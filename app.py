@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request
+from datetime import datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
+customers = []
 @app.route("/")
 def home():
     return "AI Business Manager Backend is running!"
@@ -16,7 +17,29 @@ def status():
         "status": "online"
     })
 
+@app.route("/api/customers", methods=["POST"])
+def add_customer():
 
+    data = request.json
+
+    customer = {
+        "name": data.get("name"),
+        "message": data.get("message"),
+        "date": str(datetime.now())
+    }
+
+    customers.append(customer)
+
+    return jsonify({
+        "status": "saved",
+        "customer": customer
+    })
+
+
+@app.route("/api/customers", methods=["GET"])
+def get_customers():
+
+    return jsonify(customers)
 @app.route("/api/ai", methods=["POST"])
 def ai_reply():
 
