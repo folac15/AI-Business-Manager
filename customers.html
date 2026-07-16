@@ -53,7 +53,89 @@ Reply
 
 
 <script src="script.js"></script>
+<script>
 
+async function saveCustomer(){
+
+    let name = document.getElementById("customerName").value;
+    let message = document.getElementById("customerMessage").value;
+
+
+    let response = await fetch(
+    "https://ai-business-manager.onrender.com/api/customers",
+    {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body: JSON.stringify({
+            name:name,
+            message:message
+        })
+
+    });
+
+
+    let data = await response.json();
+
+    alert("Customer saved successfully!");
+
+}
+
+
+async function loadCustomers(){
+
+    let response = await fetch(
+    "https://ai-business-manager.onrender.com/api/customers"
+    );
+
+
+    let customers = await response.json();
+
+    let area = document.getElementById("customerList");
+
+    area.innerHTML="";
+
+
+    customers.forEach(function(customer){
+
+        area.innerHTML +=
+        "<p><b>"+customer.name+"</b><br>"
+        +customer.message+
+        "<br>"+customer.date+
+        "</p><hr>";
+
+    });
+
+}
+
+</script>
+<h2>Customer Management</h2>
+
+<input id="customerName" placeholder="Customer name">
+
+<br><br>
+
+<textarea id="customerMessage" placeholder="Customer message"></textarea>
+
+<br><br>
+
+<button onclick="saveCustomer()">
+Save Customer
+</button>
+
+<br><br>
+
+<button onclick="loadCustomers()">
+Load Customers
+</button>
+
+<h3>Customer History</h3>
+
+<div id="customerList"></div>
 </body>
 
 </html>
