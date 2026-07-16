@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>AI Assistant</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>AI Business Assistant</h1>
+
+<p>Generate replies and marketing ideas</p>
+
+</header>
+
+
+<div class="card">
+
+<h2>Ask AI</h2>
+<h3>Generate Marketing Post</h3>
+
+<textarea id="marketingRequest"
+placeholder="Example: Advertise my business..."
+style="width:100%;height:100px;">
+</textarea>
+
+<br><br>
+
+<button onclick="generatePost()">
+Generate Post
+</button>
+
+<p id="marketingResult">
+</p>
+
+<textarea id="question"
+placeholder="Write your request here..."
+style="width:100%;height:120px;">
+</textarea>
+
+<br><br>
+
+<button onclick="askAI()">
+Generate Response
+</button>
+
+
+<h3>AI Response:</h3>
+
+<p id="aiResponse">
+Waiting for request...
+</p>
+
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
