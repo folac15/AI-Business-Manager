@@ -51,6 +51,7 @@ def ai_reply():
     return jsonify({
         "response": answer
     })
+    
 @app.route("/api/customers", methods=["POST"])
 def add_customer():
 
@@ -58,10 +59,9 @@ def add_customer():
 
     customer = {
         "name": data.get("name"),
-        "phone": data.get("phone"),
-        "email": data.get("email"),
         "message": data.get("message"),
-        "created_at": datetime.now().isoformat()
+        "ai_reply": data.get("ai_reply", ""),
+        "created_at": datetime.utcnow().isoformat()
     }
 
     response = requests.post(
@@ -70,35 +70,28 @@ def add_customer():
         json=customer
     )
 
+    if response.status_code in [200, 201]:
+        return jsonify({
+            "status": "saved",
+            "customer": customer
+        })
+
     return jsonify({
-        "message": "Customer saved successfully",
-        "data": response.json()
-    })
+        "status": "error",
+        "details": response.text
+    }), 500
 
 
 @app.route("/api/customers", methods=["GET"])
 def get_customers():
 
     response = requests.get(
-        SUPABASE_URL,
+        SUPABASE_URL + "?select=*",
         headers=HEADERS
     )
 
     return jsonify(response.json())
 
 
-@app.route("/api/customers/<id>", methods=["DELETE"])
-def delete_customer(id):
-
-    response = requests.delete(
-        f"{SUPABASE_URL}?id=eq.{id}",
-        headers=HEADERS
-    )
-
-    return jsonify({
-        "message": "Customer deleted"
-    })
-
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
