@@ -69,18 +69,11 @@ def add_customer():
         headers=HEADERS,
         json=customer
     )
-
-    if response.status_code in [200, 201]:
-        return jsonify({
-            "status": "saved",
-            "customer": customer
-        })
-
-    return jsonify({
-        "status": "error",
-        "details": response.text
-    }), 500
-
+    
+return jsonify({
+    "status_code": response.status_code,
+    "response": response.text
+})
 
 @app.route("/api/customers", methods=["GET"])
 def get_customers():
