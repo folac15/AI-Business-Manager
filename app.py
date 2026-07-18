@@ -6,9 +6,11 @@ import requests
 app = Flask(__name__)
 CORS(app)
 
+
 SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/customers"
 
 SUPABASE_KEY = "sb_publishable_ITqFQ7q90A6lkl8bzDQQEA_eiOuX9VR"
+
 
 HEADERS = {
     "apikey": SUPABASE_KEY,
@@ -51,7 +53,8 @@ def ai_reply():
     return jsonify({
         "response": answer
     })
-    
+
+
 @app.route("/api/customers", methods=["POST"])
 def add_customer():
 
@@ -69,17 +72,18 @@ def add_customer():
         headers=HEADERS,
         json=customer
     )
-    
-return jsonify({
-    "status_code": response.status_code,
-    "response": response.text
-})
+
+    return jsonify({
+        "status": response.status_code,
+        "result": response.text
+    })
+
 
 @app.route("/api/customers", methods=["GET"])
 def get_customers():
 
     response = requests.get(
-        SUPABASE_URL + "?select=*",
+        SUPABASE_URL,
         headers=HEADERS
     )
 
