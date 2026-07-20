@@ -9,13 +9,15 @@ CORS(app)
 
 SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/customers"
 
-SUPABASE_KEY = "sb_publishable_ITqFQ7q90A6lkl8bzDQQEA_eiOuX9VR"
+import os
 
+SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
 HEADERS = {
     "apikey": SUPABASE_KEY,
     "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
 }
 
 
