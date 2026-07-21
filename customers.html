@@ -170,17 +170,12 @@ async function loadCustomers(){
     let area = document.getElementById("customerList");
 
 
-    area.innerHTML = "";
-
-
-    customers.forEach(function(customer){
-
-        area.innerHTML +=
-
-        "<p><b>Name:</b> " + customer.name +
-        "<br><b>Message:</b> " + customer.message +
-        "<br><b>Date:</b> " + customer.created_at +
-        "</p><hr>";
+    area.innerHTML +=
+"<p><b>Customer:</b> "+customer.name+"<br><br>"
++"<b>Message:</b> "+customer.message+"<br><br>"
++"<b>AI Response:</b> "+customer.ai_reply+"<br><br>"
++"<b>Date:</b> "+customer.created_at+
+"</p><hr>";
 
     });
 
