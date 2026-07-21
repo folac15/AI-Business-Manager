@@ -163,19 +163,20 @@ async function loadCustomers(){
         "https://ai-business-manager.onrender.com/api/customers"
     );
 
-
     let customers = await response.json();
-
 
     let area = document.getElementById("customerList");
 
+    area.innerHTML = "";
 
-    area.innerHTML +=
-"<p><b>Customer:</b> "+customer.name+"<br><br>"
-+"<b>Message:</b> "+customer.message+"<br><br>"
-+"<b>AI Response:</b> "+customer.ai_reply+"<br><br>"
-+"<b>Date:</b> "+customer.created_at+
-"</p><hr>";
+    customers.forEach(function(customer){
+
+        area.innerHTML +=
+        "<p><b>Customer:</b> " + customer.name + "<br><br>"
+        + "<b>Message:</b> " + customer.message + "<br><br>"
+        + "<b>AI Response:</b> " + customer.ai_reply + "<br><br>"
+        + "<b>Date:</b> " + customer.created_at
+        + "</p><hr>";
 
     });
 
