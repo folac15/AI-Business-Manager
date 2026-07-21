@@ -97,7 +97,10 @@ def get_customers():
 
     response = requests.get(
         SUPABASE_URL,
-        headers=HEADERS
+        headers=HEADERS,
+        params={
+            "select": "name,message,ai_reply,created_at"
+        }
     )
 
     return jsonify(response.json())
