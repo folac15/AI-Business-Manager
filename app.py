@@ -57,7 +57,11 @@ def ai_reply():
     })
 
 
-@app.    message = data.get("message", "")
+@app.route("/api/customers", methods=["POST"])
+def add_customer():
+
+    data = request.json
+    message = data.get("message", "")
 
     if "price" in message.lower():
         ai_reply = "Thank you for your interest. Please contact us for our current prices and offers."
@@ -74,6 +78,7 @@ def ai_reply():
         "ai_reply": ai_reply,
         "created_at": datetime.utcnow().isoformat()
     }
+
     response = requests.post(
         SUPABASE_URL,
         headers=HEADERS,
@@ -82,7 +87,8 @@ def ai_reply():
 
     return jsonify({
         "status": response.status_code,
-        "result": response.text
+        "result": response.text,
+        "ai_reply": ai_reply
     })
 
 
