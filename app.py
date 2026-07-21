@@ -57,18 +57,23 @@ def ai_reply():
     })
 
 
-@app.route("/api/customers", methods=["POST"])
-def add_customer():
+@app.    message = data.get("message", "")
 
-    data = request.json
+    if "price" in message.lower():
+        ai_reply = "Thank you for your interest. Please contact us for our current prices and offers."
+    elif "hello" in message.lower() or "hi" in message.lower():
+        ai_reply = "Hello! Welcome to our business. How can we help you today?"
+    elif "delivery" in message.lower():
+        ai_reply = "We provide delivery services. Please send your location."
+    else:
+        ai_reply = "Thank you for your message. We will assist you shortly."
 
     customer = {
         "name": data.get("name"),
-        "message": data.get("message"),
-        "ai_reply": data.get("ai_reply", ""),
+        "message": message,
+        "ai_reply": ai_reply,
         "created_at": datetime.utcnow().isoformat()
     }
-
     response = requests.post(
         SUPABASE_URL,
         headers=HEADERS,
