@@ -2,169 +2,89 @@
 <html>
 
 <head>
-
-<meta charset="UTF-8">
-
-<title>Customer Management</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
-
 <header>
-
-<h1>Customer Management</h1>
-
-<p>Manage customer messages and conversations</p>
-
+    <h1>Customer Management</h1>
+    <p>Manage customer messages and conversations</p>
 </header>
 
+<div class="card">
+
+    <h2>Customer Form</h2>
+
+    <label>Customer Name</label><br>
+
+    <input id="customerName" placeholder="Enter customer name">
+
+    <br><br>
+
+    <label>Customer Message</label><br>
+
+    <textarea id="customerMessage" placeholder="Enter customer message"></textarea>
+
+    <br><br>
+
+    <button onclick="saveCustomer()">
+        Save Customer
+    </button>
+
+    <button onclick="loadCustomers()">
+        Load Customers
+    </button>
+
+</div>
 
 <div class="card">
 
-<h2>Customer Form</h2>
+    <h2>Customer History</h2>
 
-
-<label>Customer Name</label>
-
-<br>
-
-<input 
-id="customerName" 
-placeholder="Enter customer name">
-
-
-<br><br>
-
-
-<label>Customer Message</label>
-
-<br>
-
-<textarea 
-id="customerMessage" 
-placeholder="Enter customer message"></textarea>
-
-
-<br><br>
-
-
-<button onclick="saveCustomer()">
-Save Customer
-</button>
-
-
-<button onclick="loadCustomers()">
-Load Customers
-</button>
-
+    <div id="customerList">
+        <p>No customer records loaded.</p>
+    </div>
 
 </div>
-
-
-<div class="card">
-
-<h2>Customer History</h2>
-
-
-<div id="customerList">
-
-<p>No customer records loaded.</p>
-
-</div>
-
-
-</div>
-
-
-<script src="script.js"></script>
-
 
 <script>
 
 async function saveCustomer(){
 
     let name = document.getElementById("customerName").value;
-
     let message = document.getElementById("customerMessage").value;
-
 
     let response = await fetch(
         "https://ai-business-manager.onrender.com/api/customers",
         {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                name: name,
-                message: message
-            })
-        }
-    );
-
-
-    let result = await response.json();
-
-    alert(JSON.stringify(result));
-
-}
-<script src="script.js"></script>
-
-<script>
-
-async function saveCustomer(){
-
-    let name = document.getElementById("customerName").value;
-
-    let message = document.getElementById("customerMessage").value;
-
-
-    let response = await fetch(
-        "https://ai-business-manager.onrender.com/api/customers",
-        {
-            method: "POST",
-
+            method:"POST",
             headers:{
                 "Content-Type":"application/json"
             },
-
-            body: JSON.stringify({
+            body:JSON.stringify({
                 name:name,
                 message:message
             })
         }
     );
 
-
     let result = await response.json();
-
 
     alert(JSON.stringify(result));
 
-
     document.getElementById("customerName").value = "";
-
     document.getElementById("customerMessage").value = "";
-
 }
-
-
-
-async function loadCustomers(){
+    async function loadCustomers(){
 
     let response = await fetch(
         "https://ai-business-manager.onrender.com/api/customers"
     );
 
     let customers = await response.json();
-    console.log(customers);
 
     let area = document.getElementById("customerList");
 
@@ -173,18 +93,18 @@ async function loadCustomers(){
     customers.forEach(function(customer){
 
         area.innerHTML +=
-        "<p><b>Customer:</b> " + customer.name + "<br><br>"
-        + "<b>Message:</b> " + customer.message + "<br><br>"
-        + "<b>AI Response:</b> " + customer.ai_reply + "<br><br>"
-        + "<b>Date:</b> " + customer.created_at
-        + "</p><hr>";
+        "<div class='card'>" +
+        "<p><b>Customer:</b> " + customer.name + "</p>" +
+        "<p><b>Message:</b> " + customer.message + "</p>" +
+        "<p><b>AI Response:</b> " + customer.ai_reply + "</p>" +
+        "<p><b>Date:</b> " + customer.created_at + "</p>" +
+        "</div><br>";
 
     });
 
 }
 
 </script>
-
 
 </body>
 
