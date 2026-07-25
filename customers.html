@@ -73,10 +73,22 @@ async function saveCustomer(){
 
     let result = await response.json();
 
+if(response.status === 201){
+
     alert("Customer saved successfully!");
 
-    document.getElementById("customerName").value = "";
-    document.getElementById("customerMessage").value = "";
+    loadCustomers();
+
+}
+else{
+
+    alert("Something went wrong. Please try again.");
+
+}
+
+
+document.getElementById("customerName").value = "";
+document.getElementById("customerMessage").value = "";
 }
     async function loadCustomers(){
 
