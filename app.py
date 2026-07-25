@@ -1,11 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from datetime import datetime
 import requests
 
 app = Flask(__name__)
 CORS(app)
-
+@app.route("/customers.html")
+def customers_page():
+    return send_from_directory(".", "customers.html")
 
 SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/customers"
 
