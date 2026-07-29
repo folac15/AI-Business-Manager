@@ -1,57 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Management</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Customer Management</h1>
+
+<p>Manage customer conversations with AI</p>
+
+</header>
+
+<div class="card">
+
+<h2>Customer Form</h2>
+
+<label>Customer Name</label><br>
+
+<input
+id="customerName"
+type="text"
+placeholder="Enter customer name">
+
+<br><br>
+
+<label>Customer Message</label><br>
+
+<textarea
+id="customerMessage"
+rows="5"
+placeholder="Enter customer message"></textarea>
+
+<br><br>
+
+<button onclick="saveCustomer()">
+Save Customer
+</button>
+
+<button onclick="loadCustomers()">
+Load Customers
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Customer History</h2>
+
+<div id="customerList">
+
+<p>No customer records available.</p>
+
+</div>
+
+</div>
+
 <script>
+
+const API_URL =
+"https://ai-business-manager.onrender.com/api/customers";
 
 async function saveCustomer(){
 
-    let name = document.getElementById("customerName").value;
-    let message = document.getElementById("customerMessage").value;
+let name =
+document.getElementById("customerName").value.trim();
 
-    let response = await fetch(
-        "https://ai-business-manager.onrender.com/api/customers",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: name,
-                message: message
-            })
-        }
-    );
+let message =
+document.getElementById("customerMessage").value.trim();
 
-    let result = await response.json();
+if(name==="" || message===""){
 
-    alert(JSON.stringify(result));
+alert("Please enter customer name and message.");
 
-    document.getElementById("customerName").value = "";
-    document.getElementById("customerMessage").value = "";
+return;
+
+}
+
+try{
+
+let response =
+await fetch(API_URL,{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+name:name,
+
+message:message
+
+})
+
+});
+
+let result =
+await response.json();
+if(response.ok){
+
+alert("Customer saved successfully!");
+
+document.getElementById("customerName").value="";
+document.getElementById("customerMessage").value="";
+
+loadCustomers();
+
+}
+else{
+
+alert("Unable to save customer.");
+
+console.log(result);
+
+}
+
+}
+
+catch(error){
+
+console.log(error);
+
+alert("Server connection failed.");
+
+}
 
 }
 
 async function loadCustomers(){
 
-    let response = await fetch(
-        "https://ai-business-manager.onrender.com/api/customers"
-    );
+try{
 
-    let customers = await response.json();
+let response =
+await fetch(API_URL);
 
-    let area = document.getElementById("customerList");
+let customers =
+await response.json();
 
-    area.innerHTML = "";
+let area =
+document.getElementById("customerList");
 
-    customers.forEach(function(customer){
+area.innerHTML="";
 
-        area.innerHTML +=
-        "<div class='card'>" +
-        "<p><b>Customer:</b> " + customer.name + "</p>" +
-        "<p><b>Message:</b> " + customer.message + "</p>" +
-        "<p><b>AI Response:</b> " + customer.ai_reply + "</p>" +
-        "<p><b>Date:</b> " + customer.created_at + "</p>" +
-        "</div><br>";
+customers.reverse().forEach(function(customer){
 
-    });
+area.innerHTML +=
+
+"<div class='card'>"
+
++
+
+"<p><b>Customer:</b> "
+
++ (customer.name || "")
+
++ "</p>"
+
++
+
+"<p><b>Message:</b> "
+
++ (customer.message || "")
+
++ "</p>"
+
++
+
+"<p><b>AI Response:</b> "
+
++ (customer.ai_reply || "No AI response")
+
++ "</p>"
+
++
+
+"<p><b>Date:</b> "
+
++ (customer.created_at || "")
+
++ "</p>"
+
++
+
+"<hr></div>";
+
+});
 
 }
 
+catch(error){
+
+alert("Unable to load customers.");
+
+console.log(error);
+
+}
+
+}
+
+window.onload=function(){
+
+loadCustomers();
+
+};
+
 </script>
+
+</body>
+
+</html>    
+
+    
+    
