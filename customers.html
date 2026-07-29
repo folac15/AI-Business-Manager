@@ -73,9 +73,7 @@ async function saveCustomer(){
 
     let result = await response.json();
 
-alert("Customer saved successfully!");
-
-loadCustomers();
+alert(JSON.stringify(result));
 
 }
 
