@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
-<title>Dashboard</title>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Manager</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -11,49 +16,43 @@
 
 <body>
 
-<header>
-<h1>AI Business Manager Dashboard</h1>
-<p>Control your business activities</p>
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Professional Business Dashboard</p>
+
 </header>
 
+<div class="container">
 
-<div class="card">
+<div class="sidebar">
 
-<h2>Dashboard Menu</h2>
+<h2>MENU</h2>
 
-<div class="card">
-
-<h2>Business Tools</h2>
-
-<a href="videos.html">
-<button>📹 Manage Videos</button>
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
 </a>
-
-<br><br>
-
-<a href="posts.html">
-<button>📝 Create Posts</button>
-</a>
-
-<br><br>
-
-<a href="post_history.html">
-<button>📚 Post History</button>
-</a>
-
-<br><br>
 
 <a href="customers.html">
-<button>💬 Customers</button>
+<button>👥 Customers</button>
 </a>
-
-<br><br>
 
 <a href="ai_assistant.html">
 <button>🤖 AI Assistant</button>
 </a>
 
-<br><br>
+<a href="posts.html">
+<button>📝 Marketing</button>
+</a>
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+<a href="post_history.html">
+<button>📚 Post History</button>
+</a>
 
 <a href="settings.html">
 <button>⚙ Settings</button>
@@ -61,9 +60,132 @@
 
 </div>
 
+<div class="content">
+
+<h2>Dashboard Overview</h2>
+
+<div class="dashboard-grid">
+
+<div class="dashboard-card">
+
+<h3>👥 Customers</h3>
+
+<h1 id="customerCount">0</h1>
+
+<p>Total Customers</p>
+
 </div>
 
+<div class="dashboard-card">
+
+<h3>🤖 AI Replies</h3>
+
+<h1>100%</h1>
+
+<p>Automatic Response</p>
+
+</div>
+
+<div class="dashboard-card">
+
+<h3>📹 Videos</h3>
+
+<h1>0</h1>
+
+<p>Marketing Videos</p>
+
+</div>
+
+<div class="dashboard-card">
+
+<h3>📝 Posts</h3>
+
+<h1>0</h1>
+
+<p>Saved Posts</p>
+
+</div>
+  <div class="dashboard-card">
+
+<h3>💰 Revenue</h3>
+
+<h1>0 FCFA</h1>
+
+<p>Business Revenue</p>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>Recent Activity</h2>
+
+<div id="recentActivity">
+
+<p>Loading business information...</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+async function loadDashboard(){
+
+try{
+
+let response = await fetch(
+"https://ai-business-manager.onrender.com/api/customers"
+);
+
+let customers = await response.json();
+
+document.getElementById("customerCount").innerHTML =
+customers.length;
+
+let activity =
+document.getElementById("recentActivity");
+
+activity.innerHTML = "";
+
+customers.slice().reverse().forEach(function(customer){
+
+activity.innerHTML +=
+
+"<p><b>"+customer.name+"</b> : "
++customer.message+
+"<br><small>"
++customer.created_at+
+"</small></p><hr>";
+
+});
+
+}
+
+catch(error){
+
+document.getElementById("recentActivity").innerHTML =
+"Unable to load dashboard data.";
+
+console.log(error);
+
+}
+
+}
+
+window.onload = loadDashboard;
+
+</script>
+
 <script src="script.js"></script>
+
 </body>
 
 </html>
