@@ -158,7 +158,6 @@ def add_customer():
         SUPABASE_URL,
         headers=HEADERS,
         json=customer
-    
 )
         if response.status_code not in [200, 201]:
         return jsonify({
@@ -196,7 +195,6 @@ def get_customers():
         }), response.status_code
 
     return jsonify(response.json())
-
 # ===============================
 # START SERVER
 # ===============================
@@ -206,4 +204,4 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5000
-    )
+)
