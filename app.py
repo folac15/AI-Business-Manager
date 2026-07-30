@@ -28,7 +28,7 @@ HEADERS = {
 
 @app.route("/")
 def home():
-    return "AI Business Manager Backend is running!"
+    return send_from_directory(".", "index.html")
 
 @app.route("/dashboard.html")
 def dashboard():
