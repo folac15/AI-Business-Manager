@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Customer Management</title>
+<title>Customer CRM</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -19,9 +19,9 @@
 
 <header class="topbar">
 
-<h1>Customer Management</h1>
+<h1>AI Business Manager</h1>
 
-<p>Manage customer conversations with AI assistance</p>
+<p>Customer Relationship Management</p>
 
 </header>
 
@@ -30,7 +30,9 @@
 <div class="container">
 
 
+
 <div class="sidebar">
+
 
 <h2>MENU</h2>
 
@@ -51,7 +53,7 @@
 
 
 <a href="posts.html">
-<button>📝 Posts</button>
+<button>📝 Marketing</button>
 </a>
 
 
@@ -60,8 +62,13 @@
 </a>
 
 
-<a href="post_history.html">
-<button>📚 History</button>
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
 </a>
 
 
@@ -80,7 +87,7 @@
 <div class="card">
 
 
-<h2>Add Customer Message</h2>
+<h2>➕ Add New Customer</h2>
 
 
 <label>
@@ -88,13 +95,28 @@ Customer Name
 </label>
 
 
-<input
-id="customerName"
+<input id="customerName"
 placeholder="Enter customer name">
 
 
 
-<br><br>
+<label>
+Phone Number
+</label>
+
+
+<input id="customerPhone"
+placeholder="Enter phone number">
+
+
+
+<label>
+Location
+</label>
+
+
+<input id="customerLocation"
+placeholder="Enter customer location">
 
 
 
@@ -103,10 +125,9 @@ Customer Message
 </label>
 
 
-<textarea
-id="customerMessage"
-placeholder="Enter customer message">
-</textarea>
+<textarea id="customerMessage"
+placeholder="Enter customer message"></textarea>
+
 
 
 <br><br>
@@ -114,124 +135,285 @@ placeholder="Enter customer message">
 
 <button onclick="saveCustomer()">
 
-💾 Save Customer
+Save Customer
 
 </button>
 
 
-<button onclick="loadCustomers()">
+                    </div>
+                    <!-- CUSTOMER DATABASE -->
 
-🔄 Load History
-
-</button>
+<div class="card">
 
 
-    </div>
-    <div class="card">
+<h2>👥 Customer History</h2>
 
-<h2>Customer History</h2>
+
+<input 
+id="searchCustomer"
+placeholder="🔍 Search customer..."
+onkeyup="searchCustomers()"
+>
+
+
+
+<br><br>
+
 
 <div id="customerList">
 
-<p>Loading customer records...</p>
+<p>
+No customer records loaded.
+</p>
+
+
+</div>
+
+
+</div>
+
+
 
 </div>
 
 </div>
 
-</div>
-
-</div>
 
 <script>
 
+
 async function saveCustomer(){
 
-    let name =
-    document.getElementById("customerName").value;
 
-    let message =
-    document.getElementById("customerMessage").value;
+let customer = {
 
-    if(name.trim()=="" || message.trim()==""){
 
-        alert("Please enter the customer name and message.");
+name:
+document.getElementById("customerName").value,
 
-        return;
 
-    }
+phone:
+document.getElementById("customerPhone").value,
 
-    let response = await fetch(
-    "https://ai-business-manager.onrender.com/api/customers",
-    {
 
-        method:"POST",
+location:
+document.getElementById("customerLocation").value,
 
-        headers:{
-            "Content-Type":"application/json"
-        },
 
-        body:JSON.stringify({
+message:
+document.getElementById("customerMessage").value
 
-            name:name,
-            message:message
 
-        })
+};
 
-    });
 
-    let result = await response.json();
 
-    alert(result.ai_reply);
+if(customer.name=="" || customer.message==""){
 
-    document.getElementById("customerName").value="";
-    document.getElementById("customerMessage").value="";
-    }
 
-   async function loadCustomers(){
+alert("Please enter customer name and message.");
 
-    let response = await fetch(
-    "https://ai-business-manager.onrender.com/api/customers"
-    );
+return;
 
-    let customers = await response.json();
-
-    let area =
-    document.getElementById("customerList");
-
-    area.innerHTML = "";
-
-    customers.forEach(function(customer){
-
-        area.innerHTML +=
-
-        "<div class='card'>" +
-
-        "<h3>👤 " + customer.name + "</h3>" +
-
-        "<p><b>Customer:</b><br>" +
-        customer.message +
-        "</p>" +
-
-        "<p><b>🤖 AI Reply:</b><br>" +
-        customer.ai_reply +
-        "</p>" +
-
-        "<p><small>" +
-        customer.created_at +
-        "</small></p>" +
-
-        "</div>";
-
-    });
 
 }
 
-window.onload = loadCustomers;
+
+
+let response =
+await fetch(
+
+"https://ai-business-manager.onrender.com/api/customers",
+
+{
+
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+
+},
+
+
+body:JSON.stringify(customer)
+
+
+}
+
+
+);
+
+
+
+let result =
+await response.json();
+
+
+
+alert("Customer saved successfully!");
+
+
+
+document.getElementById("customerName").value="";
+
+document.getElementById("customerPhone").value="";
+
+document.getElementById("customerLocation").value="";
+
+document.getElementById("customerMessage").value="";
+
+
+
+loadCustomers();
+
+
+
+}
+
+
+
+async function loadCustomers(){
+
+
+let response =
+await fetch(
+
+"https://ai-business-manager.onrender.com/api/customers"
+
+);
+
+
+
+let customers =
+await response.json();
+
+
+
+let area =
+document.getElementById("customerList");
+
+
+
+area.innerHTML="";
+
+
+customers.forEach(function(customer){
+
+
+area.innerHTML +=
+
+`
+<div class="card">
+
+
+<h3>👤 ${customer.name}</h3>
+
+
+<p>
+<b>Message:</b><br>
+${customer.message}
+</p>
+
+
+<p>
+<b>🤖 AI Reply:</b><br>
+${customer.ai_reply}
+</p>
+
+
+<p>
+<b>Date:</b>
+${customer.created_at}
+</p>
+
+
+<span class="status-online">
+New Customer
+</span>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+window.onload =
+loadCustomers;
+    <!-- CUSTOMER SEARCH -->
+
+<script>
+
+
+function searchCustomers(){
+
+
+let input =
+document
+.getElementById("searchCustomer")
+.value
+.toLowerCase();
+
+
+
+let cards =
+document
+.querySelectorAll("#customerList .card");
+
+
+
+cards.forEach(function(card){
+
+
+let text =
+card.innerText.toLowerCase();
+
+
+
+if(text.includes(input)){
+
+
+card.style.display="block";
+
+
+}
+
+else{
+
+
+card.style.display="none";
+
+
+}
+
+
+});
+
+
+
+}
+
+
 
 </script>
 
+
+
 <script src="script.js"></script>
+
 
 </body>
 
