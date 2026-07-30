@@ -29,6 +29,9 @@ HEADERS = {
 @app.route("/")
 def home():
     return send_from_directory(".", "index.html")
+    @app.route("/index.html")
+def index_page():
+    return send_from_directory(".", "index.html")
 
 @app.route("/dashboard.html")
 def dashboard():
