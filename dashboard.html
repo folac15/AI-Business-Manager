@@ -21,7 +21,7 @@
 
 <h1>AI Business Manager</h1>
 
-<p>Business Control Dashboard</p>
+<p>Professional Business Control Center</p>
 
 </header>
 
@@ -31,6 +31,7 @@
 
 
 <div class="sidebar">
+
 
 <h2>MENU</h2>
 
@@ -51,7 +52,7 @@
 
 
 <a href="posts.html">
-<button>📝 Posts</button>
+<button>📝 Marketing</button>
 </a>
 
 
@@ -60,8 +61,13 @@
 </a>
 
 
-<a href="post_history.html">
-<button>📚 History</button>
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
 </a>
 
 
@@ -83,55 +89,84 @@
 <div class="dashboard-grid">
 
 
+
 <div class="dashboard-card">
 
 <h3>👥 Customers</h3>
 
-<h1 id="customerCount">0</h1>
+<h1 id="customerCount">
+0
+</h1>
 
 <p>Total Customers</p>
 
 </div>
 
 
+
 <div class="dashboard-card">
 
-<h3>🤖 AI Replies</h3>
+<h3>🤖 AI Activity</h3>
 
-<h1 id="aiCount">0</h1>
+<h1 id="aiCount">
+0
+</h1>
 
-<p>Automatic Responses</p>
+<p>AI Conversations</p>
 
 </div>
+
 
 
 <div class="dashboard-card">
 
 <h3>📝 Posts</h3>
 
-<h1 id="postCount">0</h1>
+<h1 id="postCount">
+0
+</h1>
 
-<p>Marketing Posts</p>
+<p>Marketing Content</p>
 
   </div>
   <div class="dashboard-card">
 
 <h3>📹 Videos</h3>
 
-<h1 id="videoCount">0</h1>
+<h1 id="videoCount">
+0
+</h1>
 
-<p>Business Videos</p>
+<p>Uploaded Videos</p>
 
 </div>
 
 
+
+<div class="dashboard-card">
+
+<h3>⚡ System</h3>
+
+<h1>
+🟢
+</h1>
+
+<p>AI Manager Online</p>
+
 </div>
+
+
+
+</div>
+
 
 
 <br>
 
 
+
 <div class="card">
+
 
 <h2>Quick Actions</h2>
 
@@ -163,28 +198,77 @@
 </a>
 
 
-</div>
+<a href="videos.html">
 
+<button>
+🎥 Upload Video
+</button>
 
-
-<div class="card">
-
-
-<h2>Recent Customer Activity</h2>
-
-
-<div id="recentActivity">
-
-<p>
-Loading customer activity...
-</p>
-
-
-</div>
+</a>
 
 
   </div>
-  <script>
+  <!-- Activity Center -->
+
+<div class="card">
+
+<h2>📌 Recent Activity</h2>
+
+
+<div class="notification">
+
+<p>
+🟢 System online
+</p>
+
+<p>
+AI Business Manager is running successfully.
+</p>
+
+</div>
+
+
+
+<div class="notification">
+
+<p>
+🤖 AI Assistant ready
+</p>
+
+<p>
+Customer conversations can be handled automatically.
+</p>
+
+</div>
+
+
+
+<div class="notification">
+
+<p>
+📊 Analytics module prepared
+</p>
+
+<p>
+Business performance tracking will appear here.
+</p>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+// Load dashboard statistics
 
 async function loadDashboard(){
 
@@ -192,70 +276,43 @@ async function loadDashboard(){
 try{
 
 
-let response = await fetch(
+let customers =
+await fetch(
 "https://ai-business-manager.onrender.com/api/customers"
 );
 
 
-let customers = await response.json();
+let customerData =
+await customers.json();
 
 
 
 document.getElementById("customerCount").innerHTML =
-customers.length;
+customerData.length;
 
-
-
-document.getElementById("aiCount").innerHTML =
-customers.filter(function(customer){
-
-return customer.ai_reply;
-
-}).length;
-
-
-
-let activity =
-document.getElementById("recentActivity");
-
-
-
-activity.innerHTML = "";
-
-
-
-customers.slice(0,5).forEach(function(customer){
-
-
-activity.innerHTML +=
-
-"<p><b>"
-+ customer.name +
-"</b><br>"
-+ customer.message +
-"<br><small>"
-+ customer.created_at +
-"</small></p><hr>";
-
-
-});
 
 
 }
 
 
-
 catch(error){
-
-
-document.getElementById("recentActivity").innerHTML =
-"Unable to load customer activity.";
 
 
 console.log(error);
 
 
 }
+
+
+
+let posts =
+JSON.parse(localStorage.getItem("posts")) || [];
+
+
+
+document.getElementById("postCount").innerHTML =
+posts.length;
+
 
 
 }
