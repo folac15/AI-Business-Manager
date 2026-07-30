@@ -7,9 +7,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# ==========================
+# ===============================
 # SUPABASE CONFIGURATION
-# ==========================
+# ===============================
 
 SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/customers"
 
@@ -22,9 +22,9 @@ HEADERS = {
     "Prefer": "return=representation"
 }
 
-# ==========================
+# ===============================
 # WEBSITE PAGES
-# ==========================
+# ===============================
 
 @app.route("/")
 def home():
@@ -42,13 +42,13 @@ def customers():
 def posts():
     return send_from_directory(".", "posts.html")
 
-@app.route("/videos.html")
-def videos():
-    return send_from_directory(".", "videos.html")
-
 @app.route("/post_history.html")
 def post_history():
     return send_from_directory(".", "post_history.html")
+
+@app.route("/videos.html")
+def videos():
+    return send_from_directory(".", "videos.html")
 
 @app.route("/settings.html")
 def settings():
@@ -66,27 +66,29 @@ def style():
 def script():
     return send_from_directory(".", "script.js")
 
-# ==========================
+# ===============================
 # STATUS API
-# ==========================
+# ===============================
 
 @app.route("/api/status")
 def status():
+
     return jsonify({
         "status": "online",
         "message": "AI Business Manager API is working"
     })
-    # ==========================
+    # ===============================
 # AI ASSISTANT API
-# ==========================
+# ===============================
 
 @app.route("/api/ai", methods=["POST"])
 def ai_reply():
 
     data = request.get_json() or {}
+
     question = data.get("question", "").strip().lower()
 
-    if not question:
+    if question == "":
         answer = "Please enter your question."
 
     elif "delivery" in question:
@@ -95,7 +97,7 @@ def ai_reply():
     elif "price" in question or "prices" in question or "cost" in question:
         answer = "Thank you for your interest. Please contact us for our current prices and offers."
 
-    elif "hello" in question or "hi" in question or "good morning" in question or "good afternoon" in question:
+    elif "hello" in question or "hi" in question:
         answer = "Hello! Welcome to our business. How can we help you today?"
 
     elif "thank" in question:
@@ -109,9 +111,9 @@ def ai_reply():
     })
 
 
-# ==========================
+# ===============================
 # ADD CUSTOMER
-# ==========================
+# ===============================
 
 @app.route("/api/customers", methods=["POST"])
 def add_customer():
@@ -119,9 +121,10 @@ def add_customer():
     data = request.get_json() or {}
 
     name = data.get("name", "").strip()
+
     message = data.get("message", "").strip()
 
-    if not name or not message:
+    if name == "" or message == "":
         return jsonify({
             "status": 400,
             "error": "Customer name and message are required."
@@ -155,7 +158,8 @@ def add_customer():
         SUPABASE_URL,
         headers=HEADERS,
         json=customer
-    )
+    
+)
         if response.status_code not in [200, 201]:
         return jsonify({
             "status": response.status_code,
@@ -169,9 +173,9 @@ def add_customer():
     })
 
 
-# ==========================
+# ===============================
 # GET CUSTOMERS
-# ==========================
+# ===============================
 
 @app.route("/api/customers", methods=["GET"])
 def get_customers():
@@ -193,12 +197,12 @@ def get_customers():
 
     return jsonify(response.json())
 
-
-# ==========================
+# ===============================
 # START SERVER
-# ==========================
+# ===============================
 
 if __name__ == "__main__":
+
     app.run(
         host="0.0.0.0",
         port=5000
