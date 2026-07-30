@@ -22,14 +22,13 @@
 
 <h1>AI Business Manager</h1>
 
-<p>Marketing & Content Manager</p>
+<p>Marketing Content Manager</p>
 
 </header>
 
 
 
 <div class="container">
-
 
 
 <div class="sidebar">
@@ -68,11 +67,6 @@
 </a>
 
 
-<a href="reports.html">
-<button>📄 Reports</button>
-</a>
-
-
 <a href="settings.html">
 <button>⚙ Settings</button>
 </a>
@@ -85,37 +79,52 @@
 <div class="content">
 
 
-
 <div class="card">
 
 
 <h2>📝 Create Marketing Post</h2>
 
 
-<label>
-
-What do you want to advertise?
-
-</label>
-
-
 <textarea
-
-id="postRequest"
-
-placeholder="Example: Advertise my poultry farm, school, shop, product..."
-
-rows="5">
-
+id="postInput"
+rows="5"
+placeholder="Example: Advertise my poultry farm, school, shop or product">
 </textarea>
 
 
 <br><br>
 
 
-<button onclick="generatePost(); alert('Button works')">
+<button id="generateButton">
 
-🤖 Generate With AI
+🤖 Generate Post
+
+</button>
+
+
+  </div>
+  <!-- GENERATED POST -->
+
+
+<div class="card">
+
+
+<h2>✨ Generated Marketing Post</h2>
+
+
+<textarea
+id="generatedPost"
+rows="8"
+placeholder="Generated content will appear here...">
+</textarea>
+
+
+<br><br>
+
+
+<button id="saveButton">
+
+💾 Save Post
 
 </button>
 
@@ -124,41 +133,18 @@ rows="5">
 
 
 
+
+<!-- POST HISTORY -->
+
+
 <div class="card">
 
 
-<h2>Generated Post</h2>
+<h2>📚 Saved Posts</h2>
 
 
-<textarea
+<div id="postList">
 
-id="generatedPost"
-
-rows="8"
-
-placeholder="Your marketing content will appear here...">
-
-</textarea>
-
-
-<br><br>
-
-
-<button onclick="savePost()">
-
-💾 Save Post
-
-</button>
-
-
-  </div>
-  <div class="card">
-
-
-<h2>📚 Post History</h2>
-
-
-<div id="postHistory">
 
 <p>
 No saved posts yet.
@@ -174,111 +160,97 @@ No saved posts yet.
 </div>
 
 
-</div>
+  </div>
+  <script>
+
+
+const postInput =
+document.getElementById("postInput");
+
+
+const generatedPost =
+document.getElementById("generatedPost");
+
+
+const postList =
+document.getElementById("postList");
 
 
 
-<script>
-
-
-
-function generatePost(){
+document
+.getElementById("generateButton")
+.onclick = function(){
 
 
 let request =
-document
-.getElementById("postRequest")
-.value
-.toLowerCase();
+postInput.value.toLowerCase().trim();
 
 
 
-let result="";
+let result = "";
 
 
 
-if(
-request.includes("poultry")
-||
-request.includes("chicken")
-){
+if(request.includes("poultry") || request.includes("chicken")){
 
 
 result =
-"🐔 Fresh quality chickens available! Healthy and affordable birds raised with care. Contact us today for orders and delivery.";
+"🐔 Fresh quality chickens available! Healthy birds raised with care. Affordable prices and reliable service. Contact us today for orders and delivery.";
 
 
 }
 
-
-
-else if(
-request.includes("school")
-||
-request.includes("education")
-){
+else if(request.includes("school") || request.includes("education")){
 
 
 result =
-"📚 Give your children quality education with experienced teachers and a better learning environment. Enroll today.";
+"📚 Give your child quality education with experienced teachers and excellent learning support. Enrollment is open today.";
 
 
 }
 
-
-
-else if(
-request.includes("shop")
-||
-request.includes("product")
-){
+else if(request.includes("shop") || request.includes("product")){
 
 
 result =
-"✨ Quality products at affordable prices. Excellent service and customer satisfaction guaranteed. Contact us today.";
+"✨ Quality products at affordable prices. We provide excellent service and customer satisfaction. Contact us today.";
 
 
 }
-
-
 
 else{
 
 
 result =
-"🚀 Discover our amazing products and services. We are ready to serve you with quality and reliability.";
+"🚀 Discover our quality products and services. We are ready to serve you. Contact us today for more information.";
 
 
 }
+
+
+
+generatedPost.value = result;
+
+
+
+};
 
 
 
 document
-.getElementById("generatedPost")
-.value = result;
-
-
-
-}
-
-
-
-function savePost(){
+.getElementById("saveButton")
+.onclick = function(){
 
 
 let post =
-
-document
-.getElementById("generatedPost")
-.value
-.trim();
+generatedPost.value.trim();
 
 
 
 if(post===""){
 
 
-alert("Please generate or write a post first.");
+alert("Please generate a post first.");
 
 return;
 
@@ -288,9 +260,8 @@ return;
 
 
 let posts =
-
 JSON.parse(
-localStorage.getItem("businessPosts")
+localStorage.getItem("posts")
 )
 ||
 [];
@@ -299,20 +270,17 @@ localStorage.getItem("businessPosts")
 
 posts.push({
 
-text:post,
+content: post,
 
-date:new Date().toLocaleString()
+date: new Date().toLocaleString()
 
 });
 
 
 
 localStorage.setItem(
-
-"businessPosts",
-
+"posts",
 JSON.stringify(posts)
-
 );
 
 
@@ -324,8 +292,8 @@ alert("Post saved successfully!");
 loadPosts();
 
 
-}
 
+};
 
 
 
@@ -333,28 +301,19 @@ function loadPosts(){
 
 
 let posts =
-
 JSON.parse(
-localStorage.getItem("businessPosts")
+localStorage.getItem("posts")
 )
 ||
 [];
 
 
 
-let area =
-
-document
-.getElementById("postHistory");
-
-
-
 if(posts.length===0){
 
 
-area.innerHTML =
+postList.innerHTML =
 "No saved posts yet.";
-
 
 return;
 
@@ -363,39 +322,34 @@ return;
 
 
 
-area.innerHTML="";
+postList.innerHTML="";
 
 
 
 posts.reverse().forEach(function(post,index){
 
 
-area.innerHTML +=
 
-`
+postList.innerHTML += `
 
 <div class="card">
-
 
 <h3>
 Post ${index+1}
 </h3>
 
-
 <p>
-${post.text}
+${post.content}
 </p>
-
 
 <small>
 ${post.date}
 </small>
 
-
 </div>
 
-
 `;
+
 
 
 });
@@ -406,12 +360,15 @@ ${post.date}
 
 
 
-window.onload =
-loadPosts;
+loadPosts();
 
 
-  </script>
-  <script src="script.js"></script>
+
+</script>
+
+
+
+<script src="script.js"></script>
 
 
 </body>
