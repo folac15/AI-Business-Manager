@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Customer Management</title>
@@ -12,55 +13,131 @@
 
 </head>
 
+
 <body>
 
-<header>
+
+<header class="topbar">
 
 <h1>Customer Management</h1>
 
-<p>Manage customer conversations with AI</p>
+<p>Manage customer conversations with AI assistance</p>
 
 </header>
 
-<div class="card">
 
-<h2>Customer Form</h2>
 
-<label>Customer Name</label><br>
+<div class="container">
 
-<input
-id="customerName"
-type="text"
-placeholder="Enter customer name">
 
-<br><br>
+<div class="sidebar">
 
-<label>Customer Message</label><br>
+<h2>MENU</h2>
 
-<textarea
-id="customerMessage"
-rows="5"
-placeholder="Enter customer message"></textarea>
 
-<br><br>
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
 
-<button onclick="saveCustomer()">
-Save Customer
-</button>
 
-<button onclick="loadCustomers()">
-Load Customers
-</button>
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="ai_assistant.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="posts.html">
+<button>📝 Posts</button>
+</a>
+
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+
+<a href="post_history.html">
+<button>📚 History</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
 
 </div>
 
+
+
+<div class="content">
+
+
 <div class="card">
+
+
+<h2>Add Customer Message</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+id="customerName"
+placeholder="Enter customer name">
+
+
+
+<br><br>
+
+
+
+<label>
+Customer Message
+</label>
+
+
+<textarea
+id="customerMessage"
+placeholder="Enter customer message">
+</textarea>
+
+
+<br><br>
+
+
+<button onclick="saveCustomer()">
+
+💾 Save Customer
+
+</button>
+
+
+<button onclick="loadCustomers()">
+
+🔄 Load History
+
+</button>
+
+
+    </div>
+    <div class="card">
 
 <h2>Customer History</h2>
 
 <div id="customerList">
 
-<p>No customer records available.</p>
+<p>Loading customer records...</p>
+
+</div>
+
+</div>
 
 </div>
 
@@ -68,160 +145,93 @@ Load Customers
 
 <script>
 
-const API_URL =
-"https://ai-business-manager.onrender.com/api/customers";
-
 async function saveCustomer(){
 
-let name =
-document.getElementById("customerName").value.trim();
+    let name =
+    document.getElementById("customerName").value;
 
-let message =
-document.getElementById("customerMessage").value.trim();
+    let message =
+    document.getElementById("customerMessage").value;
 
-if(name==="" || message===""){
+    if(name.trim()=="" || message.trim()==""){
 
-alert("Please enter customer name and message.");
+        alert("Please enter the customer name and message.");
 
-return;
+        return;
 
-}
+    }
 
-try{
+    let response = await fetch(
+    "https://ai-business-manager.onrender.com/api/customers",
+    {
 
-let response =
-await fetch(API_URL,{
+        method:"POST",
 
-method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
 
-headers:{
-"Content-Type":"application/json"
-},
+        body:JSON.stringify({
 
-body:JSON.stringify({
+            name:name,
+            message:message
 
-name:name,
+        })
 
-message:message
+    });
 
-})
+    let result = await response.json();
 
-});
+    alert(result.ai_reply);
 
-let result =
-await response.json();
-if(response.ok){
+    document.getElementById("customerName").value="";
+    document.getElementById("customerMessage").value="";
 
-alert("Customer saved successfully!");
+   async function loadCustomers(){
 
-document.getElementById("customerName").value="";
-document.getElementById("customerMessage").value="";
+    let response = await fetch(
+    "https://ai-business-manager.onrender.com/api/customers"
+    );
 
-loadCustomers();
+    let customers = await response.json();
 
-}
-else{
+    let area =
+    document.getElementById("customerList");
 
-alert("Unable to save customer.");
+    area.innerHTML = "";
 
-console.log(result);
+    customers.forEach(function(customer){
 
-}
+        area.innerHTML +=
 
-}
+        "<div class='card'>" +
 
-catch(error){
+        "<h3>👤 " + customer.name + "</h3>" +
 
-console.log(error);
+        "<p><b>Customer:</b><br>" +
+        customer.message +
+        "</p>" +
 
-alert("Server connection failed.");
+        "<p><b>🤖 AI Reply:</b><br>" +
+        customer.ai_reply +
+        "</p>" +
 
-}
+        "<p><small>" +
+        customer.created_at +
+        "</small></p>" +
 
-}
+        "</div>";
 
-async function loadCustomers(){
-
-try{
-
-let response =
-await fetch(API_URL);
-
-let customers =
-await response.json();
-
-let area =
-document.getElementById("customerList");
-
-area.innerHTML="";
-
-customers.reverse().forEach(function(customer){
-
-area.innerHTML +=
-
-"<div class='card'>"
-
-+
-
-"<p><b>Customer:</b> "
-
-+ (customer.name || "")
-
-+ "</p>"
-
-+
-
-"<p><b>Message:</b> "
-
-+ (customer.message || "")
-
-+ "</p>"
-
-+
-
-"<p><b>AI Response:</b> "
-
-+ (customer.ai_reply || "No AI response")
-
-+ "</p>"
-
-+
-
-"<p><b>Date:</b> "
-
-+ (customer.created_at || "")
-
-+ "</p>"
-
-+
-
-"<hr></div>";
-
-});
+    });
 
 }
 
-catch(error){
-
-alert("Unable to load customers.");
-
-console.log(error);
-
-}
-
-}
-
-window.onload=function(){
-
-loadCustomers();
-
-};
+window.onload = loadCustomers;
 
 </script>
 
+<script src="script.js"></script>
+
 </body>
 
-</html>    
-
-    
-    
+</html>
