@@ -153,10 +153,12 @@ def add_customer():
         ai_reply = "Thank you for your message. We will assist you shortly."
 
     customer = {
-        "name": name,
-        "message": message,
-        "ai_reply": ai_reply,
-        "created_at": datetime.utcnow().isoformat()
+    "name": name,
+    "phone": data.get("phone", "").strip(),
+    "location": data.get("location", "").strip(),
+    "message": message,
+    "ai_reply": ai_reply,
+    "created_at": datetime.utcnow().isoformat()
     }
 
     response = requests.post(
@@ -189,9 +191,9 @@ def get_customers():
         SUPABASE_URL,
         headers=HEADERS,
         params={
-            "select": "name,message,ai_reply,created_at",
-            "order": "created_at.desc"
-        }
+    "select": "name,phone,location,message,ai_reply,created_at",
+    "order": "created_at.desc"
+}
     )
 
     if response.status_code != 200:
