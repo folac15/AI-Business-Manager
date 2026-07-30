@@ -158,8 +158,9 @@ def add_customer():
         SUPABASE_URL,
         headers=HEADERS,
         json=customer
-)
-        if response.status_code not in [200, 201]:
+    )
+
+    if response.status_code not in [200, 201]:
         return jsonify({
             "status": response.status_code,
             "error": response.text
