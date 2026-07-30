@@ -1,152 +1,263 @@
 function showMessage(){
+
     alert("AI Business Manager is ready!");
+
 }
+
+
+/* ==========================
+   POSTS MANAGEMENT
+========================== */
+
+
 function createPost(){
 
-    let text = document.getElementById("postText").value;
+    let text =
+    document.getElementById("postText").value;
 
-    if(text == ""){
+
+    if(text.trim()==""){
 
         alert("Please write something first.");
+        return;
 
     }
-    else{
 
-        let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-        posts.push(text);
+    let posts =
+    JSON.parse(localStorage.getItem("posts")) || [];
 
-        localStorage.setItem("posts", JSON.stringify(posts));
 
-        alert("Post saved successfully!");
+    posts.push(text);
 
-        document.getElementById("postText").value = "";
 
-    }
+    localStorage.setItem(
+        "posts",
+        JSON.stringify(posts)
+    );
+
+
+    alert("Post saved successfully!");
+
+
+    document.getElementById("postText").value="";
 
 }
-function replyCustomer(){
 
-    let reply = prompt("Write your reply to the customer:");
 
-    if(reply != null && reply != ""){
-        alert("Reply sent:\n\n" + reply);
+
+function loadPosts(){
+
+    let posts =
+    JSON.parse(localStorage.getItem("posts")) || [];
+
+
+    let area =
+    document.getElementById("postList");
+
+
+    if(!area){
+
+        return;
+
     }
-    else{
-        alert("No reply written.");
+
+
+    if(posts.length==0){
+
+        area.innerHTML =
+        "No posts available yet.";
+
+        return;
+
     }
+
+
+    area.innerHTML="";
+
+
+    posts.forEach(function(post,index){
+
+
+        area.innerHTML +=
+
+        "<p><b>Post "
+        +(index+1)+
+        ":</b><br>"
+        +post+
+        "</p><hr>";
+
+
+    });
+
 
 }
+
+
+/* ==========================
+   SETTINGS
+========================== */
+
+
 function saveSettings(){
 
-    let name = document.getElementById("businessName").value;
-    let phone = document.getElementById("phone").value;
+    let name =
+    document.getElementById("businessName").value;
 
-    if(name == "" || phone == ""){
+
+    let phone =
+    document.getElementById("phone").value;
+
+
+    if(name=="" || phone==""){
 
         alert("Please complete all information.");
 
-    }
-    else{
-
-        localStorage.setItem("businessName", name);
-        localStorage.setItem("phone", phone);
-
-        alert("Settings saved successfully!");
+        return;
 
     }
+
+
+    localStorage.setItem(
+        "businessName",
+        name
+    );
+
+
+    localStorage.setItem(
+        "phone",
+        phone
+    );
+
+
+    alert("Settings saved successfully!");
 
 }
-function loadPosts(){
 
-    let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-    let postArea = document.getElementById("postList");
+/* ==========================
+   AI ASSISTANT
+========================== */
 
-    if(posts.length == 0){
 
-        postArea.innerHTML = "No posts available yet.";
-
-    }
-    else{
-
-        postArea.innerHTML = "";
-
-        posts.forEach(function(post, index){
-
-            postArea.innerHTML += 
-            "<p><b>Post " + (index + 1) + ":</b><br>" 
-            + post + 
-            "</p><hr>";
-
-        });
-
-    }
-
-}
 async function askAI(){
 
-    let question = document.getElementById("question").value;
 
-    let responseBox = document.getElementById("aiResponse");
+    let question =
+    document.getElementById("question").value;
 
-    responseBox.innerHTML = "Thinking...";
 
-    try {
+    let responseBox =
+    document.getElementById("aiResponse");
 
-        let response = await fetch("https://ai-business-manager.onrender.com/api/ai", {
 
-            method: "POST",
+    responseBox.innerHTML =
+    "Thinking...";
 
-            headers: {
-                "Content-Type": "application/json"
+
+    try{
+
+
+        let response =
+        await fetch(
+        "https://ai-business-manager.onrender.com/api/ai",
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
             },
 
-            body: JSON.stringify({
-                question: question
+
+            body:JSON.stringify({
+
+                question:question
+
             })
 
         });
 
 
-        let data = await response.json();
+        let data =
+        await response.json();
 
-        responseBox.innerHTML = data.response;
+
+        responseBox.innerHTML =
+        data.response;
 
 
-    } catch(error){
+    }
 
-        responseBox.innerHTML = 
+
+    catch(error){
+
+
+        responseBox.innerHTML =
         "Unable to connect to AI server.";
 
+
+        console.log(error);
+
+
     }
+
 
 }
+
+
+/* ==========================
+   MARKETING POST GENERATOR
+========================== */
+
+
 function generatePost(){
 
-    let request = document.getElementById("marketingRequest").value.toLowerCase();
 
-    let result = "";
+    let request =
+    document
+    .getElementById("marketingRequest")
+    .value
+    .toLowerCase();
 
-    if(request.includes("poultry") || request.includes("chicken")){
 
-        result = "Fresh quality chickens available! Healthy, well-raised birds at affordable prices. Contact us today to place your order.";
+    let result="";
+
+
+    if(
+        request.includes("poultry")
+        ||
+        request.includes("chicken")
+    ){
+
+        result =
+        "Fresh quality chickens available! Healthy, well-raised birds at affordable prices. Contact us today.";
 
     }
 
-    else if(request.includes("school")){
 
-        result = "Give your children the best education experience. Quality teaching, guidance and success-focused learning.";
+    else if(
+        request.includes("school")
+    ){
+
+        result =
+        "Give your children the best education experience with quality teaching and guidance.";
 
     }
+
 
     else{
 
-        result = "Discover our quality products and services. We are ready to serve you. Contact us today.";
+
+        result =
+        "Discover our quality products and services. Contact us today.";
 
     }
 
 
-    document.getElementById("marketingResult").innerHTML = result;
+    document
+    .getElementById("marketingResult")
+    .innerHTML=result;
+
 
 }
