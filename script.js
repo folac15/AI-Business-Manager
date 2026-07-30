@@ -135,75 +135,7 @@ function saveSettings(){
 }
 
 
-/* ==========================
-   AI ASSISTANT
-========================== */
 
-
-async function askAI(){
-
-
-    let question =
-    document.getElementById("question").value;
-
-
-    let responseBox =
-    document.getElementById("aiResponse");
-
-
-    responseBox.innerHTML =
-    "Thinking...";
-
-
-    try{
-
-
-        let response =
-        await fetch(
-        "https://ai-business-manager.onrender.com/api/ai",
-        {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
-            },
-
-
-            body:JSON.stringify({
-
-                question:question
-
-            })
-
-        });
-
-
-        let data =
-        await response.json();
-
-
-        responseBox.innerHTML =
-        data.response;
-
-
-    }
-
-
-    catch(error){
-
-
-        responseBox.innerHTML =
-        "Unable to connect to AI server.";
-
-
-        console.log(error);
-
-
-    }
-
-
-}
 
 
 /* ==========================
