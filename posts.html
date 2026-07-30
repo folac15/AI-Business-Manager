@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-<title>Create Posts</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marketing Manager</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -13,35 +17,403 @@
 
 <body>
 
-<header>
 
-<h1>Create New Post</h1>
+<header class="topbar">
 
-<p>Write updates for your customers</p>
+<h1>AI Business Manager</h1>
+
+<p>Marketing & Content Manager</p>
 
 </header>
 
 
-<div class="card">
 
-<h2>Post Content</h2>
+<div class="container">
 
-<textarea id="postText" 
-placeholder="Write your message here..."
-style="width:100%;height:120px;">
-</textarea>
 
-<br><br>
 
-<button onclick="createPost()">
-Create Post
-</button>
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="ai_assistant.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="posts.html">
+<button>📝 Marketing</button>
+</a>
+
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
 
 </div>
 
 
-<script src="script.js"></script>
+
+<div class="content">
+
+
+
+<div class="card">
+
+
+<h2>📝 Create Marketing Post</h2>
+
+
+<label>
+
+What do you want to advertise?
+
+</label>
+
+
+<textarea
+
+id="postRequest"
+
+placeholder="Example: Advertise my poultry farm, school, shop, product..."
+
+rows="5">
+
+</textarea>
+
+
+<br><br>
+
+
+<button onclick="generatePost()">
+
+🤖 Generate With AI
+
+</button>
+
+
+</div>
+
+
+
+<div class="card">
+
+
+<h2>Generated Post</h2>
+
+
+<textarea
+
+id="generatedPost"
+
+rows="8"
+
+placeholder="Your marketing content will appear here...">
+
+</textarea>
+
+
+<br><br>
+
+
+<button onclick="savePost()">
+
+💾 Save Post
+
+</button>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>📚 Post History</h2>
+
+
+<div id="postHistory">
+
+<p>
+No saved posts yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+
+function generatePost(){
+
+
+let request =
+document
+.getElementById("postRequest")
+.value
+.toLowerCase();
+
+
+
+let result="";
+
+
+
+if(
+request.includes("poultry")
+||
+request.includes("chicken")
+){
+
+
+result =
+"🐔 Fresh quality chickens available! Healthy and affordable birds raised with care. Contact us today for orders and delivery.";
+
+
+}
+
+
+
+else if(
+request.includes("school")
+||
+request.includes("education")
+){
+
+
+result =
+"📚 Give your children quality education with experienced teachers and a better learning environment. Enroll today.";
+
+
+}
+
+
+
+else if(
+request.includes("shop")
+||
+request.includes("product")
+){
+
+
+result =
+"✨ Quality products at affordable prices. Excellent service and customer satisfaction guaranteed. Contact us today.";
+
+
+}
+
+
+
+else{
+
+
+result =
+"🚀 Discover our amazing products and services. We are ready to serve you with quality and reliability.";
+
+
+}
+
+
+
+document
+.getElementById("generatedPost")
+.value = result;
+
+
+
+}
+
+
+
+function savePost(){
+
+
+let post =
+
+document
+.getElementById("generatedPost")
+.value
+.trim();
+
+
+
+if(post===""){
+
+
+alert("Please generate or write a post first.");
+
+return;
+
+
+}
+
+
+
+let posts =
+
+JSON.parse(
+localStorage.getItem("businessPosts")
+)
+||
+[];
+
+
+
+posts.push({
+
+text:post,
+
+date:new Date().toLocaleString()
+
+});
+
+
+
+localStorage.setItem(
+
+"businessPosts",
+
+JSON.stringify(posts)
+
+);
+
+
+
+alert("Post saved successfully!");
+
+
+
+loadPosts();
+
+
+}
+
+
+
+
+function loadPosts(){
+
+
+let posts =
+
+JSON.parse(
+localStorage.getItem("businessPosts")
+)
+||
+[];
+
+
+
+let area =
+
+document
+.getElementById("postHistory");
+
+
+
+if(posts.length===0){
+
+
+area.innerHTML =
+"No saved posts yet.";
+
+
+return;
+
+
+}
+
+
+
+area.innerHTML="";
+
+
+
+posts.reverse().forEach(function(post,index){
+
+
+area.innerHTML +=
+
+`
+
+<div class="card">
+
+
+<h3>
+Post ${index+1}
+</h3>
+
+
+<p>
+${post.text}
+</p>
+
+
+<small>
+${post.date}
+</small>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+
+}
+
+
+
+window.onload =
+loadPosts;
+
+
+  </script>
+  <script src="script.js"></script>
+
 
 </body>
 
-</html>
+  </html>
