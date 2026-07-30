@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Assistant</title>
 
 <link rel="stylesheet" href="style.css">
@@ -12,58 +15,157 @@
 
 <body>
 
-<header>
+<header class="topbar">
 
-<h1>AI Business Assistant</h1>
+<h1>AI Business Manager</h1>
 
-<p>Generate replies and marketing ideas</p>
+<p>AI Business Assistant</p>
 
 </header>
 
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
+
+<a href="posts.html"><button>📝 Posts</button></a>
+
+<a href="videos.html"><button>🎥 Videos</button></a>
+
+<a href="post_history.html"><button>📚 History</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
 
 <div class="card">
 
-<h2>Ask AI</h2>
-<h3>Generate Marketing Post</h3>
+<h2>Chat with AI</h2>
 
-<textarea id="marketingRequest"
-placeholder="Example: Advertise my business..."
-style="width:100%;height:100px;">
-</textarea>
+<div id="chatArea" style="height:350px;overflow-y:auto;border:1px solid #ddd;padding:15px;border-radius:10px;background:#fafafa;">
 
-<br><br>
+<p><b>AI:</b> Hello! How can I help you today?</p>
 
-<button onclick="generatePost()">
-Generate Post
-</button>
+</div>
 
-<p id="marketingResult">
-</p>
+<br>
 
-<textarea id="question"
-placeholder="Write your request here..."
-style="width:100%;height:120px;">
-</textarea>
+<textarea
+id="question"
+placeholder="Type your question here..."></textarea>
 
 <br><br>
 
 <button onclick="askAI()">
-Generate Response
-</button>
-
-
-<h3>AI Response:</h3>
-
-<p id="aiResponse">
-Waiting for request...
-</p>
-
+Send Message
+  </button>
+  </div>
 
 </div>
 
+</div>
+
+<script>
+
+async function askAI(){
+
+    let question =
+    document.getElementById("question").value.trim();
+
+    if(question==""){
+
+        alert("Please type a question.");
+
+        return;
+
+    }
+
+    let chat =
+    document.getElementById("chatArea");
+
+    chat.innerHTML +=
+    "<p><b>You:</b> "
+    + question +
+    "</p>";
+
+    chat.innerHTML +=
+    "<p id='thinking'><b>AI:</b> Thinking...</p>";
+
+    chat.scrollTop = chat.scrollHeight;
+
+    try{
+
+        let response = await fetch(
+        "https://ai-business-manager.onrender.com/api/ai",
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+                question:question
+            })
+
+        });
+
+        let data = await response.json();
+
+        document.getElementById("thinking").remove();
+
+        chat.innerHTML +=
+        "<p><b>AI:</b> "
+        + data.response +
+        "</p>";
+
+        document.getElementById("question").value="";
+
+        chat.scrollTop = chat.scrollHeight;
+
+    }
+
+    catch(error){
+
+        document.getElementById("thinking").innerHTML =
+        "<b>AI:</b> Unable to connect to the server.";
+
+        console.log(error);
+
+    }
+
+}
+
+document.getElementById("question").addEventListener(
+"keypress",
+function(event){
+
+    if(event.key==="Enter" && !event.shiftKey){
+
+        event.preventDefault();
+
+        askAI();
+
+    }
+
+});
+
+</script>
 
 <script src="script.js"></script>
 
 </body>
 
 </html>
+
+  
