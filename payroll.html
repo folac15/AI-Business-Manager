@@ -1,1 +1,264 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Payroll Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Payroll Management Center</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="employees.html"><button>👨‍💼 Employees</button></a>
+
+<a href="payroll.html"><button>💰 Payroll</button></a>
+
+<a href="finance.html"><button>💵 Finance</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>💰 New Payroll Record</h2>
+
+<label>Employee Name</label>
+
+<input
+type="text"
+id="employeeName"
+placeholder="Enter employee name">
+
+<label>Position</label>
+
+<input
+type="text"
+id="employeePosition"
+placeholder="Enter position">
+
+<label>Basic Salary</label>
+
+<input
+type="number"
+id="basicSalary"
+placeholder="Enter basic salary">
+
+<label>Bonus</label>
+
+<input
+type="number"
+id="bonus"
+placeholder="Enter bonus">
+
+<label>Deductions</label>
+
+<input
+type="number"
+id="deductions"
+placeholder="Enter deductions">
+
+<br><br>
+
+<button id="savePayroll">
+
+💾 Save Payroll
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Payroll Summary</h2>
+
+
+<p>
+
+Total Payroll Records:
+
+<b id="totalPayroll">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Payroll History</h2>
+
+
+<div id="payrollList">
+
+
+<p>
+No payroll records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const savePayroll =
+document.getElementById("savePayroll");
+
+const payrollList =
+document.getElementById("payrollList");
+
+
+function loadPayroll(){
+
+let payroll =
+JSON.parse(localStorage.getItem("payroll")) || [];
+
+document.getElementById("totalPayroll").innerHTML =
+payroll.length;
+
+if(payroll.length === 0){
+
+payrollList.innerHTML =
+"<p>No payroll records available yet.</p>";
+
+return;
+
+}
+
+payrollList.innerHTML = "";
+
+payroll.reverse().forEach(function(record){
+
+payrollList.innerHTML += `
+
+<div class="card">
+
+<h3>💰 ${record.name}</h3>
+
+<p><b>Position:</b> ${record.position}</p>
+
+<p><b>Basic Salary:</b> ${record.salary}</p>
+
+<p><b>Bonus:</b> ${record.bonus}</p>
+
+<p><b>Deductions:</b> ${record.deductions}</p>
+
+<p><b>Net Salary:</b> ${record.netSalary}</p>
+
+<small>${record.date}</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+savePayroll.onclick = function(){
+
+let salary =
+Number(document.getElementById("basicSalary").value) || 0;
+
+let bonus =
+Number(document.getElementById("bonus").value) || 0;
+
+let deductions =
+Number(document.getElementById("deductions").value) || 0;
+
+let record = {
+
+name:
+document.getElementById("employeeName").value.trim(),
+
+position:
+document.getElementById("employeePosition").value.trim(),
+
+salary: salary,
+
+bonus: bonus,
+
+deductions: deductions,
+
+netSalary: salary + bonus - deductions,
+
+date:
+new Date().toLocaleString()
+
+};
+
+if(record.name === "" || record.position === ""){
+
+alert("Please fill employee name and position.");
+
+return;
+
+}
+
+let payroll =
+JSON.parse(localStorage.getItem("payroll")) || [];
+
+payroll.push(record);
+
+localStorage.setItem(
+"payroll",
+JSON.stringify(payroll)
+);
+
+alert("Payroll saved successfully!");
+
+loadPayroll();
+
+};
+
+window.onload =
+loadPayroll;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+  </html>
+  
