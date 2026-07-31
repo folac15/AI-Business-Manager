@@ -1,1 +1,352 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Booking & Appointment Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Booking & Appointment Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="calendar.html"><button>📅 Calendar</button></a>
+
+<a href="appointments.html"><button>🗓 Appointments</button></a>
+
+<a href="support.html"><button>🎧 Support</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🗓 Create New Appointment</h2>
+
+
+<label>
+Customer Name
+</label>
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+<label>
+Appointment Title
+</label>
+
+<input
+type="text"
+id="appointmentTitle"
+placeholder="Enter appointment title">
+
+
+<label>
+Appointment Date
+</label>
+
+<input
+type="date"
+id="appointmentDate">
+
+
+<label>
+Appointment Time
+</label>
+
+<input
+type="time"
+id="appointmentTime">
+
+
+<label>
+Status
+</label>
+
+<select id="appointmentStatus">
+
+<option>
+Pending
+</option>
+
+<option>
+Confirmed
+</option>
+
+<option>
+Completed
+</option>
+
+<option>
+Cancelled
+</option>
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveAppointment">
+
+💾 Save Appointment
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Appointment Summary</h2>
+
+
+<p>
+
+Total Appointments:
+
+<b id="totalAppointments">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Appointment History</h2>
+
+
+<div id="appointmentList">
+
+
+<p>
+No appointments available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveAppointment =
+document.getElementById("saveAppointment");
+
+
+const appointmentList =
+document.getElementById("appointmentList");
+
+
+
+function loadAppointments(){
+
+
+let appointments =
+JSON.parse(localStorage.getItem("appointments")) || [];
+
+
+
+document.getElementById("totalAppointments").innerHTML =
+appointments.length;
+
+
+
+if(appointments.length === 0){
+
+
+appointmentList.innerHTML =
+"<p>No appointments available yet.</p>";
+
+return;
+
+}
+
+
+
+appointmentList.innerHTML = "";
+
+
+
+appointments.reverse().forEach(function(appointment){
+
+
+appointmentList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🗓 ${appointment.title}</h3>
+
+
+<p>
+<b>Customer:</b> ${appointment.customer}
+</p>
+
+
+<p>
+<b>Date:</b> ${appointment.date}
+</p>
+
+
+<p>
+<b>Time:</b> ${appointment.time}
+</p>
+
+
+<p>
+<b>Status:</b> ${appointment.status}
+</p>
+
+
+<small>
+${appointment.created}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAppointment.onclick = function(){
+
+
+
+let appointment = {
+
+
+customer:
+document.getElementById("customerName").value.trim(),
+
+
+title:
+document.getElementById("appointmentTitle").value.trim(),
+
+
+date:
+document.getElementById("appointmentDate").value,
+
+
+time:
+document.getElementById("appointmentTime").value,
+
+
+status:
+document.getElementById("appointmentStatus").value,
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(appointment.customer === "" || appointment.title === ""){
+
+
+alert("Please fill customer name and appointment title.");
+
+return;
+
+}
+
+
+
+let appointments =
+JSON.parse(localStorage.getItem("appointments")) || [];
+
+
+
+appointments.push(appointment);
+
+
+
+localStorage.setItem(
+"appointments",
+JSON.stringify(appointments)
+);
+
+
+
+alert("Appointment saved successfully!");
+
+
+
+loadAppointments();
+
+
+
+};
+
+
+
+window.onload =
+loadAppointments;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
