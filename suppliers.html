@@ -1,1 +1,404 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Supplier Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Supplier Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="suppliers.html">
+<button>🚚 Suppliers</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📅 Tasks</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🚚 Add New Supplier</h2>
+
+
+<label>
+Supplier Name
+</label>
+
+
+<input
+type="text"
+id="supplierName"
+placeholder="Enter supplier name">
+
+
+
+<label>
+Company Name
+</label>
+
+
+<input
+type="text"
+id="companyName"
+placeholder="Enter company name">
+
+
+
+<label>
+Phone Number
+</label>
+
+
+<input
+type="text"
+id="supplierPhone"
+placeholder="Enter phone number">
+
+
+
+<label>
+Location
+</label>
+
+
+<input
+type="text"
+id="supplierLocation"
+placeholder="Enter location">
+
+
+
+<label>
+Products Supplied
+</label>
+
+
+<input
+type="text"
+id="productsSupplied"
+placeholder="Example: Phones, Batteries, Food">
+
+
+
+<br><br>
+
+
+<button id="saveSupplier">
+
+💾 Save Supplier
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Supplier Summary</h2>
+
+
+<p>
+
+Total Suppliers:
+
+<b id="totalSuppliers">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Supplier History</h2>
+
+
+<div id="supplierList">
+
+
+<p>
+No suppliers added yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveSupplier =
+document.getElementById("saveSupplier");
+
+
+const supplierList =
+document.getElementById("supplierList");
+
+
+
+function loadSuppliers(){
+
+
+let suppliers =
+JSON.parse(localStorage.getItem("suppliers")) || [];
+
+
+
+document.getElementById("totalSuppliers").innerHTML =
+suppliers.length;
+
+
+
+if(suppliers.length === 0){
+
+
+supplierList.innerHTML =
+"<p>No suppliers added yet.</p>";
+
+return;
+
+}
+
+
+
+supplierList.innerHTML = "";
+
+
+
+suppliers.reverse().forEach(function(supplier){
+
+
+supplierList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🚚 ${supplier.name}</h3>
+
+
+<p>
+<b>Company:</b> ${supplier.company}
+</p>
+
+
+<p>
+<b>Phone:</b> ${supplier.phone}
+</p>
+
+
+<p>
+<b>Location:</b> ${supplier.location}
+</p>
+
+
+<p>
+<b>Products:</b> ${supplier.products}
+</p>
+
+
+<small>
+${supplier.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSupplier.onclick = function(){
+
+
+
+let supplier = {
+
+
+name:
+document.getElementById("supplierName").value.trim(),
+
+
+company:
+document.getElementById("companyName").value.trim(),
+
+
+phone:
+document.getElementById("supplierPhone").value.trim(),
+
+
+location:
+document.getElementById("supplierLocation").value.trim(),
+
+
+products:
+document.getElementById("productsSupplied").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+supplier.name === "" ||
+supplier.company === ""
+){
+
+alert("Please fill supplier name and company name.");
+
+return;
+
+}
+
+
+
+let suppliers =
+JSON.parse(localStorage.getItem("suppliers")) || [];
+
+
+
+suppliers.push(supplier);
+
+
+
+localStorage.setItem(
+"suppliers",
+JSON.stringify(suppliers)
+);
+
+
+
+alert("Supplier saved successfully!");
+
+
+
+loadSuppliers();
+
+
+
+};
+
+
+
+window.onload =
+loadSuppliers;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
