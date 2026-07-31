@@ -35,49 +35,13 @@ def home():
 def index_page():
     return send_from_directory(".", "index.html")
 
-@app.route("/dashboard.html")
-def dashboard():
-    return send_from_directory(".", "dashboard.html")
+@app.route("/<path:filename>")
+def serve_files(filename):
 
-@app.route("/customers.html")
-def customers():
-    return send_from_directory(".", "customers.html")
+    if filename.endswith(".html") or filename.endswith(".css") or filename.endswith(".js"):
+        return send_from_directory(".", filename)
 
-@app.route("/posts.html")
-def posts():
-    return send_from_directory(".", "posts.html")
-
-@app.route("/post_history.html")
-def post_history():
-    return send_from_directory(".", "post_history.html")
-
-@app.route("/videos.html")
-def videos():
-    return send_from_directory(".", "videos.html")
-
-@app.route("/settings.html")
-def settings():
-    return send_from_directory(".", "settings.html")
-
-
-@app.route("/analytics.html")
-def analytics():
-    return send_from_directory(".", "analytics.html")
-
-
-@app.route("/reports.html")
-def reports():
-    return send_from_directory(".", "reports.html")
-
-
-@app.route("/automation.html")
-def automation():
-    return send_from_directory(".", "automation.html")
-
-
-@app.route("/ai_assistant.html")
-def ai_assistant():
-    return send_from_directory(".", "ai_assistant.html")
+    return "File not found", 404
 
 @app.route("/style.css")
 def style():
