@@ -1,1 +1,205 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Analytics Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Business Analytics Dashboard</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
+
+<a href="posts.html"><button>📝 Marketing</button></a>
+
+<a href="videos.html"><button>🎥 Videos</button></a>
+
+<a href="analytics.html"><button>📊 Analytics</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>📊 Business Overview</h2>
+
+<div style="display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;">
+
+<div class="card">
+
+<h3>Total Customers</h3>
+
+<h1 id="totalCustomers">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Marketing Posts</h3>
+
+<h1 id="totalPosts">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Saved Videos</h3>
+
+<h1 id="totalVideos">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>AI Conversations</h3>
+
+<h1 id="totalChats">0</h1>
+
+</div>
+
+</div>
+
+                                                    </div>
+  <div class="card">
+
+<h2>📈 Business Activity</h2>
+
+<table style="width:100%;border-collapse:collapse;">
+
+<tr>
+
+<td><b>Today's Customers</b></td>
+
+<td id="todayCustomers">0</td>
+
+</tr>
+
+<tr>
+
+<td><b>Today's Posts</b></td>
+
+<td id="todayPosts">0</td>
+
+</tr>
+
+<tr>
+
+<td><b>Today's Videos</b></td>
+
+<td id="todayVideos">0</td>
+
+</tr>
+
+<tr>
+
+<td><b>System Status</b></td>
+
+<td style="color:green;"><b>🟢 Online</b></td>
+
+</tr>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>📋 Quick Summary</h2>
+
+<p id="summaryText">
+
+Loading business statistics...
+
+</p>
+
+</div>
+
+</div>
+
+                                                      </div>
+  <script>
+
+function loadAnalytics(){
+
+    // Customers are currently stored in Supabase,
+    // so we will connect this later.
+    document.getElementById("totalCustomers").innerHTML = "--";
+
+    // Posts
+    let posts =
+    JSON.parse(localStorage.getItem("posts")) || [];
+
+    document.getElementById("totalPosts").innerHTML =
+    posts.length;
+
+    // Videos
+    let videos =
+    JSON.parse(localStorage.getItem("videos")) || [];
+
+    document.getElementById("totalVideos").innerHTML =
+    videos.length;
+
+    // AI conversations (prepared for future backend tracking)
+    let chats =
+    JSON.parse(localStorage.getItem("aiChats")) || [];
+
+    document.getElementById("totalChats").innerHTML =
+    chats.length;
+
+    // Today's activity
+    document.getElementById("todayCustomers").innerHTML = "--";
+    document.getElementById("todayPosts").innerHTML = posts.length;
+    document.getElementById("todayVideos").innerHTML = videos.length;
+
+    // Summary
+    document.getElementById("summaryText").innerHTML =
+    "Your business currently has <b>" +
+    posts.length +
+    "</b> saved marketing posts, <b>" +
+    videos.length +
+    "</b> saved videos, and the analytics dashboard is ready for future real-time reporting.";
+
+}
+
+window.onload = loadAnalytics;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+  </html>
