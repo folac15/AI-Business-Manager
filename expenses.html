@@ -1,1 +1,397 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Expense Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Expense Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📅 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💸 Add New Expense</h2>
+
+
+<label>
+Expense Category
+</label>
+
+
+<select id="expenseCategory">
+
+<option>
+Transport
+</option>
+
+<option>
+Stock Purchase
+</option>
+
+<option>
+Salary
+</option>
+
+<option>
+Marketing
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+
+<label>
+Description
+</label>
+
+
+<textarea
+id="expenseDescription"
+placeholder="Enter expense details"></textarea>
+
+
+
+<label>
+Amount
+</label>
+
+
+<input
+type="number"
+id="expenseAmount"
+placeholder="Enter amount">
+
+
+
+<br><br>
+
+
+<button id="saveExpense">
+
+💾 Save Expense
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Expense Summary</h2>
+
+
+<p>
+
+Total Expenses:
+
+<b id="totalExpenses">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Expense History</h2>
+
+
+<div id="expenseList">
+
+
+<p>
+No expenses recorded yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveExpense =
+document.getElementById("saveExpense");
+
+
+const expenseList =
+document.getElementById("expenseList");
+
+
+
+function loadExpenses(){
+
+
+let expenses =
+JSON.parse(localStorage.getItem("expenses")) || [];
+
+
+let total = 0;
+
+
+
+expenses.forEach(function(expense){
+
+
+total += Number(expense.amount);
+
+
+});
+
+
+
+document.getElementById("totalExpenses").innerHTML =
+total;
+
+
+
+if(expenses.length === 0){
+
+
+expenseList.innerHTML =
+"<p>No expenses recorded yet.</p>";
+
+return;
+
+}
+
+
+
+expenseList.innerHTML = "";
+
+
+
+expenses.reverse().forEach(function(expense){
+
+
+expenseList.innerHTML += `
+
+<div class="card">
+
+
+<h3>💸 ${expense.category}</h3>
+
+
+<p>
+<b>Description:</b> ${expense.description}
+</p>
+
+
+<p>
+<b>Amount:</b> ${expense.amount}
+</p>
+
+
+<small>
+${expense.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveExpense.onclick = function(){
+
+
+
+let expense = {
+
+
+category:
+document.getElementById("expenseCategory").value,
+
+
+description:
+document.getElementById("expenseDescription").value.trim(),
+
+
+amount:
+document.getElementById("expenseAmount").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+expense.description === "" ||
+expense.amount === ""
+){
+
+alert("Please fill expense details.");
+
+return;
+
+}
+
+
+
+let expenses =
+JSON.parse(localStorage.getItem("expenses")) || [];
+
+
+
+expenses.push(expense);
+
+
+
+localStorage.setItem(
+"expenses",
+JSON.stringify(expenses)
+);
+
+
+
+alert("Expense saved successfully!");
+
+
+
+loadExpenses();
+
+
+
+};
+
+
+
+window.onload =
+loadExpenses;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
