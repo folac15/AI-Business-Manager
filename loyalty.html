@@ -1,1 +1,349 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Loyalty & Rewards Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Customer Loyalty & Rewards Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="loyalty.html"><button>🎁 Loyalty</button></a>
+
+<a href="marketing.html"><button>📢 Marketing</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🎁 Add Loyalty Record</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+<label>
+Points Earned
+</label>
+
+
+<input
+type="number"
+id="points"
+placeholder="Enter points">
+
+
+<label>
+Reward Type
+</label>
+
+
+<select id="rewardType">
+
+<option>
+Discount
+</option>
+
+<option>
+Free Product
+</option>
+
+<option>
+Cash Reward
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+<label>
+Loyalty Status
+</label>
+
+
+<select id="loyaltyStatus">
+
+<option>
+Active
+</option>
+
+<option>
+VIP
+</option>
+
+<option>
+Inactive
+</option>
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveLoyalty">
+
+💾 Save Loyalty Record
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Loyalty Summary</h2>
+
+
+<p>
+
+Total Loyalty Records:
+
+<b id="totalLoyalty">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Loyalty History</h2>
+
+
+<div id="loyaltyList">
+
+
+<p>
+No loyalty records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveLoyalty =
+document.getElementById("saveLoyalty");
+
+
+const loyaltyList =
+document.getElementById("loyaltyList");
+
+
+
+function loadLoyalty(){
+
+
+let records =
+JSON.parse(localStorage.getItem("loyaltyRecords")) || [];
+
+
+
+document.getElementById("totalLoyalty").innerHTML =
+records.length;
+
+
+
+if(records.length === 0){
+
+
+loyaltyList.innerHTML =
+"<p>No loyalty records available yet.</p>";
+
+return;
+
+}
+
+
+
+loyaltyList.innerHTML = "";
+
+
+
+records.reverse().forEach(function(record){
+
+
+loyaltyList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🎁 ${record.customer}</h3>
+
+
+<p>
+<b>Points:</b> ${record.points}
+</p>
+
+
+<p>
+<b>Reward:</b> ${record.reward}
+</p>
+
+
+<p>
+<b>Status:</b> ${record.status}
+</p>
+
+
+<small>
+${record.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveLoyalty.onclick = function(){
+
+
+
+let record = {
+
+
+customer:
+document.getElementById("customerName").value.trim(),
+
+
+points:
+document.getElementById("points").value,
+
+
+reward:
+document.getElementById("rewardType").value,
+
+
+status:
+document.getElementById("loyaltyStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.customer === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("loyaltyRecords")) || [];
+
+
+
+records.push(record);
+
+
+
+localStorage.setItem(
+"loyaltyRecords",
+JSON.stringify(records)
+);
+
+
+
+alert("Loyalty record saved successfully!");
+
+
+
+loadLoyalty();
+
+
+
+};
+
+
+
+window.onload =
+loadLoyalty;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
