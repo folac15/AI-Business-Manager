@@ -1,1 +1,401 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Employee Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Employee Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>👨‍💼 Add New Employee</h2>
+
+
+<label>
+Employee Name
+</label>
+
+
+<input
+type="text"
+id="employeeName"
+placeholder="Enter employee name">
+
+
+
+<label>
+Position / Role
+</label>
+
+
+<input
+type="text"
+id="employeeRole"
+placeholder="Example: Manager, Sales Officer">
+
+
+
+<label>
+Phone Number
+</label>
+
+
+<input
+type="text"
+id="employeePhone"
+placeholder="Enter phone number">
+
+
+
+<label>
+Monthly Salary
+</label>
+
+
+<input
+type="number"
+id="employeeSalary"
+placeholder="Enter salary">
+
+
+
+<br><br>
+
+
+<button id="saveEmployee">
+
+💾 Save Employee
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Employee Summary</h2>
+
+
+<p>
+
+Total Employees:
+
+<b id="totalEmployees">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Total Monthly Salary:
+
+<b id="totalSalary">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Employee History</h2>
+
+
+<div id="employeeList">
+
+
+<p>
+No employees added yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+  
+<script>
+
+
+const saveEmployee =
+document.getElementById("saveEmployee");
+
+
+const employeeList =
+document.getElementById("employeeList");
+
+
+
+function loadEmployees(){
+
+
+let employees =
+JSON.parse(localStorage.getItem("employees")) || [];
+
+
+let salary = 0;
+
+
+
+employees.forEach(function(employee){
+
+salary += Number(employee.salary);
+
+});
+
+
+
+document.getElementById("totalEmployees").innerHTML =
+employees.length;
+
+
+
+document.getElementById("totalSalary").innerHTML =
+salary;
+
+
+
+if(employees.length === 0){
+
+
+employeeList.innerHTML =
+"<p>No employees added yet.</p>";
+
+return;
+
+}
+
+
+
+employeeList.innerHTML = "";
+
+
+
+employees.reverse().forEach(function(employee){
+
+
+employeeList.innerHTML += `
+
+<div class="card">
+
+
+<h3>👨‍💼 ${employee.name}</h3>
+
+
+<p>
+<b>Role:</b> ${employee.role}
+</p>
+
+
+<p>
+<b>Phone:</b> ${employee.phone}
+</p>
+
+
+<p>
+<b>Salary:</b> ${employee.salary}
+</p>
+
+
+<small>
+${employee.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveEmployee.onclick = function(){
+
+
+
+let employee = {
+
+
+name:
+document.getElementById("employeeName").value.trim(),
+
+
+role:
+document.getElementById("employeeRole").value.trim(),
+
+
+phone:
+document.getElementById("employeePhone").value.trim(),
+
+
+salary:
+document.getElementById("employeeSalary").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+employee.name === "" ||
+employee.role === "" ||
+employee.salary === ""
+){
+
+alert("Please fill required employee fields.");
+
+return;
+
+}
+
+
+
+let employees =
+JSON.parse(localStorage.getItem("employees")) || [];
+
+
+
+employees.push(employee);
+
+
+
+localStorage.setItem(
+"employees",
+JSON.stringify(employees)
+);
+
+
+
+alert("Employee saved successfully!");
+
+
+
+loadEmployees();
+
+
+
+};
+
+
+
+window.onload =
+loadEmployees;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
