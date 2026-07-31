@@ -1,1 +1,422 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Inventory Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Inventory & Product Management</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="ai_assistant.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="posts.html">
+<button>📝 Marketing</button>
+</a>
+
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📦 Add New Product</h2>
+
+
+<label>
+Product Name
+</label>
+
+
+<input
+type="text"
+id="productName"
+placeholder="Enter product name">
+
+
+
+<label>
+Category
+</label>
+
+
+<input
+type="text"
+id="productCategory"
+placeholder="Example: Food, Electronics">
+
+
+
+<label>
+Buying Price
+</label>
+
+
+<input
+type="number"
+id="buyingPrice"
+placeholder="Enter buying price">
+
+
+
+<label>
+Selling Price
+</label>
+
+
+<input
+type="number"
+id="sellingPrice"
+placeholder="Enter selling price">
+
+
+
+<label>
+Quantity
+</label>
+
+
+<input
+type="number"
+id="quantity"
+placeholder="Enter quantity">
+
+
+
+<br><br>
+
+
+<button id="saveProduct">
+
+💾 Save Product
+
+</button>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>📊 Inventory Summary</h2>
+
+
+<p>
+
+Total Products:
+
+<b id="totalProducts">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Total Stock Value:
+
+<b id="stockValue">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Product History</h2>
+
+
+<div id="productList">
+
+
+<p>
+No products added yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveProduct =
+document.getElementById("saveProduct");
+
+
+const productList =
+document.getElementById("productList");
+
+
+
+function loadProducts(){
+
+
+let products =
+JSON.parse(localStorage.getItem("products")) || [];
+
+
+
+let total =
+0;
+
+
+
+products.forEach(function(product){
+
+total +=
+Number(product.buyingPrice) *
+Number(product.quantity);
+
+});
+
+
+
+document.getElementById("totalProducts").innerHTML =
+products.length;
+
+
+
+document.getElementById("stockValue").innerHTML =
+total;
+
+
+
+if(products.length===0){
+
+
+productList.innerHTML =
+"<p>No products added yet.</p>";
+
+return;
+
+
+}
+
+
+
+productList.innerHTML="";
+
+
+
+products.reverse().forEach(function(product,index){
+
+
+
+productList.innerHTML += `
+
+<div class="card">
+
+<h3>📦 ${product.name}</h3>
+
+<p>
+<b>Category:</b> ${product.category}
+</p>
+
+<p>
+<b>Buying Price:</b> ${product.buyingPrice}
+</p>
+
+<p>
+<b>Selling Price:</b> ${product.sellingPrice}
+</p>
+
+<p>
+<b>Quantity:</b> ${product.quantity}
+</p>
+
+<small>
+${product.date}
+</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveProduct.onclick = function(){
+
+
+
+let product = {
+
+
+name:
+document.getElementById("productName").value.trim(),
+
+
+category:
+document.getElementById("productCategory").value.trim(),
+
+
+buyingPrice:
+document.getElementById("buyingPrice").value,
+
+
+sellingPrice:
+document.getElementById("sellingPrice").value,
+
+
+quantity:
+document.getElementById("quantity").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(product.name==="" || product.quantity===""){
+
+
+alert("Please enter product name and quantity.");
+
+return;
+
+
+}
+
+
+
+let products =
+JSON.parse(localStorage.getItem("products")) || [];
+
+
+
+products.push(product);
+
+
+
+localStorage.setItem(
+"products",
+JSON.stringify(products)
+);
+
+
+
+alert("Product saved successfully!");
+
+
+
+loadProducts();
+
+
+
+};
+
+
+
+window.onload =
+loadProducts;
+
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
