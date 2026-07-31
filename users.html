@@ -1,1 +1,377 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>User Management</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>User & Access Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="users.html">
+<button>🔐 Users</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📅 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔐 Add New User</h2>
+
+
+<label>
+User Name
+</label>
+
+
+<input
+type="text"
+id="userName"
+placeholder="Enter user name">
+
+
+
+<label>
+Email Address
+</label>
+
+
+<input
+type="email"
+id="userEmail"
+placeholder="Enter email">
+
+
+
+<label>
+Role
+</label>
+
+
+<select id="userRole">
+
+<option>
+Admin
+</option>
+
+<option>
+Manager
+</option>
+
+<option>
+Employee
+</option>
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveUser">
+
+💾 Save User
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 User Summary</h2>
+
+
+<p>
+
+Total Users:
+
+<b id="totalUsers">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 User History</h2>
+
+
+<div id="userList">
+
+
+<p>
+No users added yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveUser =
+document.getElementById("saveUser");
+
+
+const userList =
+document.getElementById("userList");
+
+
+
+function loadUsers(){
+
+
+let users =
+JSON.parse(localStorage.getItem("users")) || [];
+
+
+
+document.getElementById("totalUsers").innerHTML =
+users.length;
+
+
+
+if(users.length === 0){
+
+
+userList.innerHTML =
+"<p>No users added yet.</p>";
+
+return;
+
+}
+
+
+
+userList.innerHTML = "";
+
+
+
+users.reverse().forEach(function(user){
+
+
+userList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🔐 ${user.name}</h3>
+
+
+<p>
+<b>Email:</b> ${user.email}
+</p>
+
+
+<p>
+<b>Role:</b> ${user.role}
+</p>
+
+
+<small>
+${user.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveUser.onclick = function(){
+
+
+
+let user = {
+
+
+name:
+document.getElementById("userName").value.trim(),
+
+
+email:
+document.getElementById("userEmail").value.trim(),
+
+
+role:
+document.getElementById("userRole").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+user.name === "" ||
+user.email === ""
+){
+
+alert("Please fill user name and email.");
+
+return;
+
+}
+
+
+
+let users =
+JSON.parse(localStorage.getItem("users")) || [];
+
+
+
+users.push(user);
+
+
+
+localStorage.setItem(
+"users",
+JSON.stringify(users)
+);
+
+
+
+alert("User saved successfully!");
+
+
+
+loadUsers();
+
+
+
+};
+
+
+
+window.onload =
+loadUsers;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
