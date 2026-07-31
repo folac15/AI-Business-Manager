@@ -1,1 +1,203 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Automation Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Business Automation Center</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
+
+<a href="posts.html"><button>📝 Marketing</button></a>
+
+<a href="videos.html"><button>🎥 Videos</button></a>
+
+<a href="analytics.html"><button>📊 Analytics</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="automation.html"><button>⚡ Automation</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>⚡ Automation Control</h2>
+
+<p>
+
+Automation Status:
+
+<b id="automationStatus" style="color:red;">
+
+STOPPED
+
+</b>
+
+</p>
+
+<button id="startAutomation">
+
+▶ Start Automation
+
+</button>
+
+<button id="stopAutomation">
+
+⏹ Stop Automation
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>📱 Connected Platforms</h2>
+
+<table style="width:100%;border-collapse:collapse;">
+
+<tr>
+
+<td>Facebook</td>
+
+<td id="facebookStatus">Not Connected</td>
+
+</tr>
+
+<tr>
+
+<td>Instagram</td>
+
+<td id="instagramStatus">Not Connected</td>
+
+</tr>
+
+<tr>
+
+<td>WhatsApp</td>
+
+<td id="whatsappStatus">Not Connected</td>
+
+</tr>
+
+<tr>
+
+<td>TikTok</td>
+
+<td id="tiktokStatus">Not Connected</td>
+
+</tr>
+
+<tr>
+
+<td>YouTube</td>
+
+<td id="youtubeStatus">Not Connected</td>
+
+</tr>
+
+</table>
+
+  </div>
+  <div class="card">
+
+<h2>📋 Automation Log</h2>
+
+<div id="automationLog"
+style="height:220px;overflow-y:auto;border:1px solid #ddd;padding:10px;border-radius:10px;">
+
+<p>System ready.</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const status =
+document.getElementById("automationStatus");
+
+const log =
+document.getElementById("automationLog");
+
+function addLog(message){
+
+let time =
+new Date().toLocaleTimeString();
+
+log.innerHTML +=
+"<p><b>" + time + "</b> - " + message + "</p>";
+
+log.scrollTop = log.scrollHeight;
+
+}
+
+document.getElementById("startAutomation").onclick = function(){
+
+status.innerHTML = "RUNNING";
+
+status.style.color = "green";
+
+addLog("Automation started.");
+
+};
+
+document.getElementById("stopAutomation").onclick = function(){
+
+status.innerHTML = "STOPPED";
+
+status.style.color = "red";
+
+addLog("Automation stopped.");
+
+};
+
+window.onload = function(){
+
+addLog("Automation Center loaded successfully.");
+
+};
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+  </html>
