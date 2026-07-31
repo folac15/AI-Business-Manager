@@ -1,1 +1,404 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sales Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Sales & Transactions Management</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="ai_assistant.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="posts.html">
+<button>📝 Marketing</button>
+</a>
+
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💰 Record New Sale</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+
+<label>
+Product Name
+</label>
+
+
+<input
+type="text"
+id="productName"
+placeholder="Enter product name">
+
+
+
+<label>
+Quantity Sold
+</label>
+
+
+<input
+type="number"
+id="saleQuantity"
+placeholder="Enter quantity">
+
+
+
+<label>
+Selling Price
+</label>
+
+
+<input
+type="number"
+id="salePrice"
+placeholder="Enter selling price">
+
+
+
+<br><br>
+
+
+<button id="saveSale">
+
+💾 Save Sale
+
+</button>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>📊 Sales Summary</h2>
+
+
+<p>
+
+Total Sales:
+
+<b id="totalSales">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Total Revenue:
+
+<b id="totalRevenue">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Sales History</h2>
+
+
+<div id="salesList">
+
+
+<p>
+No sales recorded yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveSale =
+document.getElementById("saveSale");
+
+
+const salesList =
+document.getElementById("salesList");
+
+
+
+function loadSales(){
+
+
+let sales =
+JSON.parse(localStorage.getItem("sales")) || [];
+
+
+let revenue = 0;
+
+
+sales.forEach(function(sale){
+
+revenue += Number(sale.price) * Number(sale.quantity);
+
+});
+
+
+
+document.getElementById("totalSales").innerHTML =
+sales.length;
+
+
+
+document.getElementById("totalRevenue").innerHTML =
+revenue;
+
+
+
+if(sales.length === 0){
+
+salesList.innerHTML =
+"<p>No sales recorded yet.</p>";
+
+return;
+
+}
+
+
+
+salesList.innerHTML = "";
+
+
+
+sales.reverse().forEach(function(sale){
+
+
+salesList.innerHTML += `
+
+<div class="card">
+
+<h3>💰 ${sale.product}</h3>
+
+<p>
+<b>Customer:</b> ${sale.customer}
+</p>
+
+<p>
+<b>Quantity:</b> ${sale.quantity}
+</p>
+
+<p>
+<b>Selling Price:</b> ${sale.price}
+</p>
+
+<p>
+<b>Total:</b> ${Number(sale.price) * Number(sale.quantity)}
+</p>
+
+<small>
+${sale.date}
+</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSale.onclick = function(){
+
+
+
+let sale = {
+
+
+customer:
+document.getElementById("customerName").value.trim(),
+
+
+product:
+document.getElementById("productName").value.trim(),
+
+
+quantity:
+document.getElementById("saleQuantity").value,
+
+
+price:
+document.getElementById("salePrice").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+sale.customer === "" ||
+sale.product === "" ||
+sale.quantity === "" ||
+sale.price === ""
+){
+
+alert("Please fill all sales fields.");
+
+return;
+
+}
+
+
+
+let sales =
+JSON.parse(localStorage.getItem("sales")) || [];
+
+
+
+sales.push(sale);
+
+
+
+localStorage.setItem(
+"sales",
+JSON.stringify(sales)
+);
+
+
+
+alert("Sale saved successfully!");
+
+
+
+loadSales();
+
+
+
+};
+
+
+
+window.onload =
+loadSales;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
