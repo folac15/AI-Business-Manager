@@ -58,6 +58,14 @@ def videos():
 @app.route("/settings.html")
 def settings():
     return send_from_directory(".", "settings.html")
+    @app.route("/analytics.html")
+def analytics():
+    return send_from_directory(".", "analytics.html")
+
+
+@app.route("/reports.html")
+def reports():
+    return send_from_directory(".", "reports.html")
 
 @app.route("/ai_assistant.html")
 def ai_assistant():
