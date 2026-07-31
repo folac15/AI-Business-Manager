@@ -58,7 +58,9 @@ def videos():
 @app.route("/settings.html")
 def settings():
     return send_from_directory(".", "settings.html")
-    @app.route("/analytics.html")
+
+
+@app.route("/analytics.html")
 def analytics():
     return send_from_directory(".", "analytics.html")
 
