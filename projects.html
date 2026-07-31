@@ -1,1 +1,449 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Project Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Project Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="support.html">
+<button>🎧 Support</button>
+</a>
+
+
+<a href="marketing.html">
+<button>📢 Marketing</button>
+</a>
+
+
+<a href="projects.html">
+<button>📋 Projects</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📋 Create New Project</h2>
+
+
+<label>
+Project Name
+</label>
+
+
+<input
+type="text"
+id="projectName"
+placeholder="Enter project name">
+
+
+
+<label>
+Project Manager
+</label>
+
+
+<input
+type="text"
+id="projectManager"
+placeholder="Enter manager name">
+
+
+
+<label>
+Start Date
+</label>
+
+
+<input
+type="date"
+id="startDate">
+
+
+
+<label>
+Deadline
+</label>
+
+
+<input
+type="date"
+id="deadline">
+
+
+
+<label>
+Project Status
+</label>
+
+
+<select id="projectStatus">
+
+<option>
+Planning
+</option>
+
+<option>
+Running
+</option>
+
+<option>
+Completed
+</option>
+
+<option>
+On Hold
+</option>
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveProject">
+
+💾 Save Project
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Project Summary</h2>
+
+
+<p>
+
+Total Projects:
+
+<b id="totalProjects">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Project History</h2>
+
+
+<div id="projectList">
+
+
+<p>
+No projects available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveProject =
+document.getElementById("saveProject");
+
+
+const projectList =
+document.getElementById("projectList");
+
+
+
+function loadProjects(){
+
+
+let projects =
+JSON.parse(localStorage.getItem("projects")) || [];
+
+
+
+document.getElementById("totalProjects").innerHTML =
+projects.length;
+
+
+
+if(projects.length === 0){
+
+
+projectList.innerHTML =
+"<p>No projects available yet.</p>";
+
+return;
+
+}
+
+
+
+projectList.innerHTML = "";
+
+
+
+projects.reverse().forEach(function(project){
+
+
+projectList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📋 ${project.name}</h3>
+
+
+<p>
+<b>Project Manager:</b> ${project.manager}
+</p>
+
+
+<p>
+<b>Start Date:</b> ${project.start}
+</p>
+
+
+<p>
+<b>Deadline:</b> ${project.deadline}
+</p>
+
+
+<p>
+<b>Status:</b> ${project.status}
+</p>
+
+
+<small>
+${project.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveProject.onclick = function(){
+
+
+
+let project = {
+
+
+name:
+document.getElementById("projectName").value.trim(),
+
+
+manager:
+document.getElementById("projectManager").value.trim(),
+
+
+start:
+document.getElementById("startDate").value,
+
+
+deadline:
+document.getElementById("deadline").value,
+
+
+status:
+document.getElementById("projectStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(project.name === "" || project.manager === ""){
+
+
+alert("Please fill project name and project manager.");
+
+return;
+
+}
+
+
+
+let projects =
+JSON.parse(localStorage.getItem("projects")) || [];
+
+
+
+projects.push(project);
+
+
+
+localStorage.setItem(
+"projects",
+JSON.stringify(projects)
+);
+
+
+
+alert("Project saved successfully!");
+
+
+
+loadProjects();
+
+
+
+};
+
+
+
+window.onload =
+loadProjects;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
