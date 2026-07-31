@@ -68,9 +68,12 @@ def analytics():
 @app.route("/reports.html")
 def reports():
     return send_from_directory(".", "reports.html")
+   
+    
     @app.route("/automation.html")
 def automation():
     return send_from_directory(".", "automation.html")
+
 
 @app.route("/ai_assistant.html")
 def ai_assistant():
