@@ -1,1 +1,392 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Document Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Document Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📁 Add New Document</h2>
+
+
+<label>
+Document Title
+</label>
+
+
+<input
+type="text"
+id="documentTitle"
+placeholder="Enter document title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="documentCategory">
+
+<option>
+Invoice
+</option>
+
+<option>
+Contract
+</option>
+
+<option>
+Report
+</option>
+
+<option>
+Certificate
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+
+<label>
+Description
+</label>
+
+
+<textarea
+id="documentDescription"
+placeholder="Enter document description"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveDocument">
+
+💾 Save Document
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Document Summary</h2>
+
+
+<p>
+
+Total Documents:
+
+<b id="totalDocuments">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Document History</h2>
+
+
+<div id="documentList">
+
+
+<p>
+No documents added yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveDocument =
+document.getElementById("saveDocument");
+
+
+const documentList =
+document.getElementById("documentList");
+
+
+
+function loadDocuments(){
+
+
+let documents =
+JSON.parse(localStorage.getItem("documents")) || [];
+
+
+
+document.getElementById("totalDocuments").innerHTML =
+documents.length;
+
+
+
+if(documents.length === 0){
+
+
+documentList.innerHTML =
+"<p>No documents added yet.</p>";
+
+return;
+
+}
+
+
+
+documentList.innerHTML = "";
+
+
+
+documents.reverse().forEach(function(document){
+
+
+documentList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📁 ${document.title}</h3>
+
+
+<p>
+<b>Category:</b> ${document.category}
+</p>
+
+
+<p>
+<b>Description:</b> ${document.description}
+</p>
+
+
+<small>
+${document.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveDocument.onclick = function(){
+
+
+
+let documentData = {
+
+
+title:
+document.getElementById("documentTitle").value.trim(),
+
+
+category:
+document.getElementById("documentCategory").value,
+
+
+description:
+document.getElementById("documentDescription").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(documentData.title === ""){
+
+
+alert("Please enter document title.");
+
+return;
+
+}
+
+
+
+let documents =
+JSON.parse(localStorage.getItem("documents")) || [];
+
+
+
+documents.push(documentData);
+
+
+
+localStorage.setItem(
+"documents",
+JSON.stringify(documents)
+);
+
+
+
+alert("Document saved successfully!");
+
+
+
+loadDocuments();
+
+
+
+};
+
+
+
+window.onload =
+loadDocuments;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
