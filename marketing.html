@@ -1,1 +1,428 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marketing Campaign Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Marketing Campaign Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="support.html">
+<button>🎧 Support</button>
+</a>
+
+
+<a href="marketing.html">
+<button>📢 Marketing</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📢 Create Marketing Campaign</h2>
+
+
+<label>
+Campaign Name
+</label>
+
+
+<input
+type="text"
+id="campaignName"
+placeholder="Enter campaign name">
+
+
+
+<label>
+Target Audience
+</label>
+
+
+<input
+type="text"
+id="targetAudience"
+placeholder="Example: New customers">
+
+
+
+<label>
+Marketing Channel
+</label>
+
+
+<select id="marketingChannel">
+
+<option>
+Facebook
+</option>
+
+<option>
+WhatsApp
+</option>
+
+<option>
+Instagram
+</option>
+
+<option>
+Email
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+
+<label>
+Campaign Budget
+</label>
+
+
+<input
+type="number"
+id="campaignBudget"
+placeholder="Enter budget">
+
+
+<br><br>
+
+
+<button id="saveCampaign">
+
+💾 Save Campaign
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Marketing Summary</h2>
+
+
+<p>
+
+Total Campaigns:
+
+<b id="totalCampaigns">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Campaign History</h2>
+
+
+<div id="campaignList">
+
+
+<p>
+No campaigns available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveCampaign =
+document.getElementById("saveCampaign");
+
+
+const campaignList =
+document.getElementById("campaignList");
+
+
+
+function loadCampaigns(){
+
+
+let campaigns =
+JSON.parse(localStorage.getItem("campaigns")) || [];
+
+
+
+document.getElementById("totalCampaigns").innerHTML =
+campaigns.length;
+
+
+
+if(campaigns.length === 0){
+
+
+campaignList.innerHTML =
+"<p>No campaigns available yet.</p>";
+
+return;
+
+}
+
+
+
+campaignList.innerHTML = "";
+
+
+
+campaigns.reverse().forEach(function(campaign){
+
+
+campaignList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📢 ${campaign.name}</h3>
+
+
+<p>
+<b>Target Audience:</b> ${campaign.audience}
+</p>
+
+
+<p>
+<b>Channel:</b> ${campaign.channel}
+</p>
+
+
+<p>
+<b>Budget:</b> ${campaign.budget}
+</p>
+
+
+<small>
+${campaign.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveCampaign.onclick = function(){
+
+
+
+let campaign = {
+
+
+name:
+document.getElementById("campaignName").value.trim(),
+
+
+audience:
+document.getElementById("targetAudience").value.trim(),
+
+
+channel:
+document.getElementById("marketingChannel").value,
+
+
+budget:
+document.getElementById("campaignBudget").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(campaign.name === "" || campaign.audience === ""){
+
+
+alert("Please fill campaign name and target audience.");
+
+return;
+
+}
+
+
+
+let campaigns =
+JSON.parse(localStorage.getItem("campaigns")) || [];
+
+
+
+campaigns.push(campaign);
+
+
+
+localStorage.setItem(
+"campaigns",
+JSON.stringify(campaigns)
+);
+
+
+
+alert("Campaign saved successfully!");
+
+
+
+loadCampaigns();
+
+
+
+};
+
+
+
+window.onload =
+loadCampaigns;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
