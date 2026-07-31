@@ -1,1 +1,417 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Purchase Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Purchase Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="suppliers.html">
+<button>🚚 Suppliers</button>
+</a>
+
+
+<a href="purchases.html">
+<button>🛒 Purchases</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📅 Tasks</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🛒 Add New Purchase</h2>
+
+
+<label>
+Product Name
+</label>
+
+
+<input
+type="text"
+id="productName"
+placeholder="Enter product purchased">
+
+
+
+<label>
+Supplier Name
+</label>
+
+
+<input
+type="text"
+id="supplierName"
+placeholder="Enter supplier">
+
+
+
+<label>
+Quantity
+</label>
+
+
+<input
+type="number"
+id="quantity"
+placeholder="Enter quantity">
+
+
+
+<label>
+Purchase Price
+</label>
+
+
+<input
+type="number"
+id="purchasePrice"
+placeholder="Enter total purchase price">
+
+
+
+<br><br>
+
+
+<button id="savePurchase">
+
+💾 Save Purchase
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Purchase Summary</h2>
+
+
+<p>
+
+Total Purchases:
+
+<b id="totalPurchases">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Total Purchase Cost:
+
+<b id="totalPurchaseCost">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Purchase History</h2>
+
+
+<div id="purchaseList">
+
+
+<p>
+No purchases recorded yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const savePurchase =
+document.getElementById("savePurchase");
+
+
+const purchaseList =
+document.getElementById("purchaseList");
+
+
+
+function loadPurchases(){
+
+
+let purchases =
+JSON.parse(localStorage.getItem("purchases")) || [];
+
+
+let totalCost = 0;
+
+
+
+purchases.forEach(function(purchase){
+
+
+totalCost += Number(purchase.price);
+
+
+});
+
+
+
+document.getElementById("totalPurchases").innerHTML =
+purchases.length;
+
+
+
+document.getElementById("totalPurchaseCost").innerHTML =
+totalCost;
+
+
+
+if(purchases.length === 0){
+
+
+purchaseList.innerHTML =
+"<p>No purchases recorded yet.</p>";
+
+return;
+
+}
+
+
+
+purchaseList.innerHTML = "";
+
+
+
+purchases.reverse().forEach(function(purchase){
+
+
+purchaseList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🛒 ${purchase.product}</h3>
+
+
+<p>
+<b>Supplier:</b> ${purchase.supplier}
+</p>
+
+
+<p>
+<b>Quantity:</b> ${purchase.quantity}
+</p>
+
+
+<p>
+<b>Purchase Price:</b> ${purchase.price}
+</p>
+
+
+<small>
+${purchase.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+savePurchase.onclick = function(){
+
+
+
+let purchase = {
+
+
+product:
+document.getElementById("productName").value.trim(),
+
+
+supplier:
+document.getElementById("supplierName").value.trim(),
+
+
+quantity:
+document.getElementById("quantity").value,
+
+
+price:
+document.getElementById("purchasePrice").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+purchase.product === "" ||
+purchase.supplier === "" ||
+purchase.price === ""
+){
+
+alert("Please fill required purchase fields.");
+
+return;
+
+}
+
+
+
+let purchases =
+JSON.parse(localStorage.getItem("purchases")) || [];
+
+
+
+purchases.push(purchase);
+
+
+
+localStorage.setItem(
+"purchases",
+JSON.stringify(purchases)
+);
+
+
+
+alert("Purchase saved successfully!");
+
+
+
+loadPurchases();
+
+
+
+};
+
+
+
+window.onload =
+loadPurchases;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
