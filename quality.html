@@ -1,1 +1,434 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Quality Control Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Quality Control Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="support.html">
+<button>🎧 Support</button>
+</a>
+
+
+<a href="marketing.html">
+<button>📢 Marketing</button>
+</a>
+
+
+<a href="projects.html">
+<button>📋 Projects</button>
+</a>
+
+
+<a href="quality.html">
+<button>🔍 Quality</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔍 New Quality Inspection</h2>
+
+
+<label>
+Product / Service Name
+</label>
+
+
+<input
+type="text"
+id="productName"
+placeholder="Enter product or service name">
+
+
+
+<label>
+Inspector Name
+</label>
+
+
+<input
+type="text"
+id="inspectorName"
+placeholder="Enter inspector name">
+
+
+
+<label>
+Quality Status
+</label>
+
+
+<select id="qualityStatus">
+
+<option>
+Excellent
+</option>
+
+<option>
+Good
+</option>
+
+<option>
+Needs Improvement
+</option>
+
+<option>
+Failed
+</option>
+
+</select>
+
+
+
+<label>
+Findings / Remarks
+</label>
+
+
+<textarea
+id="qualityRemarks"
+placeholder="Enter inspection findings"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveInspection">
+
+💾 Save Inspection
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Quality Summary</h2>
+
+
+<p>
+
+Total Inspections:
+
+<b id="totalInspections">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Inspection History</h2>
+
+
+<div id="inspectionList">
+
+
+<p>
+No inspections available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveInspection =
+document.getElementById("saveInspection");
+
+
+const inspectionList =
+document.getElementById("inspectionList");
+
+
+
+function loadInspections(){
+
+
+let inspections =
+JSON.parse(localStorage.getItem("inspections")) || [];
+
+
+
+document.getElementById("totalInspections").innerHTML =
+inspections.length;
+
+
+
+if(inspections.length === 0){
+
+
+inspectionList.innerHTML =
+"<p>No inspections available yet.</p>";
+
+return;
+
+}
+
+
+
+inspectionList.innerHTML = "";
+
+
+
+inspections.reverse().forEach(function(inspection){
+
+
+inspectionList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🔍 ${inspection.product}</h3>
+
+
+<p>
+<b>Inspector:</b> ${inspection.inspector}
+</p>
+
+
+<p>
+<b>Status:</b> ${inspection.status}
+</p>
+
+
+<p>
+<b>Remarks:</b> ${inspection.remarks}
+</p>
+
+
+<small>
+${inspection.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveInspection.onclick = function(){
+
+
+
+let inspection = {
+
+
+product:
+document.getElementById("productName").value.trim(),
+
+
+inspector:
+document.getElementById("inspectorName").value.trim(),
+
+
+status:
+document.getElementById("qualityStatus").value,
+
+
+remarks:
+document.getElementById("qualityRemarks").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(inspection.product === "" || inspection.inspector === ""){
+
+
+alert("Please fill product name and inspector name.");
+
+return;
+
+}
+
+
+
+let inspections =
+JSON.parse(localStorage.getItem("inspections")) || [];
+
+
+
+inspections.push(inspection);
+
+
+
+localStorage.setItem(
+"inspections",
+JSON.stringify(inspections)
+);
+
+
+
+alert("Quality inspection saved successfully!");
+
+
+
+loadInspections();
+
+
+
+};
+
+
+
+window.onload =
+loadInspections;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
