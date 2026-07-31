@@ -1,1 +1,414 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Finance Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Finance & Accounting Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💵 Add Financial Record</h2>
+
+
+<label>
+Type
+</label>
+
+
+<select id="financeType">
+
+<option value="income">
+Income
+</option>
+
+<option value="expense">
+Expense
+</option>
+
+</select>
+
+
+
+<label>
+Description
+</label>
+
+
+<input
+type="text"
+id="description"
+placeholder="Example: Product sale, Transport expense">
+
+
+
+<label>
+Amount
+</label>
+
+
+<input
+type="number"
+id="amount"
+placeholder="Enter amount">
+
+
+
+<br><br>
+
+
+<button id="saveFinance">
+
+💾 Save Record
+
+</button>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>📊 Financial Summary</h2>
+
+
+<p>
+
+Total Income:
+
+<b id="totalIncome">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Total Expenses:
+
+<b id="totalExpenses">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Current Profit:
+
+<b id="totalProfit">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Financial History</h2>
+
+
+<div id="financeList">
+
+
+<p>
+No financial records yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveFinance =
+document.getElementById("saveFinance");
+
+
+const financeList =
+document.getElementById("financeList");
+
+
+
+function loadFinance(){
+
+
+let records =
+JSON.parse(localStorage.getItem("finance")) || [];
+
+
+let income = 0;
+
+let expenses = 0;
+
+
+
+records.forEach(function(record){
+
+
+if(record.type === "income"){
+
+income += Number(record.amount);
+
+}
+
+else{
+
+expenses += Number(record.amount);
+
+}
+
+
+});
+
+
+
+document.getElementById("totalIncome").innerHTML =
+income;
+
+
+document.getElementById("totalExpenses").innerHTML =
+expenses;
+
+
+document.getElementById("totalProfit").innerHTML =
+income - expenses;
+
+
+
+if(records.length === 0){
+
+
+financeList.innerHTML =
+"<p>No financial records yet.</p>";
+
+return;
+
+
+}
+
+
+
+financeList.innerHTML = "";
+
+
+
+records.reverse().forEach(function(record){
+
+
+financeList.innerHTML += `
+
+<div class="card">
+
+
+<h3>
+${record.type === "income" ? "📈 Income" : "📉 Expense"}
+</h3>
+
+
+<p>
+<b>Description:</b> ${record.description}
+</p>
+
+
+<p>
+<b>Amount:</b> ${record.amount}
+</p>
+
+
+<small>
+${record.date}
+</small>
+
+
+</div>
+
+`;
+
+
+});
+
+
+}
+
+
+
+saveFinance.onclick = function(){
+
+
+
+let record = {
+
+
+type:
+document.getElementById("financeType").value,
+
+
+description:
+document.getElementById("description").value.trim(),
+
+
+amount:
+document.getElementById("amount").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.description === "" || record.amount === ""){
+
+
+alert("Please fill all fields.");
+
+return;
+
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("finance")) || [];
+
+
+
+records.push(record);
+
+
+
+localStorage.setItem(
+"finance",
+JSON.stringify(records)
+);
+
+
+
+alert("Financial record saved successfully!");
+
+
+
+loadFinance();
+
+
+
+};
+
+
+
+window.onload =
+loadFinance;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
