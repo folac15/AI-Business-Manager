@@ -1,44 +1,305 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-<title>Video Upload</title>
 
-<link rel="stylesheet" href="style.css">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Video Manager</title>
+
+<link rel="stylesheet"
+href="style.css">
 
 </head>
 
-
 <body>
 
-<header>
+<header class="topbar">
 
-<h1>Upload Videos</h1>
+<h1>AI Business Manager</h1>
 
-<p>Prepare videos for your customers</p>
+<p>Video Content Manager</p>
 
 </header>
 
+<div class="container">
 
-<div class="card">
+<div class="sidebar">
 
-<h2>Select Video</h2>
+<h2>MENU</h2>
 
-<input type="file" accept="video/*">
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
 
-<br><br>
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
 
-<button onclick="showMessage()">
-Upload Video
-</button>
+<a href="ai_assistant.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+<a href="posts.html">
+<button>📝 Marketing</button>
+</a>
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
 
 </div>
 
+<div class="content">
+
+<div class="card">
+
+<h2>🎥 Upload Video</h2>
+
+<label>
+
+Video Title
+
+</label>
+
+<input
+type="text"
+id="videoTitle"
+placeholder="Enter video title">
+
+<label>
+
+Video Description
+
+</label>
+
+<textarea
+id="videoDescription"
+rows="5"
+placeholder="Describe this video..."></textarea>
+
+<label>
+
+Category
+
+</label>
+
+<select id="videoCategory">
+
+<option>Business</option>
+
+<option>Marketing</option>
+
+<option>Education</option>
+
+<option>Products</option>
+
+<option>Services</option>
+
+<option>Others</option>
+
+</select>
+
+<br><br>
+
+<label>
+
+Choose Video
+
+</label>
+
+<input
+type="file"
+id="videoFile"
+accept="video/*">
+
+<br><br>
+
+<button id="saveVideo">
+
+💾 Save Video
+
+</button>
+
+                      </div>
+                      <!-- VIDEO PREVIEW -->
+
+<div class="card">
+
+<h2>🎬 Video Preview</h2>
+
+<video
+id="videoPreview"
+controls
+width="100%"
+style="display:none;border-radius:10px;">
+</video>
+
+</div>
+
+
+
+<!-- SAVED VIDEOS -->
+
+<div class="card">
+
+<h2>📚 Saved Videos</h2>
+
+<div id="videoList">
+
+<p>No videos saved yet.</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const videoFile =
+document.getElementById("videoFile");
+
+const videoPreview =
+document.getElementById("videoPreview");
+
+const videoList =
+document.getElementById("videoList");
+
+
+
+videoFile.addEventListener("change", function(){
+
+const file = this.files[0];
+
+if(file){
+
+videoPreview.src =
+URL.createObjectURL(file);
+
+videoPreview.style.display = "block";
+
+}
+
+});
+
+
+
+document.getElementById("saveVideo").onclick = function(){
+
+const title =
+document.getElementById("videoTitle").value.trim();
+
+const description =
+document.getElementById("videoDescription").value.trim();
+
+const category =
+document.getElementById("videoCategory").value;
+
+const file =
+videoFile.files[0];
+
+if(title==="" || !file){
+
+alert("Please enter a title and choose a video.");
+
+return;
+
+}
+
+let videos =
+JSON.parse(localStorage.getItem("videos")) || [];
+
+videos.push({
+
+title:title,
+
+description:description,
+
+category:category,
+
+fileName:file.name,
+
+date:new Date().toLocaleString()
+
+});
+
+localStorage.setItem(
+"videos",
+JSON.stringify(videos)
+);
+
+alert("Video saved successfully!");
+
+loadVideos();
+
+};
+
+
+
+function loadVideos(){
+
+let videos =
+JSON.parse(localStorage.getItem("videos")) || [];
+
+if(videos.length===0){
+
+videoList.innerHTML =
+"<p>No videos saved yet.</p>";
+
+return;
+
+}
+
+videoList.innerHTML="";
+
+videos.reverse().forEach(function(video,index){
+
+videoList.innerHTML += `
+
+<div class="card">
+
+<h3>🎥 ${video.title}</h3>
+
+<p><b>Category:</b> ${video.category}</p>
+
+<p><b>Description:</b><br>${video.description}</p>
+
+<p><b>File:</b> ${video.fileName}</p>
+
+<small>${video.date}</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+loadVideos();
+
+</script>
 
 <script src="script.js"></script>
 
 </body>
 
-</html>
+  </html>
