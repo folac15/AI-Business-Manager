@@ -1,1 +1,277 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Maintenance Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Maintenance Management Center</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="assets.html"><button>🏢 Assets</button></a>
+
+<a href="maintenance.html"><button>🔧 Maintenance</button></a>
+
+<a href="inventory.html"><button>📦 Inventory</button></a>
+
+<a href="employees.html"><button>👨‍💼 Employees</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>🔧 New Maintenance Record</h2>
+
+<label>Asset Name</label>
+
+<input
+type="text"
+id="assetName"
+placeholder="Enter asset name">
+
+<label>Maintenance Type</label>
+
+<select id="maintenanceType">
+
+<option>Routine Service</option>
+
+<option>Repair</option>
+
+<option>Inspection</option>
+
+<option>Replacement</option>
+
+</select>
+
+<label>Technician Name</label>
+
+<input
+type="text"
+id="technicianName"
+placeholder="Enter technician name">
+
+<label>Maintenance Date</label>
+
+<input
+type="date"
+id="maintenanceDate">
+
+<label>Status</label>
+
+<select id="maintenanceStatus">
+
+<option>Scheduled</option>
+
+<option>In Progress</option>
+
+<option>Completed</option>
+
+</select>
+
+<label>Notes</label>
+
+<textarea
+id="maintenanceNotes"
+placeholder="Enter maintenance notes"></textarea>
+
+<br><br>
+
+<button id="saveMaintenance">
+
+💾 Save Maintenance
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Maintenance Summary</h2>
+
+
+<p>
+
+Total Maintenance Records:
+
+<b id="totalMaintenance">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Maintenance History</h2>
+
+
+<div id="maintenanceList">
+
+
+<p>
+No maintenance records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveMaintenance =
+document.getElementById("saveMaintenance");
+
+const maintenanceList =
+document.getElementById("maintenanceList");
+
+
+function loadMaintenance(){
+
+let records =
+JSON.parse(localStorage.getItem("maintenanceRecords")) || [];
+
+document.getElementById("totalMaintenance").innerHTML =
+records.length;
+
+if(records.length === 0){
+
+maintenanceList.innerHTML =
+"<p>No maintenance records available yet.</p>";
+
+return;
+
+}
+
+maintenanceList.innerHTML = "";
+
+records.reverse().forEach(function(record){
+
+maintenanceList.innerHTML += `
+
+<div class="card">
+
+<h3>🔧 ${record.asset}</h3>
+
+<p><b>Type:</b> ${record.type}</p>
+
+<p><b>Technician:</b> ${record.technician}</p>
+
+<p><b>Date:</b> ${record.date}</p>
+
+<p><b>Status:</b> ${record.status}</p>
+
+<p><b>Notes:</b> ${record.notes}</p>
+
+<small>${record.created}</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+saveMaintenance.onclick = function(){
+
+let record = {
+
+asset:
+document.getElementById("assetName").value.trim(),
+
+type:
+document.getElementById("maintenanceType").value,
+
+technician:
+document.getElementById("technicianName").value.trim(),
+
+date:
+document.getElementById("maintenanceDate").value,
+
+status:
+document.getElementById("maintenanceStatus").value,
+
+notes:
+document.getElementById("maintenanceNotes").value.trim(),
+
+created:
+new Date().toLocaleString()
+
+};
+
+if(record.asset === "" || record.technician === ""){
+
+alert("Please fill asset name and technician name.");
+
+return;
+
+}
+
+let records =
+JSON.parse(localStorage.getItem("maintenanceRecords")) || [];
+
+records.push(record);
+
+localStorage.setItem(
+"maintenanceRecords",
+JSON.stringify(records)
+);
+
+alert("Maintenance record saved successfully!");
+
+loadMaintenance();
+
+};
+
+window.onload =
+loadMaintenance;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+  </html>
