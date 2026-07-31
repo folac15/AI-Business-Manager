@@ -1,1 +1,444 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Communication Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Communication Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💬 New Message</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+
+<label>
+Communication Channel
+</label>
+
+
+<select id="channel">
+
+<option>
+WhatsApp
+</option>
+
+<option>
+Facebook
+</option>
+
+<option>
+Email
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+
+<label>
+Message
+</label>
+
+
+<textarea
+id="messageText"
+placeholder="Enter customer message"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveMessage">
+
+💾 Save Message
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Communication Summary</h2>
+
+
+<p>
+
+Total Messages:
+
+<b id="totalMessages">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Message History</h2>
+
+
+<div id="messageList">
+
+
+<p>
+No messages available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+                 </div>
+  <script>
+
+
+const saveMessage =
+document.getElementById("saveMessage");
+
+
+const messageList =
+document.getElementById("messageList");
+
+
+
+function loadMessages(){
+
+
+let messages =
+JSON.parse(localStorage.getItem("messages")) || [];
+
+
+
+document.getElementById("totalMessages").innerHTML =
+messages.length;
+
+
+
+if(messages.length === 0){
+
+
+messageList.innerHTML =
+"<p>No messages available yet.</p>";
+
+return;
+
+}
+
+
+
+messageList.innerHTML = "";
+
+
+
+messages.reverse().forEach(function(message){
+
+
+messageList.innerHTML += `
+
+<div class="card">
+
+
+<h3>💬 ${message.name}</h3>
+
+
+<p>
+<b>Channel:</b> ${message.channel}
+</p>
+
+
+<p>
+<b>Message:</b> ${message.text}
+</p>
+
+
+<p>
+<b>AI Reply:</b> ${message.reply}
+</p>
+
+
+<small>
+${message.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+function generateAIReply(text){
+
+
+text = text.toLowerCase();
+
+
+
+if(text.includes("price") || text.includes("cost")){
+
+return "Thank you for your interest. We will provide our current prices shortly.";
+
+}
+
+
+else if(text.includes("delivery")){
+
+return "Yes, we provide delivery services. Please share your location.";
+
+}
+
+
+else if(text.includes("hello") || text.includes("hi")){
+
+return "Hello! Welcome to our business. How can we assist you today?";
+
+}
+
+
+else{
+
+return "Thank you for your message. Our team will respond shortly.";
+
+}
+
+
+}
+
+
+
+
+saveMessage.onclick = function(){
+
+
+
+let messageData = {
+
+
+name:
+document.getElementById("customerName").value.trim(),
+
+
+channel:
+document.getElementById("channel").value,
+
+
+text:
+document.getElementById("messageText").value.trim(),
+
+
+reply:
+generateAIReply(
+document.getElementById("messageText").value
+),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(messageData.name === "" || messageData.text === ""){
+
+
+alert("Please fill customer name and message.");
+
+return;
+
+}
+
+
+
+let messages =
+JSON.parse(localStorage.getItem("messages")) || [];
+
+
+
+messages.push(messageData);
+
+
+
+localStorage.setItem(
+"messages",
+JSON.stringify(messages)
+);
+
+
+
+alert("Message saved successfully!");
+
+
+
+loadMessages();
+
+
+
+};
+
+
+
+window.onload =
+loadMessages;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
