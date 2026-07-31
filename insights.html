@@ -1,1 +1,396 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Insights Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Business Insights Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="insights.html">
+<button>🤖 Insights</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🤖 Generate Business Insight</h2>
+
+
+<label>
+Business Area
+</label>
+
+
+<select id="businessArea">
+
+<option>
+Sales
+</option>
+
+<option>
+Customers
+</option>
+
+<option>
+Expenses
+</option>
+
+<option>
+Marketing
+</option>
+
+<option>
+General
+</option>
+
+</select>
+
+
+<label>
+Observation / Data
+</label>
+
+
+<textarea
+id="businessData"
+placeholder="Enter business information"></textarea>
+
+
+<br><br>
+
+
+<button id="generateInsight">
+
+🤖 Generate Insight
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Insight Summary</h2>
+
+
+<p>
+
+Total Insights Generated:
+
+<b id="totalInsights">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🤖 AI Recommendation</h2>
+
+
+<div id="insightResult">
+
+
+<p>
+No insight generated yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Insight History</h2>
+
+
+<div id="insightList">
+
+
+<p>
+No insights available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+  <script>
+
+const generateInsight =
+document.getElementById("generateInsight");
+
+
+const insightList =
+document.getElementById("insightList");
+
+
+
+function loadInsights(){
+
+
+let insights =
+JSON.parse(localStorage.getItem("businessInsights")) || [];
+
+
+
+document.getElementById("totalInsights").innerHTML =
+insights.length;
+
+
+
+if(insights.length === 0){
+
+
+insightList.innerHTML =
+"<p>No insights available yet.</p>";
+
+return;
+
+}
+
+
+
+insightList.innerHTML = "";
+
+
+
+insights.reverse().forEach(function(insight){
+
+
+insightList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🤖 ${insight.area}</h3>
+
+
+<p>
+${insight.result}
+</p>
+
+
+<small>
+${insight.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+generateInsight.onclick = function(){
+
+
+
+let area =
+document.getElementById("businessArea").value;
+
+
+let data =
+document.getElementById("businessData").value.toLowerCase();
+
+
+
+let result = "";
+
+
+
+if(area === "Sales"){
+
+
+result =
+"Analyze sales trends, improve customer targeting, and promote your best-performing products.";
+
+}
+
+else if(area === "Customers"){
+
+
+result =
+"Focus on customer satisfaction, loyalty programs, and responding quickly to customer needs.";
+
+}
+
+else if(area === "Expenses"){
+
+
+result =
+"Review expenses regularly and identify areas where costs can be reduced.";
+
+}
+
+else if(area === "Marketing"){
+
+
+result =
+"Improve marketing by creating consistent content and tracking customer engagement.";
+
+}
+
+else{
+
+
+result =
+"Monitor all business areas and use data to make better decisions.";
+
+}
+
+
+
+if(data.includes("low")){
+
+result +=
+" Sales or performance may need improvement. Consider new strategies.";
+
+}
+
+
+
+let insight = {
+
+
+area: area,
+
+
+result: result,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+let insights =
+JSON.parse(localStorage.getItem("businessInsights")) || [];
+
+
+
+insights.push(insight);
+
+
+
+localStorage.setItem(
+"businessInsights",
+JSON.stringify(insights)
+);
+
+
+
+document.getElementById("insightResult").innerHTML =
+"<p>"+result+"</p>";
+
+
+
+alert("Business insight generated successfully!");
+
+
+
+loadInsights();
+
+
+
+};
+
+
+
+window.onload =
+loadInsights;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
+  
