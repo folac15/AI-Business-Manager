@@ -1,1 +1,390 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Calendar Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Calendar & Scheduling Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📅 Add New Event</h2>
+
+
+<label>
+Event Title
+</label>
+
+
+<input
+type="text"
+id="eventTitle"
+placeholder="Enter event title">
+
+
+
+<label>
+Description
+</label>
+
+
+<textarea
+id="eventDescription"
+placeholder="Enter event details"></textarea>
+
+
+
+<label>
+Date
+</label>
+
+
+<input
+type="date"
+id="eventDate">
+
+
+
+<label>
+Time
+</label>
+
+
+<input
+type="time"
+id="eventTime">
+
+
+
+<br><br>
+
+
+<button id="saveEvent">
+
+💾 Save Event
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Calendar Summary</h2>
+
+
+<p>
+
+Total Events:
+
+<b id="totalEvents">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Event History</h2>
+
+
+<div id="eventList">
+
+
+<p>
+No events scheduled yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveEvent =
+document.getElementById("saveEvent");
+
+
+const eventList =
+document.getElementById("eventList");
+
+
+
+function loadEvents(){
+
+
+let events =
+JSON.parse(localStorage.getItem("events")) || [];
+
+
+
+document.getElementById("totalEvents").innerHTML =
+events.length;
+
+
+
+if(events.length === 0){
+
+
+eventList.innerHTML =
+"<p>No events scheduled yet.</p>";
+
+return;
+
+}
+
+
+
+eventList.innerHTML = "";
+
+
+
+events.reverse().forEach(function(event){
+
+
+eventList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📅 ${event.title}</h3>
+
+
+<p>
+<b>Description:</b> ${event.description}
+</p>
+
+
+<p>
+<b>Date:</b> ${event.date}
+</p>
+
+
+<p>
+<b>Time:</b> ${event.time}
+</p>
+
+
+<small>
+Created: ${event.created}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveEvent.onclick = function(){
+
+
+
+let event = {
+
+
+title:
+document.getElementById("eventTitle").value.trim(),
+
+
+description:
+document.getElementById("eventDescription").value.trim(),
+
+
+date:
+document.getElementById("eventDate").value,
+
+
+time:
+document.getElementById("eventTime").value,
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(
+event.title === "" ||
+event.date === ""
+){
+
+alert("Please fill event title and date.");
+
+return;
+
+}
+
+
+
+let events =
+JSON.parse(localStorage.getItem("events")) || [];
+
+
+
+events.push(event);
+
+
+
+localStorage.setItem(
+"events",
+JSON.stringify(events)
+);
+
+
+
+alert("Event saved successfully!");
+
+
+
+loadEvents();
+
+
+
+};
+
+
+
+window.onload =
+loadEvents;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
