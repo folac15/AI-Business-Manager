@@ -1,1 +1,456 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Asset Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Asset Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="support.html">
+<button>🎧 Support</button>
+</a>
+
+
+<a href="marketing.html">
+<button>📢 Marketing</button>
+</a>
+
+
+<a href="projects.html">
+<button>📋 Projects</button>
+</a>
+
+
+<a href="quality.html">
+<button>🔍 Quality</button>
+</a>
+
+
+<a href="assets.html">
+<button>🏢 Assets</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🏢 Add New Asset</h2>
+
+
+<label>
+Asset Name
+</label>
+
+
+<input
+type="text"
+id="assetName"
+placeholder="Enter asset name">
+
+
+
+<label>
+Asset Category
+</label>
+
+
+<input
+type="text"
+id="assetCategory"
+placeholder="Example: Vehicle, Equipment, Computer">
+
+
+
+<label>
+Purchase Date
+</label>
+
+
+<input
+type="date"
+id="purchaseDate">
+
+
+
+<label>
+Asset Value
+</label>
+
+
+<input
+type="number"
+id="assetValue"
+placeholder="Enter asset value">
+
+
+
+<label>
+Asset Status
+</label>
+
+
+<select id="assetStatus">
+
+<option>
+Active
+</option>
+
+<option>
+Under Maintenance
+</option>
+
+<option>
+Inactive
+</option>
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveAsset">
+
+💾 Save Asset
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Asset Summary</h2>
+
+
+<p>
+
+Total Assets:
+
+<b id="totalAssets">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Asset History</h2>
+
+
+<div id="assetList">
+
+
+<p>
+No assets available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveAsset =
+document.getElementById("saveAsset");
+
+
+const assetList =
+document.getElementById("assetList");
+
+
+
+function loadAssets(){
+
+
+let assets =
+JSON.parse(localStorage.getItem("assets")) || [];
+
+
+
+document.getElementById("totalAssets").innerHTML =
+assets.length;
+
+
+
+if(assets.length === 0){
+
+
+assetList.innerHTML =
+"<p>No assets available yet.</p>";
+
+return;
+
+}
+
+
+
+assetList.innerHTML = "";
+
+
+
+assets.reverse().forEach(function(asset){
+
+
+assetList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🏢 ${asset.name}</h3>
+
+
+<p>
+<b>Category:</b> ${asset.category}
+</p>
+
+
+<p>
+<b>Purchase Date:</b> ${asset.datePurchased}
+</p>
+
+
+<p>
+<b>Value:</b> ${asset.value}
+</p>
+
+
+<p>
+<b>Status:</b> ${asset.status}
+</p>
+
+
+<small>
+${asset.created}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAsset.onclick = function(){
+
+
+
+let asset = {
+
+
+name:
+document.getElementById("assetName").value.trim(),
+
+
+category:
+document.getElementById("assetCategory").value.trim(),
+
+
+datePurchased:
+document.getElementById("purchaseDate").value,
+
+
+value:
+document.getElementById("assetValue").value,
+
+
+status:
+document.getElementById("assetStatus").value,
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(asset.name === "" || asset.category === ""){
+
+
+alert("Please fill asset name and category.");
+
+return;
+
+}
+
+
+
+let assets =
+JSON.parse(localStorage.getItem("assets")) || [];
+
+
+
+assets.push(asset);
+
+
+
+localStorage.setItem(
+"assets",
+JSON.stringify(assets)
+);
+
+
+
+alert("Asset saved successfully!");
+
+
+
+loadAssets();
+
+
+
+};
+
+
+
+window.onload =
+loadAssets;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
