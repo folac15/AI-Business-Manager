@@ -1,1 +1,358 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Backup & Data Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Backup & Data Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="backup.html">
+<button>💾 Backup</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💾 Create Backup Record</h2>
+
+
+<label>
+Backup Name
+</label>
+
+
+<input
+type="text"
+id="backupName"
+placeholder="Enter backup name">
+
+
+
+<label>
+Backup Type
+</label>
+
+
+<select id="backupType">
+
+
+<option>
+Full Backup
+</option>
+
+
+<option>
+Database Backup
+</option>
+
+
+<option>
+Files Backup
+</option>
+
+
+<option>
+System Backup
+</option>
+
+
+</select>
+
+
+
+<label>
+Backup Status
+</label>
+
+
+<select id="backupStatus">
+
+
+<option>
+Completed
+</option>
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+Failed
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveBackup">
+
+💾 Save Backup
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Backup Summary</h2>
+
+
+<p>
+
+Total Backups:
+
+<b id="totalBackups">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Backup History</h2>
+
+
+<div id="backupList">
+
+
+<p>
+No backup records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveBackup =
+document.getElementById("saveBackup");
+
+
+const backupList =
+document.getElementById("backupList");
+
+
+
+function loadBackups(){
+
+
+let backups =
+JSON.parse(localStorage.getItem("backups")) || [];
+
+
+
+document.getElementById("totalBackups").innerHTML =
+backups.length;
+
+
+
+if(backups.length === 0){
+
+
+backupList.innerHTML =
+"<p>No backup records available yet.</p>";
+
+return;
+
+}
+
+
+
+backupList.innerHTML = "";
+
+
+
+backups.reverse().forEach(function(backup){
+
+
+backupList.innerHTML += `
+
+<div class="card">
+
+
+<h3>💾 ${backup.name}</h3>
+
+
+<p>
+<b>Type:</b> ${backup.type}
+</p>
+
+
+<p>
+<b>Status:</b> ${backup.status}
+</p>
+
+
+<small>
+${backup.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveBackup.onclick = function(){
+
+
+
+let backup = {
+
+
+name:
+document.getElementById("backupName").value.trim(),
+
+
+type:
+document.getElementById("backupType").value,
+
+
+status:
+document.getElementById("backupStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(backup.name === ""){
+
+
+alert("Please enter backup name.");
+
+return;
+
+}
+
+
+
+let backups =
+JSON.parse(localStorage.getItem("backups")) || [];
+
+
+
+backups.push(backup);
+
+
+
+localStorage.setItem(
+"backups",
+JSON.stringify(backups)
+);
+
+
+
+alert("Backup record saved successfully!");
+
+
+
+loadBackups();
+
+
+
+};
+
+
+
+window.onload =
+loadBackups;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
