@@ -1,195 +1,131 @@
-function showMessage(){
-
+function showMessage() {
     alert("AI Business Manager is ready!");
-
 }
 
+/* ==========================
+   AUTO LOAD
+========================== */
+
+window.onload = function () {
+
+    if (typeof loadPosts === "function" && document.getElementById("postList")) {
+        loadPosts();
+    }
+
+};
 
 /* ==========================
    POSTS MANAGEMENT
 ========================== */
 
+function createPost() {
 
-function createPost(){
+    const postText = document.getElementById("postText");
 
-    let text =
-    document.getElementById("postText").value;
+    if (!postText) return;
 
+    let text = postText.value;
 
-    if(text.trim()==""){
-
+    if (text.trim() === "") {
         alert("Please write something first.");
         return;
-
     }
 
-
-    let posts =
-    JSON.parse(localStorage.getItem("posts")) || [];
-
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
     posts.push(text);
 
-
-    localStorage.setItem(
-        "posts",
-        JSON.stringify(posts)
-    );
-
+    localStorage.setItem("posts", JSON.stringify(posts));
 
     alert("Post saved successfully!");
 
+    postText.value = "";
 
-    document.getElementById("postText").value="";
-
+    loadPosts();
 }
 
+function loadPosts() {
 
+    let area = document.getElementById("postList");
 
-function loadPosts(){
+    if (!area) return;
 
-    let posts =
-    JSON.parse(localStorage.getItem("posts")) || [];
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-
-    let area =
-    document.getElementById("postList");
-
-
-    if(!area){
-
+    if (posts.length === 0) {
+        area.innerHTML = "No posts available yet.";
         return;
-
     }
 
+    area.innerHTML = "";
 
-    if(posts.length==0){
-
-        area.innerHTML =
-        "No posts available yet.";
-
-        return;
-
-    }
-
-
-    area.innerHTML="";
-
-
-    posts.forEach(function(post,index){
-
+    posts.forEach(function (post, index) {
 
         area.innerHTML +=
-
-        "<p><b>Post "
-        +(index+1)+
-        ":</b><br>"
-        +post+
-        "</p><hr>";
-
+            "<p><b>Post " +
+            (index + 1) +
+            ":</b><br>" +
+            post +
+            "</p><hr>";
 
     });
 
-
 }
-
 
 /* ==========================
    SETTINGS
 ========================== */
 
+function saveSettings() {
 
-function saveSettings(){
+    const businessName = document.getElementById("businessName");
+    const phone = document.getElementById("phone");
 
-    let name =
-    document.getElementById("businessName").value;
+    if (!businessName || !phone) return;
 
-
-    let phone =
-    document.getElementById("phone").value;
-
-
-    if(name=="" || phone==""){
+    if (businessName.value === "" || phone.value === "") {
 
         alert("Please complete all information.");
-
         return;
 
     }
 
-
-    localStorage.setItem(
-        "businessName",
-        name
-    );
-
-
-    localStorage.setItem(
-        "phone",
-        phone
-    );
-
+    localStorage.setItem("businessName", businessName.value);
+    localStorage.setItem("phone", phone.value);
 
     alert("Settings saved successfully!");
 
 }
 
-
-
-
-
 /* ==========================
    MARKETING POST GENERATOR
 ========================== */
 
+function generatePost() {
 
-function generatePost(){
+    const requestBox = document.getElementById("marketingRequest");
+    const resultBox = document.getElementById("marketingResult");
 
+    if (!requestBox || !resultBox) return;
 
-    let request =
-    document
-    .getElementById("marketingRequest")
-    .value
-    .toLowerCase();
+    let request = requestBox.value.toLowerCase();
 
+    let result = "";
 
-    let result="";
+    if (request.includes("poultry") || request.includes("chicken")) {
 
+        result = "Fresh quality chickens available! Healthy, well-raised birds at affordable prices. Contact us today.";
 
-    if(
-        request.includes("poultry")
-        ||
-        request.includes("chicken")
-    ){
+    } else if (request.includes("school")) {
 
-        result =
-        "Fresh quality chickens available! Healthy, well-raised birds at affordable prices. Contact us today.";
+        result = "Give your children the best education experience with quality teaching and guidance.";
 
-    }
+    } else {
 
-
-    else if(
-        request.includes("school")
-    ){
-
-        result =
-        "Give your children the best education experience with quality teaching and guidance.";
+        result = "Discover our quality products and services. Contact us today.";
 
     }
 
-
-    else{
-
-
-        result =
-        "Discover our quality products and services. Contact us today.";
-
-    }
-
-
-    document
-    .getElementById("marketingResult")
-    .innerHTML=result;
-
+    resultBox.innerHTML = result;
 
 }
