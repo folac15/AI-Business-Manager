@@ -1,1 +1,332 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Integration Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Integration Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="integrations.html">
+<button>🔗 Integrations</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔗 Add Integration</h2>
+
+
+
+<label>
+Service Name
+</label>
+
+
+<select id="serviceName">
+
+
+<option>
+WhatsApp
+</option>
+
+
+<option>
+Facebook
+</option>
+
+
+<option>
+Email
+</option>
+
+
+<option>
+SMS
+</option>
+
+
+<option>
+API
+</option>
+
+
+</select>
+
+
+
+<label>
+Integration Status
+</label>
+
+
+<select id="integrationStatus">
+
+
+<option>
+Connected
+</option>
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+Disconnected
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveIntegration">
+
+💾 Save Integration
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Integration Summary</h2>
+
+
+<p>
+
+Total Integrations:
+
+<b id="totalIntegrations">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Integration History</h2>
+
+
+<div id="integrationList">
+
+
+<p>
+No integrations added yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveIntegration =
+document.getElementById("saveIntegration");
+
+
+const integrationList =
+document.getElementById("integrationList");
+
+
+
+function loadIntegrations(){
+
+
+let integrations =
+JSON.parse(localStorage.getItem("integrations")) || [];
+
+
+
+document.getElementById("totalIntegrations").innerHTML =
+integrations.length;
+
+
+
+if(integrations.length === 0){
+
+
+integrationList.innerHTML =
+"<p>No integrations added yet.</p>";
+
+return;
+
+}
+
+
+
+integrationList.innerHTML = "";
+
+
+
+integrations.reverse().forEach(function(integration){
+
+
+integrationList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🔗 ${integration.service}</h3>
+
+
+<p>
+<b>Status:</b> ${integration.status}
+</p>
+
+
+<small>
+${integration.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveIntegration.onclick = function(){
+
+
+
+let integration = {
+
+
+service:
+document.getElementById("serviceName").value,
+
+
+status:
+document.getElementById("integrationStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+let integrations =
+JSON.parse(localStorage.getItem("integrations")) || [];
+
+
+
+integrations.push(integration);
+
+
+
+localStorage.setItem(
+"integrations",
+JSON.stringify(integrations)
+);
+
+
+
+alert("Integration saved successfully!");
+
+
+
+loadIntegrations();
+
+
+
+};
+
+
+
+window.onload =
+loadIntegrations;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
