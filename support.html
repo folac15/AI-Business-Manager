@@ -1,1 +1,434 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Support Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Customer Support Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="communication.html">
+<button>💬 Communication</button>
+</a>
+
+
+<a href="support.html">
+<button>🎧 Support</button>
+</a>
+
+
+<a href="inventory.html">
+<button>📦 Inventory</button>
+</a>
+
+
+<a href="sales.html">
+<button>💰 Sales</button>
+</a>
+
+
+<a href="finance.html">
+<button>💵 Finance</button>
+</a>
+
+
+<a href="expenses.html">
+<button>💸 Expenses</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="employees.html">
+<button>👨‍💼 Employees</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="notifications.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="automation.html">
+<button>⚡ Automation</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🎧 Create Support Ticket</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+
+<label>
+Issue Category
+</label>
+
+
+<select id="issueCategory">
+
+<option>
+Delivery Problem
+</option>
+
+<option>
+Product Complaint
+</option>
+
+<option>
+Payment Issue
+</option>
+
+<option>
+Technical Issue
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+
+
+<label>
+Problem Description
+</label>
+
+
+<textarea
+id="problemDescription"
+placeholder="Describe the problem"></textarea>
+
+
+
+<label>
+Status
+</label>
+
+
+<select id="ticketStatus">
+
+<option>
+Open
+</option>
+
+<option>
+In Progress
+</option>
+
+<option>
+Resolved
+</option>
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveTicket">
+
+💾 Save Ticket
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Support Summary</h2>
+
+
+<p>
+
+Total Tickets:
+
+<b id="totalTickets">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Support Ticket History</h2>
+
+
+<div id="ticketList">
+
+
+<p>
+No support tickets available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+
+const saveTicket =
+document.getElementById("saveTicket");
+
+
+const ticketList =
+document.getElementById("ticketList");
+
+
+
+function loadTickets(){
+
+
+let tickets =
+JSON.parse(localStorage.getItem("tickets")) || [];
+
+
+
+document.getElementById("totalTickets").innerHTML =
+tickets.length;
+
+
+
+if(tickets.length === 0){
+
+
+ticketList.innerHTML =
+"<p>No support tickets available yet.</p>";
+
+return;
+
+}
+
+
+
+ticketList.innerHTML = "";
+
+
+
+tickets.reverse().forEach(function(ticket){
+
+
+ticketList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🎧 ${ticket.customer}</h3>
+
+
+<p>
+<b>Category:</b> ${ticket.category}
+</p>
+
+
+<p>
+<b>Problem:</b> ${ticket.description}
+</p>
+
+
+<p>
+<b>Status:</b> ${ticket.status}
+</p>
+
+
+<small>
+${ticket.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveTicket.onclick = function(){
+
+
+
+let ticket = {
+
+
+customer:
+document.getElementById("customerName").value.trim(),
+
+
+category:
+document.getElementById("issueCategory").value,
+
+
+description:
+document.getElementById("problemDescription").value.trim(),
+
+
+status:
+document.getElementById("ticketStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(ticket.customer === "" || ticket.description === ""){
+
+
+alert("Please fill customer name and problem description.");
+
+return;
+
+}
+
+
+
+let tickets =
+JSON.parse(localStorage.getItem("tickets")) || [];
+
+
+
+tickets.push(ticket);
+
+
+
+localStorage.setItem(
+"tickets",
+JSON.stringify(tickets)
+);
+
+
+
+alert("Support ticket saved successfully!");
+
+
+
+loadTickets();
+
+
+
+};
+
+
+
+window.onload =
+loadTickets;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
