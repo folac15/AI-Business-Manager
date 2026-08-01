@@ -1,1 +1,327 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Workflow Automation Engine</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Workflow Automation Engine</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="workflow-ai.html">
+<button>⚙ Workflow AI</button>
+</a>
+
+
+<a href="ai-agent-core.html">
+<button>🤖 AI Agents</button>
+</a>
+
+
+<a href="knowledge-ai.html">
+<button>🧠 Knowledge AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>⚙ Create Automation Workflow</h2>
+
+
+<label>
+Workflow Name
+</label>
+
+
+<input
+type="text"
+id="workflowName"
+placeholder="Enter workflow name">
+
+
+
+<label>
+Trigger Event
+</label>
+
+
+<input
+type="text"
+id="triggerEvent"
+placeholder="Example: New customer message">
+
+
+
+<label>
+Action To Perform
+</label>
+
+
+<textarea
+id="workflowAction"
+placeholder="Describe automated action"></textarea>
+
+
+
+<label>
+Assigned AI Agent
+</label>
+
+
+<input
+type="text"
+id="assignedAgent"
+placeholder="Enter AI agent name">
+
+
+
+<label>
+Workflow Status
+</label>
+
+
+<select id="workflowStatus">
+
+<option>
+Active
+</option>
+
+<option>
+Inactive
+</option>
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveWorkflowAI">
+
+💾 Save Workflow
+
+  </button>
+  <div class="card">
+
+<h2>📊 Workflow Summary</h2>
+
+<p>
+
+Total Workflows:
+
+<b id="totalWorkflowAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Automation History</h2>
+
+<div id="workflowAIList">
+
+<p>
+No automation workflows created yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveWorkflowAI =
+document.getElementById("saveWorkflowAI");
+
+const workflowAIList =
+document.getElementById("workflowAIList");
+
+
+function loadWorkflowAI(){
+
+let workflows =
+JSON.parse(localStorage.getItem("workflowAI")) || [];
+
+
+document.getElementById("totalWorkflowAI").innerHTML =
+workflows.length;
+
+
+if(workflows.length === 0){
+
+workflowAIList.innerHTML =
+"<p>No automation workflows created yet.</p>";
+
+return;
+
+}
+
+
+workflowAIList.innerHTML = "";
+
+
+workflows.reverse().forEach(function(item){
+
+
+workflowAIList.innerHTML += `
+
+<div class="card">
+
+<h3>⚙ ${item.name}</h3>
+
+<p><b>Trigger:</b> ${item.trigger}</p>
+
+<p><b>Action:</b> ${item.action}</p>
+
+<p><b>Assigned AI Agent:</b> ${item.agent}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Automation Log:</b> Workflow saved successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveWorkflowAI.onclick = function(){
+
+
+let workflow = {
+
+
+name:
+document.getElementById("workflowName").value.trim(),
+
+
+trigger:
+document.getElementById("triggerEvent").value.trim(),
+
+
+action:
+document.getElementById("workflowAction").value.trim(),
+
+
+agent:
+document.getElementById("assignedAgent").value.trim(),
+
+
+status:
+document.getElementById("workflowStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(workflow.name === ""){
+
+
+alert("Please enter workflow name.");
+
+return;
+
+}
+
+
+
+let workflows =
+JSON.parse(localStorage.getItem("workflowAI")) || [];
+
+
+workflows.push(workflow);
+
+
+localStorage.setItem(
+"workflowAI",
+JSON.stringify(workflows)
+);
+
+
+alert("Workflow saved successfully!");
+
+
+loadWorkflowAI();
+
+
+};
+
+
+
+window.onload =
+loadWorkflowAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
