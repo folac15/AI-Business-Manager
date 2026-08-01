@@ -1,1 +1,356 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Project Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Project Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="project-ai.html">
+<button>📁 Project AI</button>
+</a>
+
+
+<a href="task-ai.html">
+<button>✅ Task AI</button>
+</a>
+
+
+<a href="employee-ai.html">
+<button>👥 Employee AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📁 Add Project</h2>
+
+
+<label>
+Project Name
+</label>
+
+
+<input
+type="text"
+id="projectName"
+placeholder="Enter project name">
+
+
+
+<label>
+Project Manager
+</label>
+
+
+<input
+type="text"
+id="projectManager"
+placeholder="Enter manager name">
+
+
+
+<label>
+Project Deadline
+</label>
+
+
+<input
+type="date"
+id="projectDeadline">
+
+
+
+<label>
+Project Budget
+</label>
+
+
+<input
+type="number"
+id="projectBudget"
+placeholder="Enter budget">
+
+
+
+<label>
+Project Status
+</label>
+
+
+<select id="projectStatus">
+
+
+<option>
+Planning
+</option>
+
+
+<option>
+Active
+</option>
+
+
+<option>
+Completed
+</option>
+
+
+<option>
+Cancelled
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Project Recommendation
+</label>
+
+
+<textarea
+id="projectRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveProjectAI">
+
+💾 Save Project
+
+  </button>
+  <div class="card">
+
+<h2>📊 Project Summary</h2>
+
+<p>
+
+Total Projects:
+
+<b id="totalProjectAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Project History</h2>
+
+<div id="projectAIList">
+
+<p>
+No project records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveProjectAI =
+document.getElementById("saveProjectAI");
+
+const projectAIList =
+document.getElementById("projectAIList");
+
+
+function loadProjectAI(){
+
+let projects =
+JSON.parse(localStorage.getItem("projectAI")) || [];
+
+
+document.getElementById("totalProjectAI").innerHTML =
+projects.length;
+
+
+if(projects.length === 0){
+
+projectAIList.innerHTML =
+"<p>No project records available yet.</p>";
+
+return;
+
+}
+
+
+projectAIList.innerHTML = "";
+
+
+projects.reverse().forEach(function(item){
+
+
+projectAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📁 ${item.name}</h3>
+
+<p><b>Project Manager:</b> ${item.manager}</p>
+
+<p><b>Deadline:</b> ${item.deadline}</p>
+
+<p><b>Budget:</b> ${item.budget}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveProjectAI.onclick = function(){
+
+
+let project = {
+
+
+name:
+document.getElementById("projectName").value.trim(),
+
+
+manager:
+document.getElementById("projectManager").value.trim(),
+
+
+deadline:
+document.getElementById("projectDeadline").value,
+
+
+budget:
+document.getElementById("projectBudget").value,
+
+
+status:
+document.getElementById("projectStatus").value,
+
+
+recommendation:
+document.getElementById("projectRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(project.name === ""){
+
+
+alert("Please enter project name.");
+
+return;
+
+}
+
+
+
+let projects =
+JSON.parse(localStorage.getItem("projectAI")) || [];
+
+
+projects.push(project);
+
+
+localStorage.setItem(
+"projectAI",
+JSON.stringify(projects)
+);
+
+
+alert("Project saved successfully!");
+
+
+loadProjectAI();
+
+
+};
+
+
+
+window.onload =
+loadProjectAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
