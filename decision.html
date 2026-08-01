@@ -1,1 +1,367 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Decision Support Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Decision Support Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="decision.html">
+<button>📈 Decision Support</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="ai-tasks.html">
+<button>🧠 AI Tasks</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📈 Add Business Decision</h2>
+
+
+
+<label>
+Decision Title
+</label>
+
+
+<input
+type="text"
+id="decisionTitle"
+placeholder="Enter decision title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="decisionCategory">
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Operations
+</option>
+
+
+<option>
+Customer Service
+</option>
+
+
+</select>
+
+
+
+<label>
+Problem Description
+</label>
+
+
+<textarea
+id="decisionProblem"
+placeholder="Describe the problem"></textarea>
+
+
+
+<label>
+AI Recommendation
+</label>
+
+
+<textarea
+id="decisionRecommendation"
+placeholder="Enter recommendation"></textarea>
+
+
+<br><br>
+
+
+<button id="saveDecision">
+
+💾 Save Decision
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Decision Summary</h2>
+
+
+<p>
+
+Total Decisions:
+
+<b id="totalDecisions">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Decision History</h2>
+
+
+<div id="decisionList">
+
+
+<p>
+No decisions available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveDecision =
+document.getElementById("saveDecision");
+
+
+const decisionList =
+document.getElementById("decisionList");
+
+
+
+function loadDecisions(){
+
+
+let decisions =
+JSON.parse(localStorage.getItem("decisions")) || [];
+
+
+
+document.getElementById("totalDecisions").innerHTML =
+decisions.length;
+
+
+
+if(decisions.length === 0){
+
+
+decisionList.innerHTML =
+"<p>No decisions available yet.</p>";
+
+return;
+
+}
+
+
+
+decisionList.innerHTML = "";
+
+
+
+decisions.reverse().forEach(function(item){
+
+
+decisionList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📈 ${item.title}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Problem:</b> ${item.problem}
+</p>
+
+
+<p>
+<b>AI Recommendation:</b> ${item.recommendation}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveDecision.onclick = function(){
+
+
+
+let decision = {
+
+
+title:
+document.getElementById("decisionTitle").value.trim(),
+
+
+category:
+document.getElementById("decisionCategory").value,
+
+
+problem:
+document.getElementById("decisionProblem").value.trim(),
+
+
+recommendation:
+document.getElementById("decisionRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(decision.title === ""){
+
+
+alert("Please enter decision title.");
+
+return;
+
+}
+
+
+
+let decisions =
+JSON.parse(localStorage.getItem("decisions")) || [];
+
+
+
+decisions.push(decision);
+
+
+
+localStorage.setItem(
+"decisions",
+JSON.stringify(decisions)
+);
+
+
+
+alert("Decision saved successfully!");
+
+
+
+loadDecisions();
+
+
+
+};
+
+
+
+window.onload =
+loadDecisions;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
