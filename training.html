@@ -1,1 +1,347 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Training Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Training Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="training.html">
+<button>🎓 Training</button>
+</a>
+
+
+<a href="knowledge.html">
+<button>🧠 Knowledge</button>
+</a>
+
+
+<a href="ai.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🎓 Add Training Record</h2>
+
+
+
+<label>
+Training Topic
+</label>
+
+
+<input
+type="text"
+id="trainingTopic"
+placeholder="Enter training topic">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="trainingCategory">
+
+
+<option>
+AI Improvement
+</option>
+
+
+<option>
+Business Skills
+</option>
+
+
+<option>
+Customer Service
+</option>
+
+
+<option>
+Staff Training
+</option>
+
+
+<option>
+Other
+</option>
+
+
+</select>
+
+
+
+<label>
+Training Notes
+</label>
+
+
+<textarea
+id="trainingNotes"
+placeholder="Enter training notes"></textarea>
+
+
+<br><br>
+
+
+<button id="saveTraining">
+
+💾 Save Training
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Training Summary</h2>
+
+
+<p>
+
+Total Training Sessions:
+
+<b id="totalTraining">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Training History</h2>
+
+
+<div id="trainingList">
+
+
+<p>
+No training records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+                           </div>
+  <script>
+
+const saveTraining =
+document.getElementById("saveTraining");
+
+
+const trainingList =
+document.getElementById("trainingList");
+
+
+
+function loadTraining(){
+
+
+let trainings =
+JSON.parse(localStorage.getItem("trainings")) || [];
+
+
+
+document.getElementById("totalTraining").innerHTML =
+trainings.length;
+
+
+
+if(trainings.length === 0){
+
+
+trainingList.innerHTML =
+"<p>No training records available yet.</p>";
+
+return;
+
+}
+
+
+
+trainingList.innerHTML = "";
+
+
+
+trainings.reverse().forEach(function(item){
+
+
+trainingList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🎓 ${item.topic}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+${item.notes}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveTraining.onclick = function(){
+
+
+
+let training = {
+
+
+topic:
+document.getElementById("trainingTopic").value.trim(),
+
+
+category:
+document.getElementById("trainingCategory").value,
+
+
+notes:
+document.getElementById("trainingNotes").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(training.topic === "" || training.notes === ""){
+
+
+alert("Please complete training topic and notes.");
+
+return;
+
+}
+
+
+
+let trainings =
+JSON.parse(localStorage.getItem("trainings")) || [];
+
+
+
+trainings.push(training);
+
+
+
+localStorage.setItem(
+"trainings",
+JSON.stringify(trainings)
+);
+
+
+
+alert("Training record saved successfully!");
+
+
+
+loadTraining();
+
+
+
+};
+
+
+
+window.onload =
+loadTraining;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
