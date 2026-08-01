@@ -1,1 +1,247 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Inventory Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Inventory Manager</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+<a href="inventory-ai.html">
+<button>📦 Inventory AI</button>
+</a>
+
+<a href="finance-ai.html">
+<button>💰 Finance AI</button>
+</a>
+
+<a href="sales-ai.html">
+<button>💵 Sales AI</button>
+</a>
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>📦 Add Inventory Item</h2>
+
+<label>Product Name</label>
+
+<input
+type="text"
+id="productName"
+placeholder="Enter product name">
+
+<label>Category</label>
+
+<input
+type="text"
+id="productCategory"
+placeholder="Enter product category">
+
+<label>Quantity in Stock</label>
+
+<input
+type="number"
+id="stockQuantity"
+placeholder="Enter quantity">
+
+<label>Minimum Stock Level</label>
+
+<input
+type="number"
+id="minimumStock"
+placeholder="Enter minimum stock">
+
+<label>AI Restocking Recommendation</label>
+
+<textarea
+id="stockRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+<br><br>
+
+<button id="saveInventoryAI">
+
+💾 Save Inventory Item
+
+  </button>
+  <div class="card">
+
+<h2>📊 Inventory Summary</h2>
+
+<p>
+
+Total Inventory Items:
+
+<b id="totalInventoryAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Inventory History</h2>
+
+<div id="inventoryAIList">
+
+<p>
+No inventory records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveInventoryAI =
+document.getElementById("saveInventoryAI");
+
+const inventoryAIList =
+document.getElementById("inventoryAIList");
+
+function loadInventoryAI(){
+
+let items =
+JSON.parse(localStorage.getItem("inventoryAI")) || [];
+
+document.getElementById("totalInventoryAI").innerHTML =
+items.length;
+
+if(items.length === 0){
+
+inventoryAIList.innerHTML =
+"<p>No inventory records available yet.</p>";
+
+return;
+
+}
+
+inventoryAIList.innerHTML = "";
+
+items.reverse().forEach(function(item){
+
+inventoryAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📦 ${item.name}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Stock:</b> ${item.quantity}</p>
+
+<p><b>Minimum Stock:</b> ${item.minimum}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+saveInventoryAI.onclick = function(){
+
+let item = {
+
+name:
+document.getElementById("productName").value.trim(),
+
+category:
+document.getElementById("productCategory").value.trim(),
+
+quantity:
+document.getElementById("stockQuantity").value,
+
+minimum:
+document.getElementById("minimumStock").value,
+
+recommendation:
+document.getElementById("stockRecommendation").value.trim(),
+
+date:
+new Date().toLocaleString()
+
+};
+
+if(item.name === ""){
+
+alert("Please enter product name.");
+
+return;
+
+}
+
+let items =
+JSON.parse(localStorage.getItem("inventoryAI")) || [];
+
+items.push(item);
+
+localStorage.setItem(
+"inventoryAI",
+JSON.stringify(items)
+);
+
+alert("Inventory item saved successfully!");
+
+loadInventoryAI();
+
+};
+
+window.onload =
+loadInventoryAI;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+                            </html>
