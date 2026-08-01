@@ -1,1 +1,354 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Customer Feedback Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Customer Feedback Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="feedback-ai.html">
+<button>⭐ Feedback AI</button>
+</a>
+
+
+<a href="lead-ai.html">
+<button>🎯 Lead AI</button>
+</a>
+
+
+<a href="crm-ai.html">
+<button>🤝 CRM AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>⭐ Add Customer Feedback</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+
+<label>
+Feedback Category
+</label>
+
+
+<input
+type="text"
+id="feedbackCategory"
+placeholder="Product, Service, Support etc.">
+
+
+
+<label>
+Rating Score
+</label>
+
+
+<select id="ratingScore">
+
+<option>
+1
+</option>
+
+<option>
+2
+</option>
+
+<option>
+3
+</option>
+
+<option>
+4
+</option>
+
+<option>
+5
+</option>
+
+</select>
+
+
+
+<label>
+Feedback Message
+</label>
+
+
+<textarea
+id="feedbackMessage"
+placeholder="Enter customer feedback"></textarea>
+
+
+
+<label>
+AI Sentiment Analysis
+</label>
+
+
+<textarea
+id="sentimentAnalysis"
+placeholder="Enter AI sentiment result"></textarea>
+
+
+
+<label>
+AI Improvement Suggestion
+</label>
+
+
+<textarea
+id="improvementSuggestion"
+placeholder="Enter AI suggestion"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveFeedbackAI">
+
+💾 Save Feedback
+
+  </button>
+  <div class="card">
+
+<h2>📊 Feedback Summary</h2>
+
+<p>
+
+Total Feedback:
+
+<b id="totalFeedbackAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Feedback History</h2>
+
+<div id="feedbackAIList">
+
+<p>
+No feedback records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveFeedbackAI =
+document.getElementById("saveFeedbackAI");
+
+const feedbackAIList =
+document.getElementById("feedbackAIList");
+
+
+function loadFeedbackAI(){
+
+let feedbacks =
+JSON.parse(localStorage.getItem("feedbackAI")) || [];
+
+
+document.getElementById("totalFeedbackAI").innerHTML =
+feedbacks.length;
+
+
+if(feedbacks.length === 0){
+
+feedbackAIList.innerHTML =
+"<p>No feedback records available yet.</p>";
+
+return;
+
+}
+
+
+feedbackAIList.innerHTML = "";
+
+
+feedbacks.reverse().forEach(function(item){
+
+
+feedbackAIList.innerHTML += `
+
+<div class="card">
+
+<h3>⭐ ${item.customer}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Rating:</b> ${item.rating}/5</p>
+
+<p><b>Feedback:</b> ${item.message}</p>
+
+<p><b>AI Sentiment:</b> ${item.sentiment}</p>
+
+<p><b>AI Improvement:</b> ${item.improvement}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveFeedbackAI.onclick = function(){
+
+
+let feedback = {
+
+
+customer:
+document.getElementById("customerName").value.trim(),
+
+
+category:
+document.getElementById("feedbackCategory").value.trim(),
+
+
+rating:
+document.getElementById("ratingScore").value,
+
+
+message:
+document.getElementById("feedbackMessage").value.trim(),
+
+
+sentiment:
+document.getElementById("sentimentAnalysis").value.trim(),
+
+
+improvement:
+document.getElementById("improvementSuggestion").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(feedback.customer === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let feedbacks =
+JSON.parse(localStorage.getItem("feedbackAI")) || [];
+
+
+feedbacks.push(feedback);
+
+
+localStorage.setItem(
+"feedbackAI",
+JSON.stringify(feedbacks)
+);
+
+
+alert("Feedback saved successfully!");
+
+
+loadFeedbackAI();
+
+
+};
+
+
+
+window.onload =
+loadFeedbackAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
