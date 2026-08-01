@@ -1,1 +1,368 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Chat Automation Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Chat Automation Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="chat-ai.html">
+<button>💬 Chat AI</button>
+</a>
+
+
+<a href="customer-ai.html">
+<button>👥 Customer AI</button>
+</a>
+
+
+<a href="customers.html">
+<button>👤 Customers</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💬 Add Customer Chat</h2>
+
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="chatCustomer"
+placeholder="Enter customer name">
+
+
+
+<label>
+Chat Category
+</label>
+
+
+<select id="chatCategory">
+
+
+<option>
+Sales Inquiry
+</option>
+
+
+<option>
+Customer Support
+</option>
+
+
+<option>
+Complaint
+</option>
+
+
+<option>
+Feedback
+</option>
+
+
+<option>
+General Question
+</option>
+
+
+</select>
+
+
+
+<label>
+Customer Message
+</label>
+
+
+<textarea
+id="customerMessage"
+placeholder="Enter customer message"></textarea>
+
+
+
+<label>
+AI Response Suggestion
+</label>
+
+
+<textarea
+id="aiResponse"
+placeholder="Enter AI suggested reply"></textarea>
+
+
+<br><br>
+
+
+<button id="saveChatAI">
+
+💾 Save Chat
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Chat Summary</h2>
+
+
+<p>
+
+Total Chat Records:
+
+<b id="totalChatAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Conversation History</h2>
+
+
+<div id="chatAIList">
+
+
+<p>
+No chat records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveChatAI =
+document.getElementById("saveChatAI");
+
+
+const chatAIList =
+document.getElementById("chatAIList");
+
+
+
+function loadChatAI(){
+
+
+let chats =
+JSON.parse(localStorage.getItem("chatAI")) || [];
+
+
+
+document.getElementById("totalChatAI").innerHTML =
+chats.length;
+
+
+
+if(chats.length === 0){
+
+
+chatAIList.innerHTML =
+"<p>No chat records available yet.</p>";
+
+return;
+
+}
+
+
+
+chatAIList.innerHTML = "";
+
+
+
+chats.reverse().forEach(function(item){
+
+
+chatAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>💬 ${item.customer}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Customer Message:</b> ${item.message}
+</p>
+
+
+<p>
+<b>AI Response:</b> ${item.response}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveChatAI.onclick = function(){
+
+
+
+let chat = {
+
+
+customer:
+document.getElementById("chatCustomer").value.trim(),
+
+
+category:
+document.getElementById("chatCategory").value,
+
+
+message:
+document.getElementById("customerMessage").value.trim(),
+
+
+response:
+document.getElementById("aiResponse").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(chat.customer === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let chats =
+JSON.parse(localStorage.getItem("chatAI")) || [];
+
+
+
+chats.push(chat);
+
+
+
+localStorage.setItem(
+"chatAI",
+JSON.stringify(chats)
+);
+
+
+
+alert("Chat saved successfully!");
+
+
+
+loadChatAI();
+
+
+
+};
+
+
+
+window.onload =
+loadChatAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
