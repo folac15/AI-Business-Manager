@@ -1,1 +1,367 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Marketing Intelligence Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Marketing Intelligence Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="marketing-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="marketing.html">
+<button>📣 Marketing</button>
+</a>
+
+
+<a href="strategy.html">
+<button>🎯 Strategy Planner</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📢 Add Marketing Analysis</h2>
+
+
+
+<label>
+Campaign Title
+</label>
+
+
+<input
+type="text"
+id="campaignTitle"
+placeholder="Enter campaign title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="marketingCategory">
+
+
+<option>
+Social Media
+</option>
+
+
+<option>
+Advertising
+</option>
+
+
+<option>
+Customer Growth
+</option>
+
+
+<option>
+Branding
+</option>
+
+
+<option>
+Sales Promotion
+</option>
+
+
+</select>
+
+
+
+<label>
+Target Audience
+</label>
+
+
+<textarea
+id="targetAudience"
+placeholder="Describe target customers"></textarea>
+
+
+
+<label>
+AI Marketing Recommendation
+</label>
+
+
+<textarea
+id="marketingRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+<br><br>
+
+
+<button id="saveMarketingAI">
+
+💾 Save Marketing Analysis
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Marketing Summary</h2>
+
+
+<p>
+
+Total Marketing Records:
+
+<b id="totalMarketingAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Marketing Analysis History</h2>
+
+
+<div id="marketingAIList">
+
+
+<p>
+No marketing records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveMarketingAI =
+document.getElementById("saveMarketingAI");
+
+
+const marketingAIList =
+document.getElementById("marketingAIList");
+
+
+
+function loadMarketingAI(){
+
+
+let records =
+JSON.parse(localStorage.getItem("marketingAI")) || [];
+
+
+
+document.getElementById("totalMarketingAI").innerHTML =
+records.length;
+
+
+
+if(records.length === 0){
+
+
+marketingAIList.innerHTML =
+"<p>No marketing records available yet.</p>";
+
+return;
+
+}
+
+
+
+marketingAIList.innerHTML = "";
+
+
+
+records.reverse().forEach(function(item){
+
+
+marketingAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📢 ${item.title}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Target Audience:</b> ${item.audience}
+</p>
+
+
+<p>
+<b>AI Recommendation:</b> ${item.recommendation}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveMarketingAI.onclick = function(){
+
+
+
+let record = {
+
+
+title:
+document.getElementById("campaignTitle").value.trim(),
+
+
+category:
+document.getElementById("marketingCategory").value,
+
+
+audience:
+document.getElementById("targetAudience").value.trim(),
+
+
+recommendation:
+document.getElementById("marketingRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.title === ""){
+
+
+alert("Please enter campaign title.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("marketingAI")) || [];
+
+
+
+records.push(record);
+
+
+
+localStorage.setItem(
+"marketingAI",
+JSON.stringify(records)
+);
+
+
+
+alert("Marketing analysis saved successfully!");
+
+
+
+loadMarketingAI();
+
+
+
+};
+
+
+
+window.onload =
+loadMarketingAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
