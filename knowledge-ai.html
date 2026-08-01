@@ -1,1 +1,300 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Knowledge Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Business Knowledge Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="knowledge-ai.html">
+<button>🧠 Knowledge AI</button>
+</a>
+
+
+<a href="feedback-ai.html">
+<button>⭐ Feedback AI</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🧠 Add Knowledge Record</h2>
+
+
+<label>
+Knowledge Title
+</label>
+
+
+<input
+type="text"
+id="knowledgeTitle"
+placeholder="Enter knowledge title">
+
+
+
+<label>
+Knowledge Category
+</label>
+
+
+<input
+type="text"
+id="knowledgeCategory"
+placeholder="Business, Product, Process etc.">
+
+
+
+<label>
+Knowledge Description
+</label>
+
+
+<textarea
+id="knowledgeDescription"
+placeholder="Enter knowledge details"></textarea>
+
+
+
+<label>
+AI Knowledge Summary
+</label>
+
+
+<textarea
+id="knowledgeSummary"
+placeholder="Enter AI summary"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveKnowledgeAI">
+
+💾 Save Knowledge
+
+  </button>
+  <div class="card">
+
+<h2>📊 Knowledge Summary</h2>
+
+<p>
+
+Total Knowledge Records:
+
+<b id="totalKnowledgeAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Knowledge History</h2>
+
+<div id="knowledgeAIList">
+
+<p>
+No knowledge records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveKnowledgeAI =
+document.getElementById("saveKnowledgeAI");
+
+const knowledgeAIList =
+document.getElementById("knowledgeAIList");
+
+
+function loadKnowledgeAI(){
+
+let knowledge =
+JSON.parse(localStorage.getItem("knowledgeAI")) || [];
+
+
+document.getElementById("totalKnowledgeAI").innerHTML =
+knowledge.length;
+
+
+if(knowledge.length === 0){
+
+knowledgeAIList.innerHTML =
+"<p>No knowledge records available yet.</p>";
+
+return;
+
+}
+
+
+knowledgeAIList.innerHTML = "";
+
+
+knowledge.reverse().forEach(function(item){
+
+
+knowledgeAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🧠 ${item.title}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Description:</b> ${item.description}</p>
+
+<p><b>AI Summary:</b> ${item.summary}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveKnowledgeAI.onclick = function(){
+
+
+let record = {
+
+
+title:
+document.getElementById("knowledgeTitle").value.trim(),
+
+
+category:
+document.getElementById("knowledgeCategory").value.trim(),
+
+
+description:
+document.getElementById("knowledgeDescription").value.trim(),
+
+
+summary:
+document.getElementById("knowledgeSummary").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.title === ""){
+
+
+alert("Please enter knowledge title.");
+
+return;
+
+}
+
+
+
+let knowledge =
+JSON.parse(localStorage.getItem("knowledgeAI")) || [];
+
+
+knowledge.push(record);
+
+
+localStorage.setItem(
+"knowledgeAI",
+JSON.stringify(knowledge)
+);
+
+
+alert("Knowledge saved successfully!");
+
+
+loadKnowledgeAI();
+
+
+};
+
+
+
+window.onload =
+loadKnowledgeAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
