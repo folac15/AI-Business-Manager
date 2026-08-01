@@ -1,1 +1,260 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Language Manager AI</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Language Management Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="language-manager-ai.html">
+<button>🌍 Language Manager</button>
+</a>
+
+
+<a href="ai-master-control-center.html">
+<button>👑 Master Control</button>
+</a>
+
+
+<a href="system-integration-hub.html">
+<button>🔗 Integration Hub</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🌍 Platform Language Settings</h2>
+
+
+<label>
+Select Language
+</label>
+
+
+<select id="platformLanguage">
+
+
+<option value="English">
+🇬🇧 English
+</option>
+
+
+<option value="French">
+🇫🇷 Français
+</option>
+
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveLanguageAI">
+
+💾 Save Language
+
+</button>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>📊 Language Status</h2>
+
+
+<p>
+
+Current Platform Language:
+
+<b id="currentLanguageAI">
+English
+</b>
+
+</p>
+
+
+
+<p>
+
+Translation System:
+
+<b id="translationStatusAI">
+Ready
+</b>
+
+</p>
+
+
+
+<p>
+
+Available Languages:
+
+<b>
+English + French
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🌍 Language Activity</h2>
+
+
+<div id="languageActivityAI">
+
+
+<p>
+No language changes available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+  </div>
+  <script>
+
+
+const saveLanguageAI =
+document.getElementById("saveLanguageAI");
+
+
+
+function loadLanguageAI(){
+
+
+let language =
+localStorage.getItem("platformLanguageAI") || "English";
+
+
+
+document.getElementById("platformLanguage").value =
+language;
+
+
+
+document.getElementById("currentLanguageAI").innerHTML =
+language;
+
+
+
+document.getElementById("languageActivityAI").innerHTML = `
+
+<p>✅ Language System Active</p>
+
+<p>🌍 Current Language: ${language}</p>
+
+<p>🇬🇧 English Support Available</p>
+
+<p>🇫🇷 French Support Available</p>
+
+`;
+
+
+
+}
+
+
+
+saveLanguageAI.onclick = function(){
+
+
+let language =
+document.getElementById("platformLanguage").value;
+
+
+
+localStorage.setItem(
+"platformLanguageAI",
+language
+);
+
+
+
+alert(
+"Platform language saved successfully!"
+);
+
+
+
+loadLanguageAI();
+
+
+};
+
+
+
+window.onload =
+loadLanguageAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
