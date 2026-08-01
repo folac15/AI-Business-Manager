@@ -1,1 +1,333 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Notification Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Notification Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="notification-ai.html">
+<button>🔔 Notification AI</button>
+</a>
+
+
+<a href="task-ai.html">
+<button>✅ Task AI</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔔 Create Notification</h2>
+
+
+<label>
+Notification Title
+</label>
+
+
+<input
+type="text"
+id="notificationTitle"
+placeholder="Enter notification title">
+
+
+
+<label>
+Notification Type
+</label>
+
+
+<input
+type="text"
+id="notificationType"
+placeholder="Enter notification type">
+
+
+
+<label>
+Notification Message
+</label>
+
+
+<textarea
+id="notificationMessage"
+placeholder="Enter notification message"></textarea>
+
+
+
+<label>
+Priority Level
+</label>
+
+
+<select id="notificationPriority">
+
+
+<option>
+Low
+</option>
+
+
+<option>
+Medium
+</option>
+
+
+<option>
+High
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Notification Suggestion
+</label>
+
+
+<textarea
+id="notificationSuggestion"
+placeholder="Enter AI suggestion"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveNotificationAI">
+
+💾 Save Notification
+
+  </button>
+  <div class="card">
+
+<h2>📊 Notification Summary</h2>
+
+<p>
+
+Total Notifications:
+
+<b id="totalNotificationAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Notification History</h2>
+
+<div id="notificationAIList">
+
+<p>
+No notification records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveNotificationAI =
+document.getElementById("saveNotificationAI");
+
+const notificationAIList =
+document.getElementById("notificationAIList");
+
+
+function loadNotificationAI(){
+
+let notifications =
+JSON.parse(localStorage.getItem("notificationAI")) || [];
+
+
+document.getElementById("totalNotificationAI").innerHTML =
+notifications.length;
+
+
+if(notifications.length === 0){
+
+notificationAIList.innerHTML =
+"<p>No notification records available yet.</p>";
+
+return;
+
+}
+
+
+notificationAIList.innerHTML = "";
+
+
+notifications.reverse().forEach(function(item){
+
+
+notificationAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🔔 ${item.title}</h3>
+
+<p><b>Type:</b> ${item.type}</p>
+
+<p><b>Message:</b> ${item.message}</p>
+
+<p><b>Priority:</b> ${item.priority}</p>
+
+<p><b>AI Suggestion:</b> ${item.suggestion}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveNotificationAI.onclick = function(){
+
+
+let notification = {
+
+
+title:
+document.getElementById("notificationTitle").value.trim(),
+
+
+type:
+document.getElementById("notificationType").value.trim(),
+
+
+message:
+document.getElementById("notificationMessage").value.trim(),
+
+
+priority:
+document.getElementById("notificationPriority").value,
+
+
+suggestion:
+document.getElementById("notificationSuggestion").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(notification.title === ""){
+
+
+alert("Please enter notification title.");
+
+return;
+
+}
+
+
+
+let notifications =
+JSON.parse(localStorage.getItem("notificationAI")) || [];
+
+
+notifications.push(notification);
+
+
+localStorage.setItem(
+"notificationAI",
+JSON.stringify(notifications)
+);
+
+
+alert("Notification saved successfully!");
+
+
+loadNotificationAI();
+
+
+};
+
+
+
+window.onload =
+loadNotificationAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
