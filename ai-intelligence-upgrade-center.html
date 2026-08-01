@@ -230,7 +230,6 @@ No intelligence activity available yet.
   </div>
   <script>
 
-
 let generateInsightAI =
 document.getElementById("generateInsightAI");
 
@@ -261,7 +260,6 @@ document.getElementById("totalInsightsAI").innerHTML =
 insights.length;
 
 
-
 document.getElementById("totalRecommendationsAI").innerHTML =
 insights.length;
 
@@ -270,17 +268,22 @@ insights.length;
 if(insights.length > 0){
 
 
-document.getElementById("aiInsightResult").innerHTML = "";
+let result = "";
+
 
 
 insights.forEach(function(item){
 
 
-document.getElementById("aiInsightResult").innerHTML += `
+result += `
 
 <div class="card">
 
-<p>🧠 ${item.insight}</p>
+<h3>🧠 AI Insight</h3>
+
+<p>${item.insight}</p>
+
+<p><b>Question:</b> ${item.question}</p>
 
 <small>${item.date}</small>
 
@@ -288,12 +291,19 @@ document.getElementById("aiInsightResult").innerHTML += `
 
 `;
 
+
 });
+
+
+
+document.getElementById("aiInsightResult").innerHTML =
+result;
+
 
 
 document.getElementById("intelligenceActivityAI").innerHTML = `
 
-<p>✅ AI Insight Generated</p>
+<p>✅ AI Insight History Loaded</p>
 
 <p>💡 Recommendation Engine Active</p>
 
@@ -308,18 +318,18 @@ document.getElementById("intelligenceActivityAI").innerHTML = `
 else{
 
 
-document.getElementById("intelligenceActivityAI").innerHTML = `
+document.getElementById("aiInsightResult").innerHTML =
+"<p>No AI insights generated yet.</p>";
 
-<p>🧠 AI Intelligence System Ready</p>
 
-<p>Waiting for business questions</p>
+document.getElementById("intelligenceActivityAI").innerHTML =
+"<p>🧠 Waiting for business questions</p>";
 
-`;
+}
+
 
 }
 
-
-}
 
 
 
@@ -327,12 +337,11 @@ generateInsightAI.onclick = function(){
 
 
 let question =
-document.getElementById("businessQuestionAI").value;
+document.getElementById("businessQuestionAI").value.trim();
 
 
 
-if(question.trim() === ""){
-
+if(question === ""){
 
 alert("Enter a business question first.");
 
@@ -342,11 +351,11 @@ return;
 
 
 
-let insight = {
+let newInsight = {
 
 
 insight:
-"AI analysis: Based on your question, consider improving customer engagement, automation, and decision making.",
+"AI Recommendation: Improve customer engagement, automate repetitive tasks, analyze your data regularly, and build stronger customer relationships.",
 
 
 question:
@@ -356,7 +365,6 @@ question,
 date:
 new Date().toLocaleString()
 
-
 };
 
 
@@ -365,7 +373,8 @@ let insights =
 JSON.parse(localStorage.getItem("aiInsightsAI")) || [];
 
 
-insights.push(insight);
+
+insights.push(newInsight);
 
 
 
