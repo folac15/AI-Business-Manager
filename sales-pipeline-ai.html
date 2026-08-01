@@ -1,1 +1,360 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Sales Pipeline Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Sales Pipeline Manager</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="sales-pipeline-ai.html">
+<button>💰 Sales Pipeline AI</button>
+</a>
+
+
+<a href="marketing-campaign-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="crm-ai.html">
+<button>🤝 CRM AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💰 Add Sales Deal</h2>
+
+
+<label>
+Lead / Customer Name
+</label>
+
+
+<input
+type="text"
+id="leadName"
+placeholder="Enter customer name">
+
+
+
+<label>
+Sales Stage
+</label>
+
+
+<select id="salesStage">
+
+
+<option>
+New Lead
+</option>
+
+
+<option>
+Contacted
+</option>
+
+
+<option>
+Negotiation
+</option>
+
+
+<option>
+Closed Won
+</option>
+
+
+<option>
+Closed Lost
+</option>
+
+
+</select>
+
+
+
+<label>
+Deal Value
+</label>
+
+
+<input
+type="number"
+id="dealValue"
+placeholder="Enter deal value">
+
+
+
+<label>
+Expected Closing Date
+</label>
+
+
+<input
+type="date"
+id="closingDate">
+
+
+
+<label>
+Sales Notes
+</label>
+
+
+<textarea
+id="salesNotes"
+placeholder="Enter sales notes"></textarea>
+
+
+
+<label>
+AI Sales Recommendation
+</label>
+
+
+<textarea
+id="salesRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveSalesPipelineAI">
+
+💾 Save Deal
+
+  </button>
+  <div class="card">
+
+<h2>📊 Sales Summary</h2>
+
+<p>
+
+Total Deals:
+
+<b id="totalSalesPipelineAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Sales Pipeline History</h2>
+
+<div id="salesPipelineAIList">
+
+<p>
+No sales records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveSalesPipelineAI =
+document.getElementById("saveSalesPipelineAI");
+
+const salesPipelineAIList =
+document.getElementById("salesPipelineAIList");
+
+
+function loadSalesPipelineAI(){
+
+let deals =
+JSON.parse(localStorage.getItem("salesPipelineAI")) || [];
+
+
+document.getElementById("totalSalesPipelineAI").innerHTML =
+deals.length;
+
+
+if(deals.length === 0){
+
+salesPipelineAIList.innerHTML =
+"<p>No sales records available yet.</p>";
+
+return;
+
+}
+
+
+salesPipelineAIList.innerHTML = "";
+
+
+deals.reverse().forEach(function(item){
+
+
+salesPipelineAIList.innerHTML += `
+
+<div class="card">
+
+<h3>💰 ${item.name}</h3>
+
+<p><b>Sales Stage:</b> ${item.stage}</p>
+
+<p><b>Deal Value:</b> ${item.value}</p>
+
+<p><b>Closing Date:</b> ${item.dateClose}</p>
+
+<p><b>Sales Notes:</b> ${item.notes}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.created}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSalesPipelineAI.onclick = function(){
+
+
+let deal = {
+
+
+name:
+document.getElementById("leadName").value.trim(),
+
+
+stage:
+document.getElementById("salesStage").value,
+
+
+value:
+document.getElementById("dealValue").value,
+
+
+dateClose:
+document.getElementById("closingDate").value,
+
+
+notes:
+document.getElementById("salesNotes").value.trim(),
+
+
+recommendation:
+document.getElementById("salesRecommendation").value.trim(),
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(deal.name === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let deals =
+JSON.parse(localStorage.getItem("salesPipelineAI")) || [];
+
+
+deals.push(deal);
+
+
+localStorage.setItem(
+"salesPipelineAI",
+JSON.stringify(deals)
+);
+
+
+alert("Sales deal saved successfully!");
+
+
+loadSalesPipelineAI();
+
+
+};
+
+
+
+window.onload =
+loadSalesPipelineAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
