@@ -1,1 +1,383 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Security Admin Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Security & Administration Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="ai-security-admin-center.html">
+<button>🔐 Security Admin</button>
+</a>
+
+
+<a href="ai-master-control-center.html">
+<button>👑 Master Control</button>
+</a>
+
+
+<a href="agent-center-ai.html">
+<button>🤖 AI Agents</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔐 Create User Access</h2>
+
+
+<label>
+User Name
+</label>
+
+
+<input
+type="text"
+id="securityUserName"
+placeholder="Enter user name">
+
+
+
+<label>
+Role
+</label>
+
+
+<select id="securityRole">
+
+
+<option>
+Administrator
+</option>
+
+
+<option>
+Manager
+</option>
+
+
+<option>
+Employee
+</option>
+
+
+<option>
+Viewer
+</option>
+
+
+</select>
+
+
+
+<label>
+Permission Level
+</label>
+
+
+<select id="permissionLevel">
+
+
+<option>
+Full Access
+</option>
+
+
+<option>
+Limited Access
+</option>
+
+
+<option>
+Read Only
+</option>
+
+
+</select>
+
+
+
+<label>
+Security Status
+</label>
+
+
+<select id="securityStatus">
+
+
+<option>
+Active
+</option>
+
+
+<option>
+Suspended
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveSecurityAI">
+
+💾 Save User Access
+
+  </button>
+  <div class="card">
+
+<h2>📊 Security Dashboard</h2>
+
+
+<p>
+
+Total Users:
+
+<b id="totalSecurityUsersAI">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Active Users:
+
+<b id="activeSecurityUsersAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+<div class="card">
+
+<h2>🔐 Security Access Logs</h2>
+
+
+<div id="securityAIList">
+
+<p>
+No security records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+  </div>
+  <script>
+
+const saveSecurityAI =
+document.getElementById("saveSecurityAI");
+
+const securityAIList =
+document.getElementById("securityAIList");
+
+
+function loadSecurityAI(){
+
+let users =
+JSON.parse(localStorage.getItem("securityUsersAI")) || [];
+
+
+document.getElementById("totalSecurityUsersAI").innerHTML =
+users.length;
+
+
+let active =
+users.filter(function(item){
+
+return item.status === "Active";
+
+}).length;
+
+
+document.getElementById("activeSecurityUsersAI").innerHTML =
+active;
+
+
+
+if(users.length === 0){
+
+securityAIList.innerHTML =
+"<p>No security records available yet.</p>";
+
+return;
+
+}
+
+
+
+securityAIList.innerHTML = "";
+
+
+users.reverse().forEach(function(item){
+
+
+securityAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🔐 ${item.name}</h3>
+
+<p><b>Role:</b> ${item.role}</p>
+
+<p><b>Permission:</b> ${item.permission}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Security Log:</b> Access control created successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSecurityAI.onclick = function(){
+
+
+let userAccess = {
+
+
+name:
+document.getElementById("securityUserName").value.trim(),
+
+
+role:
+document.getElementById("securityRole").value,
+
+
+permission:
+document.getElementById("permissionLevel").value,
+
+
+status:
+document.getElementById("securityStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(userAccess.name === ""){
+
+
+alert("Please enter user name.");
+
+return;
+
+}
+
+
+
+let users =
+JSON.parse(localStorage.getItem("securityUsersAI")) || [];
+
+
+users.push(userAccess);
+
+
+localStorage.setItem(
+"securityUsersAI",
+JSON.stringify(users)
+);
+
+
+
+alert("Security access saved successfully!");
+
+
+loadSecurityAI();
+
+
+};
+
+
+
+window.onload =
+loadSecurityAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
