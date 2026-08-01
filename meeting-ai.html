@@ -1,1 +1,352 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Meeting Assistant Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Meeting Assistant Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="meeting-ai.html">
+<button>🗣️ Meeting AI</button>
+</a>
+
+
+<a href="calendar-ai.html">
+<button>📅 Calendar AI</button>
+</a>
+
+
+<a href="notification-ai.html">
+<button>🔔 Notification AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🗣️ Create Meeting</h2>
+
+
+<label>
+Meeting Title
+</label>
+
+
+<input
+type="text"
+id="meetingTitle"
+placeholder="Enter meeting title">
+
+
+
+<label>
+Participants
+</label>
+
+
+<input
+type="text"
+id="participants"
+placeholder="Enter participants">
+
+
+
+<label>
+Meeting Date
+</label>
+
+
+<input
+type="date"
+id="meetingDate">
+
+
+
+<label>
+Meeting Time
+</label>
+
+
+<input
+type="time"
+id="meetingTime">
+
+
+
+<label>
+Meeting Agenda
+</label>
+
+
+<textarea
+id="meetingAgenda"
+placeholder="Enter meeting agenda"></textarea>
+
+
+
+<label>
+Meeting Notes
+</label>
+
+
+<textarea
+id="meetingNotes"
+placeholder="Enter meeting notes"></textarea>
+
+
+
+<label>
+AI Meeting Summary
+</label>
+
+
+<textarea
+id="meetingSummary"
+placeholder="Enter AI summary"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveMeetingAI">
+
+💾 Save Meeting
+
+  </button>
+  <div class="card">
+
+<h2>📊 Meeting Summary</h2>
+
+<p>
+
+Total Meetings:
+
+<b id="totalMeetingAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Meeting History</h2>
+
+<div id="meetingAIList">
+
+<p>
+No meeting records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveMeetingAI =
+document.getElementById("saveMeetingAI");
+
+const meetingAIList =
+document.getElementById("meetingAIList");
+
+
+function loadMeetingAI(){
+
+let meetings =
+JSON.parse(localStorage.getItem("meetingAI")) || [];
+
+
+document.getElementById("totalMeetingAI").innerHTML =
+meetings.length;
+
+
+if(meetings.length === 0){
+
+meetingAIList.innerHTML =
+"<p>No meeting records available yet.</p>";
+
+return;
+
+}
+
+
+meetingAIList.innerHTML = "";
+
+
+meetings.reverse().forEach(function(item){
+
+
+meetingAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🗣️ ${item.title}</h3>
+
+<p><b>Participants:</b> ${item.participants}</p>
+
+<p><b>Date:</b> ${item.date}</p>
+
+<p><b>Time:</b> ${item.time}</p>
+
+<p><b>Agenda:</b> ${item.agenda}</p>
+
+<p><b>Notes:</b> ${item.notes}</p>
+
+<p><b>AI Summary:</b> ${item.summary}</p>
+
+<small>${item.created}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveMeetingAI.onclick = function(){
+
+
+let meeting = {
+
+
+title:
+document.getElementById("meetingTitle").value.trim(),
+
+
+participants:
+document.getElementById("participants").value.trim(),
+
+
+date:
+document.getElementById("meetingDate").value,
+
+
+time:
+document.getElementById("meetingTime").value,
+
+
+agenda:
+document.getElementById("meetingAgenda").value.trim(),
+
+
+notes:
+document.getElementById("meetingNotes").value.trim(),
+
+
+summary:
+document.getElementById("meetingSummary").value.trim(),
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(meeting.title === ""){
+
+
+alert("Please enter meeting title.");
+
+return;
+
+}
+
+
+
+let meetings =
+JSON.parse(localStorage.getItem("meetingAI")) || [];
+
+
+meetings.push(meeting);
+
+
+localStorage.setItem(
+"meetingAI",
+JSON.stringify(meetings)
+);
+
+
+alert("Meeting saved successfully!");
+
+
+loadMeetingAI();
+
+
+};
+
+
+
+window.onload =
+loadMeetingAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
