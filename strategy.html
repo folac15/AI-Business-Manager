@@ -1,1 +1,367 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Strategy Planner Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Strategy Planner Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="strategy.html">
+<button>🎯 Strategy Planner</button>
+</a>
+
+
+<a href="recommendation.html">
+<button>💡 Recommendations</button>
+</a>
+
+
+<a href="decision.html">
+<button>📈 Decision Support</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🎯 Add Business Strategy</h2>
+
+
+
+<label>
+Strategy Title
+</label>
+
+
+<input
+type="text"
+id="strategyTitle"
+placeholder="Enter strategy title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="strategyCategory">
+
+
+<option>
+Growth
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+Operations
+</option>
+
+
+</select>
+
+
+
+<label>
+Business Goals
+</label>
+
+
+<textarea
+id="strategyGoals"
+placeholder="Enter business goals"></textarea>
+
+
+
+<label>
+Action Plan
+</label>
+
+
+<textarea
+id="strategyAction"
+placeholder="Enter action plan"></textarea>
+
+
+<br><br>
+
+
+<button id="saveStrategy">
+
+💾 Save Strategy
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Strategy Summary</h2>
+
+
+<p>
+
+Total Strategies:
+
+<b id="totalStrategies">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Strategy History</h2>
+
+
+<div id="strategyList">
+
+
+<p>
+No strategies available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveStrategy =
+document.getElementById("saveStrategy");
+
+
+const strategyList =
+document.getElementById("strategyList");
+
+
+
+function loadStrategies(){
+
+
+let strategies =
+JSON.parse(localStorage.getItem("strategies")) || [];
+
+
+
+document.getElementById("totalStrategies").innerHTML =
+strategies.length;
+
+
+
+if(strategies.length === 0){
+
+
+strategyList.innerHTML =
+"<p>No strategies available yet.</p>";
+
+return;
+
+}
+
+
+
+strategyList.innerHTML = "";
+
+
+
+strategies.reverse().forEach(function(item){
+
+
+strategyList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🎯 ${item.title}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Business Goals:</b> ${item.goals}
+</p>
+
+
+<p>
+<b>Action Plan:</b> ${item.action}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveStrategy.onclick = function(){
+
+
+
+let strategy = {
+
+
+title:
+document.getElementById("strategyTitle").value.trim(),
+
+
+category:
+document.getElementById("strategyCategory").value,
+
+
+goals:
+document.getElementById("strategyGoals").value.trim(),
+
+
+action:
+document.getElementById("strategyAction").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(strategy.title === ""){
+
+
+alert("Please enter strategy title.");
+
+return;
+
+}
+
+
+
+let strategies =
+JSON.parse(localStorage.getItem("strategies")) || [];
+
+
+
+strategies.push(strategy);
+
+
+
+localStorage.setItem(
+"strategies",
+JSON.stringify(strategies)
+);
+
+
+
+alert("Strategy saved successfully!");
+
+
+
+loadStrategies();
+
+
+
+};
+
+
+
+window.onload =
+loadStrategies;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
