@@ -1,1 +1,356 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Lead Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Lead Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="lead-ai.html">
+<button>🎯 Lead AI</button>
+</a>
+
+
+<a href="sales-pipeline-ai.html">
+<button>💰 Sales Pipeline AI</button>
+</a>
+
+
+<a href="crm-ai.html">
+<button>🤝 CRM AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🎯 Add Lead</h2>
+
+
+<label>
+Lead Name
+</label>
+
+
+<input
+type="text"
+id="leadName"
+placeholder="Enter lead name">
+
+
+
+<label>
+Contact Information
+</label>
+
+
+<input
+type="text"
+id="leadContact"
+placeholder="Enter phone or email">
+
+
+
+<label>
+Lead Source
+</label>
+
+
+<input
+type="text"
+id="leadSource"
+placeholder="Facebook, Website, Referral etc.">
+
+
+
+<label>
+Lead Status
+</label>
+
+
+<select id="leadStatus">
+
+<option>
+New
+</option>
+
+<option>
+Contacted
+</option>
+
+<option>
+Qualified
+</option>
+
+<option>
+Converted
+</option>
+
+<option>
+Rejected
+</option>
+
+</select>
+
+
+
+<label>
+Lead Notes
+</label>
+
+
+<textarea
+id="leadNotes"
+placeholder="Enter lead notes"></textarea>
+
+
+
+<label>
+AI Lead Qualification
+</label>
+
+
+<textarea
+id="leadQualification"
+placeholder="Enter AI qualification"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveLeadAI">
+
+💾 Save Lead
+
+  </button>
+  <div class="card">
+
+<h2>📊 Lead Summary</h2>
+
+<p>
+
+Total Leads:
+
+<b id="totalLeadAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Lead History</h2>
+
+<div id="leadAIList">
+
+<p>
+No lead records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveLeadAI =
+document.getElementById("saveLeadAI");
+
+const leadAIList =
+document.getElementById("leadAIList");
+
+
+function loadLeadAI(){
+
+let leads =
+JSON.parse(localStorage.getItem("leadAI")) || [];
+
+
+document.getElementById("totalLeadAI").innerHTML =
+leads.length;
+
+
+if(leads.length === 0){
+
+leadAIList.innerHTML =
+"<p>No lead records available yet.</p>";
+
+return;
+
+}
+
+
+leadAIList.innerHTML = "";
+
+
+leads.reverse().forEach(function(item){
+
+
+leadAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🎯 ${item.name}</h3>
+
+<p><b>Contact:</b> ${item.contact}</p>
+
+<p><b>Source:</b> ${item.source}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Notes:</b> ${item.notes}</p>
+
+<p><b>AI Qualification:</b> ${item.qualification}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveLeadAI.onclick = function(){
+
+
+let lead = {
+
+
+name:
+document.getElementById("leadName").value.trim(),
+
+
+contact:
+document.getElementById("leadContact").value.trim(),
+
+
+source:
+document.getElementById("leadSource").value.trim(),
+
+
+status:
+document.getElementById("leadStatus").value,
+
+
+notes:
+document.getElementById("leadNotes").value.trim(),
+
+
+qualification:
+document.getElementById("leadQualification").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(lead.name === ""){
+
+
+alert("Please enter lead name.");
+
+return;
+
+}
+
+
+
+let leads =
+JSON.parse(localStorage.getItem("leadAI")) || [];
+
+
+leads.push(lead);
+
+
+localStorage.setItem(
+"leadAI",
+JSON.stringify(leads)
+);
+
+
+alert("Lead saved successfully!");
+
+
+loadLeadAI();
+
+
+};
+
+
+
+window.onload =
+loadLeadAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
