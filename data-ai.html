@@ -1,1 +1,319 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Data Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Data Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="data-ai.html">
+<button>🗄️ Data AI</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="document-ai.html">
+<button>📄 Document AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🗄️ Add Data Record</h2>
+
+
+<label>
+Data Title
+</label>
+
+
+<input
+type="text"
+id="dataTitle"
+placeholder="Enter data title">
+
+
+
+<label>
+Data Category
+</label>
+
+
+<input
+type="text"
+id="dataCategory"
+placeholder="Enter data category">
+
+
+
+<label>
+Data Information
+</label>
+
+
+<textarea
+id="dataInformation"
+placeholder="Enter data details"></textarea>
+
+
+
+<label>
+Storage Information
+</label>
+
+
+<input
+type="text"
+id="storageInfo"
+placeholder="Enter storage details">
+
+
+
+<label>
+AI Data Insight
+</label>
+
+
+<textarea
+id="dataInsight"
+placeholder="Enter AI data insight"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveDataAI">
+
+💾 Save Data Record
+
+  </button>
+  <div class="card">
+
+<h2>📊 Data Summary</h2>
+
+<p>
+
+Total Data Records:
+
+<b id="totalDataAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Data History</h2>
+
+<div id="dataAIList">
+
+<p>
+No data records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveDataAI =
+document.getElementById("saveDataAI");
+
+const dataAIList =
+document.getElementById("dataAIList");
+
+
+function loadDataAI(){
+
+let dataRecords =
+JSON.parse(localStorage.getItem("dataAI")) || [];
+
+
+document.getElementById("totalDataAI").innerHTML =
+dataRecords.length;
+
+
+if(dataRecords.length === 0){
+
+dataAIList.innerHTML =
+"<p>No data records available yet.</p>";
+
+return;
+
+}
+
+
+dataAIList.innerHTML = "";
+
+
+dataRecords.reverse().forEach(function(item){
+
+
+dataAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🗄️ ${item.title}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Information:</b> ${item.information}</p>
+
+<p><b>Storage:</b> ${item.storage}</p>
+
+<p><b>AI Insight:</b> ${item.insight}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveDataAI.onclick = function(){
+
+
+let record = {
+
+
+title:
+document.getElementById("dataTitle").value.trim(),
+
+
+category:
+document.getElementById("dataCategory").value.trim(),
+
+
+information:
+document.getElementById("dataInformation").value.trim(),
+
+
+storage:
+document.getElementById("storageInfo").value.trim(),
+
+
+insight:
+document.getElementById("dataInsight").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.title === ""){
+
+
+alert("Please enter data title.");
+
+return;
+
+}
+
+
+
+let dataRecords =
+JSON.parse(localStorage.getItem("dataAI")) || [];
+
+
+dataRecords.push(record);
+
+
+localStorage.setItem(
+"dataAI",
+JSON.stringify(dataRecords)
+);
+
+
+alert("Data record saved successfully!");
+
+
+loadDataAI();
+
+
+};
+
+
+
+window.onload =
+loadDataAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
