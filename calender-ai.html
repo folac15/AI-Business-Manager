@@ -1,1 +1,354 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Calendar Scheduling Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Calendar & Scheduling Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="calendar-ai.html">
+<button>📅 Calendar AI</button>
+</a>
+
+
+<a href="task-ai.html">
+<button>✅ Task AI</button>
+</a>
+
+
+<a href="notification-ai.html">
+<button>🔔 Notification AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📅 Create Schedule Event</h2>
+
+
+<label>
+Event Title
+</label>
+
+
+<input
+type="text"
+id="eventTitle"
+placeholder="Enter event title">
+
+
+
+<label>
+Event Date
+</label>
+
+
+<input
+type="date"
+id="eventDate">
+
+
+
+<label>
+Event Time
+</label>
+
+
+<input
+type="time"
+id="eventTime">
+
+
+
+<label>
+Event Description
+</label>
+
+
+<textarea
+id="eventDescription"
+placeholder="Enter event details"></textarea>
+
+
+
+<label>
+Reminder
+</label>
+
+
+<select id="eventReminder">
+
+
+<option>
+No Reminder
+</option>
+
+
+<option>
+10 Minutes Before
+</option>
+
+
+<option>
+1 Hour Before
+</option>
+
+
+<option>
+1 Day Before
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Scheduling Suggestion
+</label>
+
+
+<textarea
+id="scheduleSuggestion"
+placeholder="Enter AI suggestion"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveCalendarAI">
+
+💾 Save Event
+
+  </button>
+  <div class="card">
+
+<h2>📊 Calendar Summary</h2>
+
+<p>
+
+Total Events:
+
+<b id="totalCalendarAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Schedule History</h2>
+
+<div id="calendarAIList">
+
+<p>
+No schedule records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveCalendarAI =
+document.getElementById("saveCalendarAI");
+
+const calendarAIList =
+document.getElementById("calendarAIList");
+
+
+function loadCalendarAI(){
+
+let events =
+JSON.parse(localStorage.getItem("calendarAI")) || [];
+
+
+document.getElementById("totalCalendarAI").innerHTML =
+events.length;
+
+
+if(events.length === 0){
+
+calendarAIList.innerHTML =
+"<p>No schedule records available yet.</p>";
+
+return;
+
+}
+
+
+calendarAIList.innerHTML = "";
+
+
+events.reverse().forEach(function(item){
+
+
+calendarAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📅 ${item.title}</h3>
+
+<p><b>Date:</b> ${item.date}</p>
+
+<p><b>Time:</b> ${item.time}</p>
+
+<p><b>Description:</b> ${item.description}</p>
+
+<p><b>Reminder:</b> ${item.reminder}</p>
+
+<p><b>AI Suggestion:</b> ${item.suggestion}</p>
+
+<small>${item.created}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveCalendarAI.onclick = function(){
+
+
+let event = {
+
+
+title:
+document.getElementById("eventTitle").value.trim(),
+
+
+date:
+document.getElementById("eventDate").value,
+
+
+time:
+document.getElementById("eventTime").value,
+
+
+description:
+document.getElementById("eventDescription").value.trim(),
+
+
+reminder:
+document.getElementById("eventReminder").value,
+
+
+suggestion:
+document.getElementById("scheduleSuggestion").value.trim(),
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(event.title === ""){
+
+
+alert("Please enter event title.");
+
+return;
+
+}
+
+
+
+let events =
+JSON.parse(localStorage.getItem("calendarAI")) || [];
+
+
+events.push(event);
+
+
+localStorage.setItem(
+"calendarAI",
+JSON.stringify(events)
+);
+
+
+alert("Event saved successfully!");
+
+
+loadCalendarAI();
+
+
+};
+
+
+
+window.onload =
+loadCalendarAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
