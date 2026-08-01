@@ -1,1 +1,320 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Customer Support Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Customer Support Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="support-ai.html">
+<button>🎧 Support AI</button>
+</a>
+
+
+<a href="customer-ai.html">
+<button>👥 Customer AI</button>
+</a>
+
+
+<a href="chat-ai.html">
+<button>💬 Chat AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🎧 Add Support Request</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="supportCustomer"
+placeholder="Enter customer name">
+
+
+
+<label>
+Issue Description
+</label>
+
+
+<textarea
+id="issueDescription"
+placeholder="Describe customer issue"></textarea>
+
+
+
+<label>
+Support Status
+</label>
+
+
+<select id="supportStatus">
+
+
+<option>
+Open
+</option>
+
+
+<option>
+In Progress
+</option>
+
+
+<option>
+Resolved
+</option>
+
+
+<option>
+Closed
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Response Suggestion
+</label>
+
+
+<textarea
+id="supportResponse"
+placeholder="Enter AI response suggestion"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveSupportAI">
+
+💾 Save Support Request
+
+  </button>
+  <div class="card">
+
+<h2>📊 Support Summary</h2>
+
+<p>
+
+Total Support Requests:
+
+<b id="totalSupportAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Support History</h2>
+
+<div id="supportAIList">
+
+<p>
+No support records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+  <script>
+
+const saveSupportAI =
+document.getElementById("saveSupportAI");
+
+const supportAIList =
+document.getElementById("supportAIList");
+
+
+function loadSupportAI(){
+
+let supports =
+JSON.parse(localStorage.getItem("supportAI")) || [];
+
+
+document.getElementById("totalSupportAI").innerHTML =
+supports.length;
+
+
+if(supports.length === 0){
+
+supportAIList.innerHTML =
+"<p>No support records available yet.</p>";
+
+return;
+
+}
+
+
+supportAIList.innerHTML = "";
+
+
+supports.reverse().forEach(function(item){
+
+
+supportAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🎧 ${item.customer}</h3>
+
+<p><b>Issue:</b> ${item.issue}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Response:</b> ${item.response}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSupportAI.onclick = function(){
+
+
+let support = {
+
+
+customer:
+document.getElementById("supportCustomer").value.trim(),
+
+
+issue:
+document.getElementById("issueDescription").value.trim(),
+
+
+status:
+document.getElementById("supportStatus").value,
+
+
+response:
+document.getElementById("supportResponse").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(support.customer === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let supports =
+JSON.parse(localStorage.getItem("supportAI")) || [];
+
+
+supports.push(support);
+
+
+localStorage.setItem(
+"supportAI",
+JSON.stringify(supports)
+);
+
+
+alert("Support request saved successfully!");
+
+
+loadSupportAI();
+
+
+};
+
+
+
+window.onload =
+loadSupportAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
