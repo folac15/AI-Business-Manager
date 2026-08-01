@@ -265,9 +265,6 @@ insights.length;
 
 
 
-if(insights.length > 0){
-
-
 let result = "";
 
 
@@ -292,13 +289,27 @@ result += `
 `;
 
 
+
 });
+
+
+
+if(result === ""){
+
+
+result = "<p>No AI insights generated yet.</p>";
+
+
+}
 
 
 
 document.getElementById("aiInsightResult").innerHTML =
 result;
 
+
+
+if(insights.length > 0){
 
 
 document.getElementById("intelligenceActivityAI").innerHTML = `
@@ -311,24 +322,24 @@ document.getElementById("intelligenceActivityAI").innerHTML = `
 
 `;
 
-
-
 }
 
 else{
 
 
-document.getElementById("aiInsightResult").innerHTML =
-"<p>No AI insights generated yet.</p>";
+document.getElementById("intelligenceActivityAI").innerHTML = `
 
+<p>🧠 AI Intelligence System Ready</p>
 
-document.getElementById("intelligenceActivityAI").innerHTML =
-"<p>🧠 Waiting for business questions</p>";
+<p>Waiting for business questions</p>
+
+`;
+
+}
+
 
 }
 
-
-}
 
 
 
@@ -343,34 +354,38 @@ document.getElementById("businessQuestionAI").value.trim();
 
 if(question === ""){
 
+
 alert("Enter a business question first.");
+
 
 return;
 
+
 }
+
+
+
+let insights =
+JSON.parse(localStorage.getItem("aiInsightsAI")) || [];
 
 
 
 let newInsight = {
 
 
-insight:
-"AI Recommendation: Improve customer engagement, automate repetitive tasks, analyze your data regularly, and build stronger customer relationships.",
-
-
 question:
 question,
+
+
+insight:
+"AI Recommendation: Analyze your customers, improve automation, monitor business data, and use intelligent decisions to grow your business.",
 
 
 date:
 new Date().toLocaleString()
 
+
 };
-
-
-
-let insights =
-JSON.parse(localStorage.getItem("aiInsightsAI")) || [];
 
 
 
@@ -385,7 +400,8 @@ JSON.stringify(insights)
 
 
 
-document.getElementById("businessQuestionAI").value = "";
+document.getElementById("businessQuestionAI").value =
+"";
 
 
 
@@ -393,6 +409,7 @@ loadAIIntelligenceUpgrade();
 
 
 };
+
 
 
 
@@ -408,4 +425,4 @@ loadAIIntelligenceUpgrade;
 
 </body>
 
-  </html>
+    </html>
