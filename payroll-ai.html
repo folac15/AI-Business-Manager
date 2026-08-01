@@ -1,1 +1,349 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Payroll Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Payroll Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="payroll-ai.html">
+<button>💵 Payroll AI</button>
+</a>
+
+
+<a href="employee-ai.html">
+<button>👥 Employee AI</button>
+</a>
+
+
+<a href="attendance-ai.html">
+<button>⏰ Attendance AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💵 Add Payroll Record</h2>
+
+
+<label>
+Employee Name
+</label>
+
+
+<input
+type="text"
+id="payrollEmployee"
+placeholder="Enter employee name">
+
+
+
+<label>
+Salary Amount
+</label>
+
+
+<input
+type="number"
+id="salaryAmount"
+placeholder="Enter salary amount">
+
+
+
+<label>
+Payment Date
+</label>
+
+
+<input
+type="date"
+id="paymentDate">
+
+
+
+<label>
+Bonus / Allowance
+</label>
+
+
+<input
+type="number"
+id="bonusAmount"
+placeholder="Enter bonus">
+
+
+
+<label>
+Deductions
+</label>
+
+
+<input
+type="number"
+id="deductions"
+placeholder="Enter deductions">
+
+
+
+<label>
+AI Payroll Analysis
+</label>
+
+
+<textarea
+id="payrollAnalysis"
+placeholder="Enter AI analysis"></textarea>
+
+
+
+<br><br>
+
+
+<button id="savePayrollAI">
+
+💾 Save Payroll
+
+  </button>
+  <div class="card">
+
+<h2>📊 Payroll Summary</h2>
+
+<p>
+
+Total Payroll Records:
+
+<b id="totalPayrollAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Payroll History</h2>
+
+<div id="payrollAIList">
+
+<p>
+No payroll records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const savePayrollAI =
+document.getElementById("savePayrollAI");
+
+const payrollAIList =
+document.getElementById("payrollAIList");
+
+
+function loadPayrollAI(){
+
+let payrolls =
+JSON.parse(localStorage.getItem("payrollAI")) || [];
+
+
+document.getElementById("totalPayrollAI").innerHTML =
+payrolls.length;
+
+
+if(payrolls.length === 0){
+
+payrollAIList.innerHTML =
+"<p>No payroll records available yet.</p>";
+
+return;
+
+}
+
+
+payrollAIList.innerHTML = "";
+
+
+payrolls.reverse().forEach(function(item){
+
+
+payrollAIList.innerHTML += `
+
+<div class="card">
+
+<h3>💵 ${item.employee}</h3>
+
+<p><b>Salary:</b> ${item.salary}</p>
+
+<p><b>Payment Date:</b> ${item.date}</p>
+
+<p><b>Bonus:</b> ${item.bonus}</p>
+
+<p><b>Deductions:</b> ${item.deduction}</p>
+
+<p><b>Net Salary:</b> ${item.net}</p>
+
+<p><b>AI Analysis:</b> ${item.analysis}</p>
+
+<small>${item.created}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+savePayrollAI.onclick = function(){
+
+
+let salary =
+Number(document.getElementById("salaryAmount").value);
+
+let bonus =
+Number(document.getElementById("bonusAmount").value) || 0;
+
+let deduction =
+Number(document.getElementById("deductions").value) || 0;
+
+
+let payroll = {
+
+
+employee:
+document.getElementById("payrollEmployee").value.trim(),
+
+
+salary: salary,
+
+
+date:
+document.getElementById("paymentDate").value,
+
+
+bonus: bonus,
+
+
+deduction: deduction,
+
+
+net:
+salary + bonus - deduction,
+
+
+analysis:
+document.getElementById("payrollAnalysis").value.trim(),
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(payroll.employee === ""){
+
+
+alert("Please enter employee name.");
+
+return;
+
+}
+
+
+
+let payrolls =
+JSON.parse(localStorage.getItem("payrollAI")) || [];
+
+
+payrolls.push(payroll);
+
+
+localStorage.setItem(
+"payrollAI",
+JSON.stringify(payrolls)
+);
+
+
+alert("Payroll saved successfully!");
+
+
+loadPayrollAI();
+
+
+};
+
+
+
+window.onload =
+loadPayrollAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
