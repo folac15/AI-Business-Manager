@@ -1,1 +1,319 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Purchase Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Purchase Manager</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="purchase-ai.html">
+<button>🛒 Purchase AI</button>
+</a>
+
+
+<a href="supplier-ai.html">
+<button>🚚 Supplier AI</button>
+</a>
+
+
+<a href="inventory-ai.html">
+<button>📦 Inventory AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🛒 Add Purchase Record</h2>
+
+
+<label>
+Supplier Name
+</label>
+
+
+<input
+type="text"
+id="purchaseSupplier"
+placeholder="Enter supplier name">
+
+
+
+<label>
+Product Purchased
+</label>
+
+
+<input
+type="text"
+id="purchaseProduct"
+placeholder="Enter product name">
+
+
+
+<label>
+Quantity
+</label>
+
+
+<input
+type="number"
+id="purchaseQuantity"
+placeholder="Enter quantity">
+
+
+
+<label>
+Purchase Cost
+</label>
+
+
+<input
+type="number"
+id="purchaseCost"
+placeholder="Enter purchase cost">
+
+
+
+<label>
+AI Purchase Recommendation
+</label>
+
+
+<textarea
+id="purchaseRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="savePurchaseAI">
+
+💾 Save Purchase
+
+  </button>
+  <div class="card">
+
+<h2>📊 Purchase Summary</h2>
+
+<p>
+
+Total Purchases:
+
+<b id="totalPurchaseAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Purchase History</h2>
+
+<div id="purchaseAIList">
+
+<p>
+No purchase records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const savePurchaseAI =
+document.getElementById("savePurchaseAI");
+
+const purchaseAIList =
+document.getElementById("purchaseAIList");
+
+
+function loadPurchaseAI(){
+
+let purchases =
+JSON.parse(localStorage.getItem("purchaseAI")) || [];
+
+
+document.getElementById("totalPurchaseAI").innerHTML =
+purchases.length;
+
+
+if(purchases.length === 0){
+
+purchaseAIList.innerHTML =
+"<p>No purchase records available yet.</p>";
+
+return;
+
+}
+
+
+purchaseAIList.innerHTML = "";
+
+
+purchases.reverse().forEach(function(item){
+
+
+purchaseAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🛒 ${item.product}</h3>
+
+<p><b>Supplier:</b> ${item.supplier}</p>
+
+<p><b>Quantity:</b> ${item.quantity}</p>
+
+<p><b>Cost:</b> ${item.cost}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+savePurchaseAI.onclick = function(){
+
+
+let purchase = {
+
+
+supplier:
+document.getElementById("purchaseSupplier").value.trim(),
+
+
+product:
+document.getElementById("purchaseProduct").value.trim(),
+
+
+quantity:
+document.getElementById("purchaseQuantity").value,
+
+
+cost:
+document.getElementById("purchaseCost").value,
+
+
+recommendation:
+document.getElementById("purchaseRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(purchase.product === ""){
+
+
+alert("Please enter product name.");
+
+return;
+
+}
+
+
+
+let purchases =
+JSON.parse(localStorage.getItem("purchaseAI")) || [];
+
+
+purchases.push(purchase);
+
+
+localStorage.setItem(
+"purchaseAI",
+JSON.stringify(purchases)
+);
+
+
+alert("Purchase saved successfully!");
+
+
+loadPurchaseAI();
+
+
+};
+
+
+
+window.onload =
+loadPurchaseAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
