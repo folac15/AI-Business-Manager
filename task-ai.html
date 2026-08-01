@@ -1,1 +1,356 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Task Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Task Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="task-ai.html">
+<button>✅ Task AI</button>
+</a>
+
+
+<a href="employee-ai.html">
+<button>👥 Employee AI</button>
+</a>
+
+
+<a href="project-ai.html">
+<button>📁 Project AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>✅ Add Task</h2>
+
+
+<label>
+Task Title
+</label>
+
+
+<input
+type="text"
+id="taskTitle"
+placeholder="Enter task title">
+
+
+
+<label>
+Assigned Employee
+</label>
+
+
+<input
+type="text"
+id="assignedEmployee"
+placeholder="Enter employee name">
+
+
+
+<label>
+Deadline
+</label>
+
+
+<input
+type="date"
+id="taskDeadline">
+
+
+
+<label>
+Task Priority
+</label>
+
+
+<select id="taskPriority">
+
+<option>
+Low
+</option>
+
+<option>
+Medium
+</option>
+
+<option>
+High
+</option>
+
+</select>
+
+
+
+<label>
+Task Status
+</label>
+
+
+<select id="taskStatus">
+
+<option>
+Pending
+</option>
+
+<option>
+In Progress
+</option>
+
+<option>
+Completed
+</option>
+
+</select>
+
+
+
+<label>
+AI Task Recommendation
+</label>
+
+
+<textarea
+id="taskRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+<br><br>
+
+
+<button id="saveTaskAI">
+
+💾 Save Task
+
+  </button>
+  <div class="card">
+
+<h2>📊 Task Summary</h2>
+
+<p>
+
+Total Tasks:
+
+<b id="totalTaskAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Task History</h2>
+
+<div id="taskAIList">
+
+<p>
+No task records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveTaskAI =
+document.getElementById("saveTaskAI");
+
+const taskAIList =
+document.getElementById("taskAIList");
+
+
+function loadTaskAI(){
+
+let tasks =
+JSON.parse(localStorage.getItem("taskAI")) || [];
+
+
+document.getElementById("totalTaskAI").innerHTML =
+tasks.length;
+
+
+if(tasks.length === 0){
+
+taskAIList.innerHTML =
+"<p>No task records available yet.</p>";
+
+return;
+
+}
+
+
+taskAIList.innerHTML = "";
+
+
+tasks.reverse().forEach(function(item){
+
+
+taskAIList.innerHTML += `
+
+<div class="card">
+
+<h3>✅ ${item.title}</h3>
+
+<p><b>Assigned Employee:</b> ${item.employee}</p>
+
+<p><b>Deadline:</b> ${item.deadline}</p>
+
+<p><b>Priority:</b> ${item.priority}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveTaskAI.onclick = function(){
+
+
+let task = {
+
+
+title:
+document.getElementById("taskTitle").value.trim(),
+
+
+employee:
+document.getElementById("assignedEmployee").value.trim(),
+
+
+deadline:
+document.getElementById("taskDeadline").value,
+
+
+priority:
+document.getElementById("taskPriority").value,
+
+
+status:
+document.getElementById("taskStatus").value,
+
+
+recommendation:
+document.getElementById("taskRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(task.title === ""){
+
+alert("Please enter task title.");
+
+return;
+
+}
+
+
+
+let tasks =
+JSON.parse(localStorage.getItem("taskAI")) || [];
+
+
+tasks.push(task);
+
+
+localStorage.setItem(
+"taskAI",
+JSON.stringify(tasks)
+);
+
+
+alert("Task saved successfully!");
+
+
+loadTaskAI();
+
+
+};
+
+
+
+window.onload =
+loadTaskAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
