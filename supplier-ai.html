@@ -1,1 +1,278 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Supplier Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Supplier Manager</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+<a href="supplier-ai.html">
+<button>🚚 Supplier AI</button>
+</a>
+
+<a href="inventory-ai.html">
+<button>📦 Inventory AI</button>
+</a>
+
+<a href="finance-ai.html">
+<button>💰 Finance AI</button>
+</a>
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>🚚 Add Supplier</h2>
+
+<label>Supplier Name</label>
+
+<input
+type="text"
+id="supplierName"
+placeholder="Enter supplier name">
+
+<label>Company Name</label>
+
+<input
+type="text"
+id="companyName"
+placeholder="Enter company name">
+
+<label>Contact Information</label>
+
+<input
+type="text"
+id="supplierContact"
+placeholder="Phone or email">
+
+<label>Products Supplied</label>
+
+<textarea
+id="supplierProducts"
+placeholder="Enter supplied products"></textarea>
+
+<label>AI Supplier Evaluation</label>
+
+<textarea
+id="supplierEvaluation"
+placeholder="Enter AI evaluation"></textarea>
+
+<br><br>
+
+<button id="saveSupplierAI">
+
+💾 Save Supplier
+
+  </button>
+  <div class="card">
+
+<h2>📊 Supplier Summary</h2>
+
+<p>
+
+Total Suppliers:
+
+<b id="totalSupplierAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Supplier History</h2>
+
+<div id="supplierAIList">
+
+<p>
+No supplier records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveSupplierAI =
+document.getElementById("saveSupplierAI");
+
+const supplierAIList =
+document.getElementById("supplierAIList");
+
+
+function loadSupplierAI(){
+
+let suppliers =
+JSON.parse(localStorage.getItem("supplierAI")) || [];
+
+
+document.getElementById("totalSupplierAI").innerHTML =
+suppliers.length;
+
+
+if(suppliers.length === 0){
+
+supplierAIList.innerHTML =
+"<p>No supplier records available yet.</p>";
+
+return;
+
+}
+
+
+supplierAIList.innerHTML = "";
+
+
+suppliers.reverse().forEach(function(item){
+
+
+supplierAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🚚 ${item.name}</h3>
+
+<p><b>Company:</b> ${item.company}</p>
+
+<p><b>Contact:</b> ${item.contact}</p>
+
+<p><b>Products:</b> ${item.products}</p>
+
+<p><b>AI Evaluation:</b> ${item.evaluation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSupplierAI.onclick = function(){
+
+
+let supplier = {
+
+
+name:
+document.getElementById("supplierName").value.trim(),
+
+
+company:
+document.getElementById("companyName").value.trim(),
+
+
+contact:
+document.getElementById("supplierContact").value.trim(),
+
+
+products:
+document.getElementById("supplierProducts").value.trim(),
+
+
+evaluation:
+document.getElementById("supplierEvaluation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(supplier.name === ""){
+
+
+alert("Please enter supplier name.");
+
+return;
+
+}
+
+
+
+let suppliers =
+JSON.parse(localStorage.getItem("supplierAI")) || [];
+
+
+suppliers.push(supplier);
+
+
+localStorage.setItem(
+"supplierAI",
+JSON.stringify(suppliers)
+);
+
+
+alert("Supplier saved successfully!");
+
+
+loadSupplierAI();
+
+
+};
+
+
+
+window.onload =
+loadSupplierAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
