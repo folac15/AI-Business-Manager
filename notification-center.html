@@ -1,1 +1,373 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Notification Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Notification Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="notification-center.html">
+<button>🔔 Notifications</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="calendar.html">
+<button>📅 Calendar</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔔 Create Notification</h2>
+
+
+
+<label>
+Notification Title
+</label>
+
+
+<input
+type="text"
+id="notificationTitle"
+placeholder="Enter notification title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="notificationCategory">
+
+
+<option>
+General
+</option>
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Customer
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+System
+</option>
+
+
+</select>
+
+
+
+<label>
+Priority
+</label>
+
+
+<select id="notificationPriority">
+
+
+<option>
+High
+</option>
+
+
+<option>
+Medium
+</option>
+
+
+<option>
+Low
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveNotification">
+
+💾 Save Notification
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Notification Summary</h2>
+
+
+<p>
+
+Total Notifications:
+
+<b id="totalNotifications">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Notification History</h2>
+
+
+<div id="notificationList">
+
+
+<p>
+No notifications available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+  <script>
+
+const saveNotification =
+document.getElementById("saveNotification");
+
+
+const notificationList =
+document.getElementById("notificationList");
+
+
+
+function loadNotifications(){
+
+
+let notifications =
+JSON.parse(localStorage.getItem("notifications")) || [];
+
+
+
+document.getElementById("totalNotifications").innerHTML =
+notifications.length;
+
+
+
+if(notifications.length === 0){
+
+
+notificationList.innerHTML =
+"<p>No notifications available yet.</p>";
+
+return;
+
+}
+
+
+
+notificationList.innerHTML = "";
+
+
+
+notifications.reverse().forEach(function(notification){
+
+
+notificationList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🔔 ${notification.title}</h3>
+
+
+<p>
+<b>Category:</b> ${notification.category}
+</p>
+
+
+<p>
+<b>Priority:</b> ${notification.priority}
+</p>
+
+
+<p>
+<b>Status:</b> ${notification.status}
+</p>
+
+
+<small>
+${notification.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveNotification.onclick = function(){
+
+
+
+let notification = {
+
+
+title:
+document.getElementById("notificationTitle").value.trim(),
+
+
+category:
+document.getElementById("notificationCategory").value,
+
+
+priority:
+document.getElementById("notificationPriority").value,
+
+
+status:
+"Unread",
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(notification.title === ""){
+
+
+alert("Please enter notification title.");
+
+return;
+
+}
+
+
+
+let notifications =
+JSON.parse(localStorage.getItem("notifications")) || [];
+
+
+
+notifications.push(notification);
+
+
+
+localStorage.setItem(
+"notifications",
+JSON.stringify(notifications)
+);
+
+
+
+alert("Notification saved successfully!");
+
+
+
+loadNotifications();
+
+
+
+};
+
+
+
+window.onload =
+loadNotifications;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
