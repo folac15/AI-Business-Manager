@@ -1,1 +1,358 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Manager Admin Control</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Admin Control Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>ADMIN MENU</h2>
+
+
+<button>👑 Master Control</button>
+
+<button>🔐 Security</button>
+
+<button>🗄️ Database</button>
+
+<button>🤖 AI Services</button>
+
+<button>🚀 Launch</button>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>👑 Master Control Center</h2>
+
+
+<p>
+
+System Control:
+
+<b id="adminSystemStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Module Management:
+
+<b id="adminModuleStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Platform Monitoring:
+
+<b id="adminMonitorStatus">
+Checking...
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🔐 Security Administration</h2>
+
+
+<p>
+
+Security Status:
+
+<b id="securityAdminStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Access Control:
+
+<b id="accessControlStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Activity Monitoring:
+
+<b id="activityMonitorStatus">
+Checking...
+</b>
+
+</p>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>🗄️ Database Monitoring</h2>
+
+
+<p>
+
+Database Connection:
+
+<b id="adminDatabaseStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Storage System:
+
+<b id="adminStorageStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Data Protection:
+
+<b id="adminDataProtectionStatus">
+Checking...
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🤖 AI Service Monitoring</h2>
+
+
+<p>
+
+AI Engine:
+
+<b id="adminAIEngineStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+AI Agents:
+
+<b id="adminAgentsStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+API Services:
+
+<b id="adminAPIStatus">
+Checking...
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🚀 Demo & Launch Control</h2>
+
+
+<p>
+
+Demo Readiness:
+
+<b id="adminDemoStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Launch Status:
+
+<b id="adminLaunchStatus">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Overall Platform:
+
+<b id="adminOverallStatus">
+Checking...
+</b>
+
+</p>
+
+
+  </div>
+  <script>
+
+
+function loadAdminControl(){
+
+
+document.getElementById("adminSystemStatus").innerHTML =
+"Active";
+
+
+document.getElementById("adminModuleStatus").innerHTML =
+"Connected";
+
+
+document.getElementById("adminMonitorStatus").innerHTML =
+"Running";
+
+
+
+document.getElementById("securityAdminStatus").innerHTML =
+"Protected";
+
+
+document.getElementById("accessControlStatus").innerHTML =
+"Enabled";
+
+
+document.getElementById("activityMonitorStatus").innerHTML =
+"Active";
+
+
+
+document.getElementById("adminDatabaseStatus").innerHTML =
+"Ready";
+
+
+document.getElementById("adminStorageStatus").innerHTML =
+"Available";
+
+
+document.getElementById("adminDataProtectionStatus").innerHTML =
+"Enabled";
+
+
+
+document.getElementById("adminAIEngineStatus").innerHTML =
+"Online";
+
+
+document.getElementById("adminAgentsStatus").innerHTML =
+"Connected";
+
+
+document.getElementById("adminAPIStatus").innerHTML =
+"Ready";
+
+
+
+document.getElementById("adminDemoStatus").innerHTML =
+"Prepared";
+
+
+document.getElementById("adminLaunchStatus").innerHTML =
+"Ready";
+
+
+document.getElementById("adminOverallStatus").innerHTML =
+"Platform Stable";
+
+
+
+}
+
+
+
+window.onload =
+loadAdminControl;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
