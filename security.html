@@ -1,1 +1,399 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Security & Access Control Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Security & Access Control Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="security.html">
+<button>🔐 Security</button>
+</a>
+
+
+<a href="users.html">
+<button>👥 Users</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔐 Add Security Record</h2>
+
+
+<label>
+User Name
+</label>
+
+
+<input
+type="text"
+id="securityUser"
+placeholder="Enter user name">
+
+
+
+<label>
+Access Level
+</label>
+
+
+<select id="accessLevel">
+
+
+<option>
+Admin
+</option>
+
+
+<option>
+Manager
+</option>
+
+
+<option>
+Employee
+</option>
+
+
+<option>
+Viewer
+</option>
+
+
+</select>
+
+
+
+<label>
+Activity Type
+</label>
+
+
+<select id="activityType">
+
+
+<option>
+Login
+</option>
+
+
+<option>
+Logout
+</option>
+
+
+<option>
+Permission Change
+</option>
+
+
+<option>
+System Update
+</option>
+
+
+</select>
+
+
+
+<label>
+Security Status
+</label>
+
+
+<select id="securityStatus">
+
+
+<option>
+Safe
+</option>
+
+
+<option>
+Warning
+</option>
+
+
+<option>
+Blocked
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveSecurity">
+
+💾 Save Security Record
+
+</button>
+  <div class="card">
+
+
+<h2>📊 Security Summary</h2>
+
+
+<p>
+
+Total Security Records:
+
+<b id="totalSecurity">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Security History</h2>
+
+
+<div id="securityList">
+
+
+<p>
+No security records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+    </div>
+  <script>
+
+const saveSecurity =
+document.getElementById("saveSecurity");
+
+
+const securityList =
+document.getElementById("securityList");
+
+
+
+function loadSecurity(){
+
+
+let records =
+JSON.parse(localStorage.getItem("securityRecords")) || [];
+
+
+
+document.getElementById("totalSecurity").innerHTML =
+records.length;
+
+
+
+if(records.length === 0){
+
+
+securityList.innerHTML =
+"<p>No security records available yet.</p>";
+
+return;
+
+}
+
+
+
+securityList.innerHTML = "";
+
+
+
+records.reverse().forEach(function(record){
+
+
+securityList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🔐 ${record.user}</h3>
+
+
+<p>
+<b>Access Level:</b> ${record.level}
+</p>
+
+
+<p>
+<b>Activity:</b> ${record.activity}
+</p>
+
+
+<p>
+<b>Status:</b> ${record.status}
+</p>
+
+
+<small>
+${record.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSecurity.onclick = function(){
+
+
+
+let record = {
+
+
+user:
+document.getElementById("securityUser").value.trim(),
+
+
+level:
+document.getElementById("accessLevel").value,
+
+
+activity:
+document.getElementById("activityType").value,
+
+
+status:
+document.getElementById("securityStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.user === ""){
+
+
+alert("Please enter user name.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("securityRecords")) || [];
+
+
+
+records.push(record);
+
+
+
+localStorage.setItem(
+"securityRecords",
+JSON.stringify(records)
+);
+
+
+
+alert("Security record saved successfully!");
+
+
+
+loadSecurity();
+
+
+
+};
+
+
+
+window.onload =
+loadSecurity;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
