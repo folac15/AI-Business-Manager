@@ -1,1 +1,339 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Delivery Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Delivery Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="delivery-ai.html">
+<button>🚚 Delivery AI</button>
+</a>
+
+
+<a href="order-ai.html">
+<button>📋 Order AI</button>
+</a>
+
+
+<a href="inventory-ai.html">
+<button>📦 Inventory AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🚚 Add Delivery Record</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="deliveryCustomer"
+placeholder="Enter customer name">
+
+
+
+<label>
+Delivery Address
+</label>
+
+
+<input
+type="text"
+id="deliveryAddress"
+placeholder="Enter delivery address">
+
+
+
+<label>
+Product Delivered
+</label>
+
+
+<input
+type="text"
+id="deliveryProduct"
+placeholder="Enter product name">
+
+
+
+<label>
+Delivery Status
+</label>
+
+
+<select id="deliveryStatus">
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+Out for Delivery
+</option>
+
+
+<option>
+Delivered
+</option>
+
+
+<option>
+Cancelled
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Delivery Recommendation
+</label>
+
+
+<textarea
+id="deliveryRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveDeliveryAI">
+
+💾 Save Delivery
+
+  </button>
+  <div class="card">
+
+<h2>📊 Delivery Summary</h2>
+
+<p>
+
+Total Deliveries:
+
+<b id="totalDeliveryAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Delivery History</h2>
+
+<div id="deliveryAIList">
+
+<p>
+No delivery records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveDeliveryAI =
+document.getElementById("saveDeliveryAI");
+
+const deliveryAIList =
+document.getElementById("deliveryAIList");
+
+
+function loadDeliveryAI(){
+
+let deliveries =
+JSON.parse(localStorage.getItem("deliveryAI")) || [];
+
+
+document.getElementById("totalDeliveryAI").innerHTML =
+deliveries.length;
+
+
+if(deliveries.length === 0){
+
+deliveryAIList.innerHTML =
+"<p>No delivery records available yet.</p>";
+
+return;
+
+}
+
+
+deliveryAIList.innerHTML = "";
+
+
+deliveries.reverse().forEach(function(item){
+
+
+deliveryAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🚚 ${item.product}</h3>
+
+<p><b>Customer:</b> ${item.customer}</p>
+
+<p><b>Address:</b> ${item.address}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveDeliveryAI.onclick = function(){
+
+
+let delivery = {
+
+
+customer:
+document.getElementById("deliveryCustomer").value.trim(),
+
+
+address:
+document.getElementById("deliveryAddress").value.trim(),
+
+
+product:
+document.getElementById("deliveryProduct").value.trim(),
+
+
+status:
+document.getElementById("deliveryStatus").value,
+
+
+recommendation:
+document.getElementById("deliveryRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(delivery.customer === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let deliveries =
+JSON.parse(localStorage.getItem("deliveryAI")) || [];
+
+
+deliveries.push(delivery);
+
+
+localStorage.setItem(
+"deliveryAI",
+JSON.stringify(deliveries)
+);
+
+
+alert("Delivery saved successfully!");
+
+
+loadDeliveryAI();
+
+
+};
+
+
+
+window.onload =
+loadDeliveryAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
