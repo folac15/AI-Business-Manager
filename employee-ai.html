@@ -1,1 +1,318 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Employee Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Employee Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="employee-ai.html">
+<button>👥 Employee AI</button>
+</a>
+
+
+<a href="delivery-ai.html">
+<button>🚚 Delivery AI</button>
+</a>
+
+
+<a href="finance-ai.html">
+<button>💰 Finance AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>👥 Add Employee Record</h2>
+
+
+<label>
+Employee Name
+</label>
+
+
+<input
+type="text"
+id="employeeName"
+placeholder="Enter employee name">
+
+
+
+<label>
+Position / Role
+</label>
+
+
+<input
+type="text"
+id="employeeRole"
+placeholder="Enter employee role">
+
+
+
+<label>
+Contact Information
+</label>
+
+
+<input
+type="text"
+id="employeeContact"
+placeholder="Enter phone or email">
+
+
+
+<label>
+Performance Notes
+</label>
+
+
+<textarea
+id="performanceNotes"
+placeholder="Enter performance notes"></textarea>
+
+
+
+<label>
+AI Employee Evaluation
+</label>
+
+
+<textarea
+id="employeeEvaluation"
+placeholder="Enter AI evaluation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveEmployeeAI">
+
+💾 Save Employee
+
+  </button>
+  <div class="card">
+
+<h2>📊 Employee Summary</h2>
+
+<p>
+
+Total Employees:
+
+<b id="totalEmployeeAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Employee History</h2>
+
+<div id="employeeAIList">
+
+<p>
+No employee records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+    </div>
+  <script>
+
+const saveEmployeeAI =
+document.getElementById("saveEmployeeAI");
+
+const employeeAIList =
+document.getElementById("employeeAIList");
+
+
+function loadEmployeeAI(){
+
+let employees =
+JSON.parse(localStorage.getItem("employeeAI")) || [];
+
+
+document.getElementById("totalEmployeeAI").innerHTML =
+employees.length;
+
+
+if(employees.length === 0){
+
+employeeAIList.innerHTML =
+"<p>No employee records available yet.</p>";
+
+return;
+
+}
+
+
+employeeAIList.innerHTML = "";
+
+
+employees.reverse().forEach(function(item){
+
+
+employeeAIList.innerHTML += `
+
+<div class="card">
+
+<h3>👤 ${item.name}</h3>
+
+<p><b>Role:</b> ${item.role}</p>
+
+<p><b>Contact:</b> ${item.contact}</p>
+
+<p><b>Performance Notes:</b> ${item.performance}</p>
+
+<p><b>AI Evaluation:</b> ${item.evaluation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveEmployeeAI.onclick = function(){
+
+
+let employee = {
+
+
+name:
+document.getElementById("employeeName").value.trim(),
+
+
+role:
+document.getElementById("employeeRole").value.trim(),
+
+
+contact:
+document.getElementById("employeeContact").value.trim(),
+
+
+performance:
+document.getElementById("performanceNotes").value.trim(),
+
+
+evaluation:
+document.getElementById("employeeEvaluation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(employee.name === ""){
+
+
+alert("Please enter employee name.");
+
+return;
+
+}
+
+
+
+let employees =
+JSON.parse(localStorage.getItem("employeeAI")) || [];
+
+
+employees.push(employee);
+
+
+localStorage.setItem(
+"employeeAI",
+JSON.stringify(employees)
+);
+
+
+alert("Employee saved successfully!");
+
+
+loadEmployeeAI();
+
+
+};
+
+
+
+window.onload =
+loadEmployeeAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
