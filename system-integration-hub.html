@@ -1,1 +1,391 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>System Integration Hub</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>System Integration Hub</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="system-integration-hub.html">
+<button>🔗 Integration Hub</button>
+</a>
+
+
+<a href="ai-master-control-center.html">
+<button>👑 Master Control</button>
+</a>
+
+
+<a href="agent-center-ai.html">
+<button>🤖 AI Agents</button>
+</a>
+
+
+<a href="automation-engine-ai.html">
+<button>⚙ Automation</button>
+</a>
+
+
+<a href="communication-hub-ai.html">
+<button>📡 Communication</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔗 AI System Connections</h2>
+
+
+<p>
+
+Master Control Center:
+
+<b id="masterConnection">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Automation Engine:
+
+<b id="automationConnection">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Communication Hub:
+
+<b id="communicationConnection">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Intelligence Center:
+
+<b id="intelligenceConnection">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Business Agents:
+
+<b id="agentsConnection">
+Checking...
+</b>
+
+</p>
+
+
+<p>
+
+Security Admin:
+
+<b id="securityConnection">
+Checking...
+</b>
+
+</p>
+
+
+  </div>
+  <div class="card">
+
+<h2>📊 Platform Health Monitor</h2>
+
+
+<p>
+
+Overall System Status:
+
+<b id="overallSystemStatusAI">
+Online
+</b>
+
+</p>
+
+
+<p>
+
+Connected Modules:
+
+<b id="connectedModulesAI">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Integration Status:
+
+<b id="integrationStatusAI">
+Active
+</b>
+
+</p>
+
+
+</div>
+
+
+
+<div class="card">
+
+<h2>🚀 Quick Access</h2>
+
+
+<a href="ai-master-control-center.html">
+
+<button>
+👑 Open Master Control
+</button>
+
+</a>
+
+
+
+<a href="agent-center-ai.html">
+
+<button>
+🤖 Open AI Agents
+</button>
+
+</a>
+
+
+
+<a href="automation-engine-ai.html">
+
+<button>
+⚙ Open Automation Engine
+</button>
+
+</a>
+
+
+
+<a href="communication-hub-ai.html">
+
+<button>
+📡 Open Communication Hub
+</button>
+
+</a>
+
+
+
+</div>
+
+
+
+<div class="card">
+
+
+<h2>📋 Integration Activity</h2>
+
+
+<div id="integrationActivityAI">
+
+<p>
+No integration activity available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+    </div>
+  <script>
+
+
+function loadIntegrationHubAI(){
+
+
+let connected = 0;
+
+
+let modules = [
+
+{
+name:"Master Control Center",
+storage:"businessAgentsAI"
+},
+
+{
+name:"Automation Engine",
+storage:"automationAI"
+},
+
+{
+name:"Communication Hub",
+storage:"communicationAI"
+},
+
+{
+name:"Intelligence Center",
+storage:"intelligenceAI"
+},
+
+{
+name:"Business Agents",
+storage:"businessAgentsAI"
+},
+
+{
+name:"Security Admin",
+storage:"securityUsersAI"
+}
+
+];
+
+
+
+modules.forEach(function(module){
+
+
+let data =
+localStorage.getItem(module.storage);
+
+
+if(data !== null){
+
+connected++;
+
+}
+
+
+});
+
+
+
+document.getElementById("connectedModulesAI").innerHTML =
+connected;
+
+
+
+document.getElementById("masterConnection").innerHTML =
+"Connected";
+
+
+document.getElementById("automationConnection").innerHTML =
+"Connected";
+
+
+document.getElementById("communicationConnection").innerHTML =
+"Connected";
+
+
+document.getElementById("intelligenceConnection").innerHTML =
+"Connected";
+
+
+document.getElementById("agentsConnection").innerHTML =
+"Connected";
+
+
+document.getElementById("securityConnection").innerHTML =
+"Connected";
+
+
+
+document.getElementById("integrationActivityAI").innerHTML = `
+
+<p>✅ Master Control Center Connected</p>
+
+<p>✅ Automation Engine Connected</p>
+
+<p>✅ Communication Hub Connected</p>
+
+<p>✅ Intelligence Center Connected</p>
+
+<p>✅ Business Agents Connected</p>
+
+<p>✅ Security Admin Connected</p>
+
+<p>🚀 AI Business Manager Integration Active</p>
+
+`;
+
+
+}
+
+
+
+window.onload =
+loadIntegrationHubAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
