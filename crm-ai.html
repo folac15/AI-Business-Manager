@@ -1,1 +1,318 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI CRM Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI CRM Manager</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="crm-ai.html">
+<button>🤝 CRM AI</button>
+</a>
+
+
+<a href="support-ai.html">
+<button>🎧 Support AI</button>
+</a>
+
+
+<a href="customer-ai.html">
+<button>👥 Customer AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🤝 Add Customer Profile</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="crmCustomer"
+placeholder="Enter customer name">
+
+
+
+<label>
+Contact Information
+</label>
+
+
+<input
+type="text"
+id="crmContact"
+placeholder="Phone or email">
+
+
+
+<label>
+Customer History
+</label>
+
+
+<textarea
+id="crmHistory"
+placeholder="Enter customer history"></textarea>
+
+
+
+<label>
+Customer Value
+</label>
+
+
+<input
+type="number"
+id="customerValue"
+placeholder="Enter customer value">
+
+
+
+<label>
+AI Customer Insight
+</label>
+
+
+<textarea
+id="crmInsight"
+placeholder="Enter AI insight"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveCRMAI">
+
+💾 Save Customer Profile
+
+  </button>
+  <div class="card">
+
+<h2>📊 CRM Summary</h2>
+
+<p>
+
+Total Customers:
+
+<b id="totalCRMAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Customer Relationship History</h2>
+
+<div id="crmAIList">
+
+<p>
+No customer profiles available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveCRMAI =
+document.getElementById("saveCRMAI");
+
+const crmAIList =
+document.getElementById("crmAIList");
+
+
+function loadCRMAI(){
+
+let customers =
+JSON.parse(localStorage.getItem("crmAI")) || [];
+
+
+document.getElementById("totalCRMAI").innerHTML =
+customers.length;
+
+
+if(customers.length === 0){
+
+crmAIList.innerHTML =
+"<p>No customer profiles available yet.</p>";
+
+return;
+
+}
+
+
+crmAIList.innerHTML = "";
+
+
+customers.reverse().forEach(function(item){
+
+
+crmAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🤝 ${item.name}</h3>
+
+<p><b>Contact:</b> ${item.contact}</p>
+
+<p><b>History:</b> ${item.history}</p>
+
+<p><b>Customer Value:</b> ${item.value}</p>
+
+<p><b>AI Insight:</b> ${item.insight}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveCRMAI.onclick = function(){
+
+
+let customer = {
+
+
+name:
+document.getElementById("crmCustomer").value.trim(),
+
+
+contact:
+document.getElementById("crmContact").value.trim(),
+
+
+history:
+document.getElementById("crmHistory").value.trim(),
+
+
+value:
+document.getElementById("customerValue").value,
+
+
+insight:
+document.getElementById("crmInsight").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(customer.name === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let customers =
+JSON.parse(localStorage.getItem("crmAI")) || [];
+
+
+customers.push(customer);
+
+
+localStorage.setItem(
+"crmAI",
+JSON.stringify(customers)
+);
+
+
+alert("Customer profile saved successfully!");
+
+
+loadCRMAI();
+
+
+};
+
+
+
+window.onload =
+loadCRMAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
