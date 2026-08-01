@@ -1,1 +1,309 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Agent Core System</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Agent Core System</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="ai-agent-core.html">
+<button>🤖 AI Agents</button>
+</a>
+
+
+<a href="knowledge-ai.html">
+<button>🧠 Knowledge AI</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🤖 Create AI Agent</h2>
+
+
+<label>
+Agent Name
+</label>
+
+
+<input
+type="text"
+id="agentName"
+placeholder="Enter agent name">
+
+
+
+<label>
+Agent Role
+</label>
+
+
+<input
+type="text"
+id="agentRole"
+placeholder="Sales Agent, Support Agent etc.">
+
+
+
+<label>
+Agent Instructions
+</label>
+
+
+<textarea
+id="agentInstructions"
+placeholder="Describe what the AI agent should do"></textarea>
+
+
+
+<label>
+Agent Status
+</label>
+
+
+<select id="agentStatus">
+
+<option>
+Active
+</option>
+
+<option>
+Inactive
+</option>
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveAgentAI">
+
+💾 Create Agent
+
+  </button>
+  <div class="card">
+
+<h2>📊 Agent Summary</h2>
+
+<p>
+
+Total AI Agents:
+
+<b id="totalAgentAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Agent History</h2>
+
+<div id="agentAIList">
+
+<p>
+No AI agents created yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveAgentAI =
+document.getElementById("saveAgentAI");
+
+const agentAIList =
+document.getElementById("agentAIList");
+
+
+function loadAgentAI(){
+
+let agents =
+JSON.parse(localStorage.getItem("agentAI")) || [];
+
+
+document.getElementById("totalAgentAI").innerHTML =
+agents.length;
+
+
+if(agents.length === 0){
+
+agentAIList.innerHTML =
+"<p>No AI agents created yet.</p>";
+
+return;
+
+}
+
+
+agentAIList.innerHTML = "";
+
+
+agents.reverse().forEach(function(item){
+
+
+agentAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🤖 ${item.name}</h3>
+
+<p><b>Role:</b> ${item.role}</p>
+
+<p><b>Instructions:</b> ${item.instructions}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Decision Log:</b> Agent initialized successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAgentAI.onclick = function(){
+
+
+let agent = {
+
+
+name:
+document.getElementById("agentName").value.trim(),
+
+
+role:
+document.getElementById("agentRole").value.trim(),
+
+
+instructions:
+document.getElementById("agentInstructions").value.trim(),
+
+
+status:
+document.getElementById("agentStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(agent.name === ""){
+
+
+alert("Please enter agent name.");
+
+return;
+
+}
+
+
+
+let agents =
+JSON.parse(localStorage.getItem("agentAI")) || [];
+
+
+agents.push(agent);
+
+
+localStorage.setItem(
+"agentAI",
+JSON.stringify(agents)
+);
+
+
+alert("AI Agent created successfully!");
+
+
+loadAgentAI();
+
+
+};
+
+
+
+window.onload =
+loadAgentAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
