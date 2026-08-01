@@ -1,1 +1,335 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Email Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Email Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="email-ai.html">
+<button>📧 Email AI</button>
+</a>
+
+
+<a href="meeting-ai.html">
+<button>🗣️ Meeting AI</button>
+</a>
+
+
+<a href="support-ai.html">
+<button>🎧 Support AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📧 Add Email Record</h2>
+
+
+<label>
+Sender Information
+</label>
+
+
+<input
+type="text"
+id="emailSender"
+placeholder="Enter sender name or email">
+
+
+
+<label>
+Email Subject
+</label>
+
+
+<input
+type="text"
+id="emailSubject"
+placeholder="Enter email subject">
+
+
+
+<label>
+Email Message
+</label>
+
+
+<textarea
+id="emailMessage"
+placeholder="Enter email message"></textarea>
+
+
+
+<label>
+Email Category
+</label>
+
+
+<input
+type="text"
+id="emailCategory"
+placeholder="Enter email category">
+
+
+
+<label>
+AI Email Summary
+</label>
+
+
+<textarea
+id="emailSummary"
+placeholder="Enter AI summary"></textarea>
+
+
+
+<label>
+AI Reply Suggestion
+</label>
+
+
+<textarea
+id="emailReply"
+placeholder="Enter AI reply suggestion"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveEmailAI">
+
+💾 Save Email
+
+  </button>
+  <div class="card">
+
+<h2>📊 Email Summary</h2>
+
+<p>
+
+Total Emails:
+
+<b id="totalEmailAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Email History</h2>
+
+<div id="emailAIList">
+
+<p>
+No email records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveEmailAI =
+document.getElementById("saveEmailAI");
+
+const emailAIList =
+document.getElementById("emailAIList");
+
+
+function loadEmailAI(){
+
+let emails =
+JSON.parse(localStorage.getItem("emailAI")) || [];
+
+
+document.getElementById("totalEmailAI").innerHTML =
+emails.length;
+
+
+if(emails.length === 0){
+
+emailAIList.innerHTML =
+"<p>No email records available yet.</p>";
+
+return;
+
+}
+
+
+emailAIList.innerHTML = "";
+
+
+emails.reverse().forEach(function(item){
+
+
+emailAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📧 ${item.subject}</h3>
+
+<p><b>Sender:</b> ${item.sender}</p>
+
+<p><b>Message:</b> ${item.message}</p>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>AI Summary:</b> ${item.summary}</p>
+
+<p><b>AI Reply:</b> ${item.reply}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveEmailAI.onclick = function(){
+
+
+let email = {
+
+
+sender:
+document.getElementById("emailSender").value.trim(),
+
+
+subject:
+document.getElementById("emailSubject").value.trim(),
+
+
+message:
+document.getElementById("emailMessage").value.trim(),
+
+
+category:
+document.getElementById("emailCategory").value.trim(),
+
+
+summary:
+document.getElementById("emailSummary").value.trim(),
+
+
+reply:
+document.getElementById("emailReply").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(email.subject === ""){
+
+
+alert("Please enter email subject.");
+
+return;
+
+}
+
+
+
+let emails =
+JSON.parse(localStorage.getItem("emailAI")) || [];
+
+
+emails.push(email);
+
+
+localStorage.setItem(
+"emailAI",
+JSON.stringify(emails)
+);
+
+
+alert("Email saved successfully!");
+
+
+loadEmailAI();
+
+
+};
+
+
+
+window.onload =
+loadEmailAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
