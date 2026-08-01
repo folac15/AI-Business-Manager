@@ -1,1 +1,243 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Financial Analysis Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Financial Analysis Center</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+<a href="finance-ai.html">
+<button>💰 Finance AI</button>
+</a>
+
+<a href="ads-ai.html">
+<button>📣 Ads AI</button>
+</a>
+
+<a href="sales-ai.html">
+<button>💵 Sales AI</button>
+</a>
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>💰 Add Financial Record</h2>
+
+<label>Record Title</label>
+
+<input
+type="text"
+id="financeTitle"
+placeholder="Enter record title">
+
+<label>Income</label>
+
+<input
+type="number"
+id="financeIncome"
+placeholder="Enter income">
+
+<label>Expense</label>
+
+<input
+type="number"
+id="financeExpense"
+placeholder="Enter expense">
+
+<label>AI Financial Recommendation</label>
+
+<textarea
+id="financeRecommendation"
+placeholder="Enter AI financial recommendation"></textarea>
+
+<br><br>
+
+<button id="saveFinanceAI">
+
+💾 Save Financial Record
+
+  </button>
+  <div class="card">
+
+<h2>📊 Financial Summary</h2>
+
+<p>
+
+Total Financial Records:
+
+<b id="totalFinanceAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Financial History</h2>
+
+<div id="financeAIList">
+
+<p>
+No financial records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveFinanceAI =
+document.getElementById("saveFinanceAI");
+
+const financeAIList =
+document.getElementById("financeAIList");
+
+function loadFinanceAI(){
+
+let records =
+JSON.parse(localStorage.getItem("financeAI")) || [];
+
+document.getElementById("totalFinanceAI").innerHTML =
+records.length;
+
+if(records.length === 0){
+
+financeAIList.innerHTML =
+"<p>No financial records available yet.</p>";
+
+return;
+
+}
+
+financeAIList.innerHTML = "";
+
+records.reverse().forEach(function(item){
+
+financeAIList.innerHTML += `
+
+<div class="card">
+
+<h3>💰 ${item.title}</h3>
+
+<p><b>Income:</b> ${item.income}</p>
+
+<p><b>Expense:</b> ${item.expense}</p>
+
+<p><b>Profit:</b> ${item.profit}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+saveFinanceAI.onclick = function(){
+
+let income =
+Number(document.getElementById("financeIncome").value);
+
+let expense =
+Number(document.getElementById("financeExpense").value);
+
+let record = {
+
+title:
+document.getElementById("financeTitle").value.trim(),
+
+income: income,
+
+expense: expense,
+
+profit: income - expense,
+
+recommendation:
+document.getElementById("financeRecommendation").value.trim(),
+
+date:
+new Date().toLocaleString()
+
+};
+
+if(record.title === ""){
+
+alert("Please enter record title.");
+
+return;
+
+}
+
+let records =
+JSON.parse(localStorage.getItem("financeAI")) || [];
+
+records.push(record);
+
+localStorage.setItem(
+"financeAI",
+JSON.stringify(records)
+);
+
+alert("Financial record saved successfully!");
+
+loadFinanceAI();
+
+};
+
+window.onload =
+loadFinanceAI;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+  </html>
