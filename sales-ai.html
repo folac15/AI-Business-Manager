@@ -1,1 +1,367 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Sales Assistant Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Sales Assistant Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="sales-ai.html">
+<button>💰 Sales AI</button>
+</a>
+
+
+<a href="sales.html">
+<button>💵 Sales</button>
+</a>
+
+
+<a href="marketing-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💰 Add Sales Analysis</h2>
+
+
+
+<label>
+Product / Service Name
+</label>
+
+
+<input
+type="text"
+id="productName"
+placeholder="Enter product or service">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="salesCategory">
+
+
+<option>
+Product Sales
+</option>
+
+
+<option>
+Services
+</option>
+
+
+<option>
+Subscription
+</option>
+
+
+<option>
+Retail
+</option>
+
+
+<option>
+Other
+</option>
+
+
+</select>
+
+
+
+<label>
+Customer Buying Pattern
+</label>
+
+
+<textarea
+id="buyingPattern"
+placeholder="Describe customer behavior"></textarea>
+
+
+
+<label>
+AI Sales Recommendation
+</label>
+
+
+<textarea
+id="salesRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+<br><br>
+
+
+<button id="saveSalesAI">
+
+💾 Save Sales Analysis
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Sales Summary</h2>
+
+
+<p>
+
+Total Sales Records:
+
+<b id="totalSalesAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Sales Analysis History</h2>
+
+
+<div id="salesAIList">
+
+
+<p>
+No sales records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveSalesAI =
+document.getElementById("saveSalesAI");
+
+
+const salesAIList =
+document.getElementById("salesAIList");
+
+
+
+function loadSalesAI(){
+
+
+let records =
+JSON.parse(localStorage.getItem("salesAI")) || [];
+
+
+
+document.getElementById("totalSalesAI").innerHTML =
+records.length;
+
+
+
+if(records.length === 0){
+
+
+salesAIList.innerHTML =
+"<p>No sales records available yet.</p>";
+
+return;
+
+}
+
+
+
+salesAIList.innerHTML = "";
+
+
+
+records.reverse().forEach(function(item){
+
+
+salesAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>💰 ${item.product}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Customer Pattern:</b> ${item.pattern}
+</p>
+
+
+<p>
+<b>AI Recommendation:</b> ${item.recommendation}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSalesAI.onclick = function(){
+
+
+
+let record = {
+
+
+product:
+document.getElementById("productName").value.trim(),
+
+
+category:
+document.getElementById("salesCategory").value,
+
+
+pattern:
+document.getElementById("buyingPattern").value.trim(),
+
+
+recommendation:
+document.getElementById("salesRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.product === ""){
+
+
+alert("Please enter product or service name.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("salesAI")) || [];
+
+
+
+records.push(record);
+
+
+
+localStorage.setItem(
+"salesAI",
+JSON.stringify(records)
+);
+
+
+
+alert("Sales analysis saved successfully!");
+
+
+
+loadSalesAI();
+
+
+
+};
+
+
+
+window.onload =
+loadSalesAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
