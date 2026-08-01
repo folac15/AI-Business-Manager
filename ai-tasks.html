@@ -1,1 +1,400 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Task Assistant Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Task Assistant Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="ai-tasks.html">
+<button>🧠 AI Tasks</button>
+</a>
+
+
+<a href="tasks.html">
+<button>📋 Tasks</button>
+</a>
+
+
+<a href="training.html">
+<button>🎓 Training</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🧠 Create AI Task</h2>
+
+
+
+<label>
+Task Title
+</label>
+
+
+<input
+type="text"
+id="taskTitle"
+placeholder="Enter task title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="taskCategory">
+
+
+<option>
+Business
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Customer Service
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+System
+</option>
+
+
+</select>
+
+
+
+<label>
+Priority
+</label>
+
+
+<select id="taskPriority">
+
+
+<option>
+High
+</option>
+
+
+<option>
+Medium
+</option>
+
+
+<option>
+Low
+</option>
+
+
+</select>
+
+
+
+<label>
+Status
+</label>
+
+
+<select id="taskStatus">
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+In Progress
+</option>
+
+
+<option>
+Completed
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveTask">
+
+💾 Save AI Task
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 AI Task Summary</h2>
+
+
+<p>
+
+Total AI Tasks:
+
+<b id="totalTasks">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 AI Task History</h2>
+
+
+<div id="taskList">
+
+
+<p>
+No AI tasks available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+  <script>
+
+const saveTask =
+document.getElementById("saveTask");
+
+
+const taskList =
+document.getElementById("taskList");
+
+
+
+function loadTasks(){
+
+
+let tasks =
+JSON.parse(localStorage.getItem("aiTasks")) || [];
+
+
+
+document.getElementById("totalTasks").innerHTML =
+tasks.length;
+
+
+
+if(tasks.length === 0){
+
+
+taskList.innerHTML =
+"<p>No AI tasks available yet.</p>";
+
+return;
+
+}
+
+
+
+taskList.innerHTML = "";
+
+
+
+tasks.reverse().forEach(function(task){
+
+
+taskList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🧠 ${task.title}</h3>
+
+
+<p>
+<b>Category:</b> ${task.category}
+</p>
+
+
+<p>
+<b>Priority:</b> ${task.priority}
+</p>
+
+
+<p>
+<b>Status:</b> ${task.status}
+</p>
+
+
+<small>
+${task.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveTask.onclick = function(){
+
+
+
+let task = {
+
+
+title:
+document.getElementById("taskTitle").value.trim(),
+
+
+category:
+document.getElementById("taskCategory").value,
+
+
+priority:
+document.getElementById("taskPriority").value,
+
+
+status:
+document.getElementById("taskStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(task.title === ""){
+
+
+alert("Please enter task title.");
+
+return;
+
+}
+
+
+
+let tasks =
+JSON.parse(localStorage.getItem("aiTasks")) || [];
+
+
+
+tasks.push(task);
+
+
+
+localStorage.setItem(
+"aiTasks",
+JSON.stringify(tasks)
+);
+
+
+
+alert("AI Task saved successfully!");
+
+
+
+loadTasks();
+
+
+
+};
+
+
+
+window.onload =
+loadTasks;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
