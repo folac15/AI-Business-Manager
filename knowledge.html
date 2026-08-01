@@ -1,1 +1,347 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Knowledge Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Chatbot Knowledge Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="knowledge.html">
+<button>🧠 Knowledge</button>
+</a>
+
+
+<a href="ai.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="documents.html">
+<button>📁 Documents</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🧠 Add Knowledge Entry</h2>
+
+
+
+<label>
+Question / Title
+</label>
+
+
+<input
+type="text"
+id="knowledgeQuestion"
+placeholder="Enter question or title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="knowledgeCategory">
+
+
+<option>
+Products
+</option>
+
+
+<option>
+Services
+</option>
+
+
+<option>
+Pricing
+</option>
+
+
+<option>
+Business Information
+</option>
+
+
+<option>
+Other
+</option>
+
+
+</select>
+
+
+
+<label>
+Answer / Information
+</label>
+
+
+<textarea
+id="knowledgeAnswer"
+placeholder="Enter answer or information"></textarea>
+
+
+<br><br>
+
+
+<button id="saveKnowledge">
+
+💾 Save Knowledge
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Knowledge Summary</h2>
+
+
+<p>
+
+Total Knowledge Records:
+
+<b id="totalKnowledge">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Knowledge History</h2>
+
+
+<div id="knowledgeList">
+
+
+<p>
+No knowledge entries available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveKnowledge =
+document.getElementById("saveKnowledge");
+
+
+const knowledgeList =
+document.getElementById("knowledgeList");
+
+
+
+function loadKnowledge(){
+
+
+let knowledge =
+JSON.parse(localStorage.getItem("knowledge")) || [];
+
+
+
+document.getElementById("totalKnowledge").innerHTML =
+knowledge.length;
+
+
+
+if(knowledge.length === 0){
+
+
+knowledgeList.innerHTML =
+"<p>No knowledge entries available yet.</p>";
+
+return;
+
+}
+
+
+
+knowledgeList.innerHTML = "";
+
+
+
+knowledge.reverse().forEach(function(item){
+
+
+knowledgeList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🧠 ${item.question}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+${item.answer}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveKnowledge.onclick = function(){
+
+
+
+let item = {
+
+
+question:
+document.getElementById("knowledgeQuestion").value.trim(),
+
+
+category:
+document.getElementById("knowledgeCategory").value,
+
+
+answer:
+document.getElementById("knowledgeAnswer").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(item.question === "" || item.answer === ""){
+
+
+alert("Please complete question and answer.");
+
+return;
+
+}
+
+
+
+let knowledge =
+JSON.parse(localStorage.getItem("knowledge")) || [];
+
+
+
+knowledge.push(item);
+
+
+
+localStorage.setItem(
+"knowledge",
+JSON.stringify(knowledge)
+);
+
+
+
+alert("Knowledge saved successfully!");
+
+
+
+loadKnowledge();
+
+
+
+};
+
+
+
+window.onload =
+loadKnowledge;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
