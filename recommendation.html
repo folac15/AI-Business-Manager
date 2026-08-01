@@ -1,1 +1,383 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Recommendation Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Recommendation Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="recommendation.html">
+<button>💡 Recommendations</button>
+</a>
+
+
+<a href="decision.html">
+<button>📈 Decision Support</button>
+</a>
+
+
+<a href="forecast.html">
+<button>🔮 Forecasting</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>💡 Add AI Recommendation</h2>
+
+
+
+<label>
+Recommendation Title
+</label>
+
+
+<input
+type="text"
+id="recommendationTitle"
+placeholder="Enter recommendation title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="recommendationCategory">
+
+
+<option>
+Business Growth
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+Customer Service
+</option>
+
+
+</select>
+
+
+
+<label>
+Suggestion Details
+</label>
+
+
+<textarea
+id="recommendationDetails"
+placeholder="Enter suggestion details"></textarea>
+
+
+
+<label>
+Priority Level
+</label>
+
+
+<select id="recommendationPriority">
+
+
+<option>
+High
+</option>
+
+
+<option>
+Medium
+</option>
+
+
+<option>
+Low
+</option>
+
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveRecommendation">
+
+💾 Save Recommendation
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Recommendation Summary</h2>
+
+
+<p>
+
+Total Recommendations:
+
+<b id="totalRecommendations">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Recommendation History</h2>
+
+
+<div id="recommendationList">
+
+
+<p>
+No recommendations available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveRecommendation =
+document.getElementById("saveRecommendation");
+
+
+const recommendationList =
+document.getElementById("recommendationList");
+
+
+
+function loadRecommendations(){
+
+
+let recommendations =
+JSON.parse(localStorage.getItem("recommendations")) || [];
+
+
+
+document.getElementById("totalRecommendations").innerHTML =
+recommendations.length;
+
+
+
+if(recommendations.length === 0){
+
+
+recommendationList.innerHTML =
+"<p>No recommendations available yet.</p>";
+
+return;
+
+}
+
+
+
+recommendationList.innerHTML = "";
+
+
+
+recommendations.reverse().forEach(function(item){
+
+
+recommendationList.innerHTML += `
+
+<div class="card">
+
+
+<h3>💡 ${item.title}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Suggestion:</b> ${item.details}
+</p>
+
+
+<p>
+<b>Priority:</b> ${item.priority}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveRecommendation.onclick = function(){
+
+
+
+let recommendation = {
+
+
+title:
+document.getElementById("recommendationTitle").value.trim(),
+
+
+category:
+document.getElementById("recommendationCategory").value,
+
+
+details:
+document.getElementById("recommendationDetails").value.trim(),
+
+
+priority:
+document.getElementById("recommendationPriority").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(recommendation.title === ""){
+
+
+alert("Please enter recommendation title.");
+
+return;
+
+}
+
+
+
+let recommendations =
+JSON.parse(localStorage.getItem("recommendations")) || [];
+
+
+
+recommendations.push(recommendation);
+
+
+
+localStorage.setItem(
+"recommendations",
+JSON.stringify(recommendations)
+);
+
+
+
+alert("Recommendation saved successfully!");
+
+
+
+loadRecommendations();
+
+
+
+};
+
+
+
+window.onload =
+loadRecommendations;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
