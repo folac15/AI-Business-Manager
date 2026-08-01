@@ -1,1 +1,370 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Service Integration</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Service Integration Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="ai-service-integration.html">
+<button>🤖 AI Services</button>
+</a>
+
+
+<a href="database-manager-ai.html">
+<button>🗄️ Database Manager</button>
+</a>
+
+
+<a href="system-integration-hub.html">
+<button>🔗 Integration Hub</button>
+</a>
+
+
+<a href="ai-master-control-center.html">
+<button>👑 Master Control</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🤖 AI Service Configuration</h2>
+
+
+<label>
+AI Service Name
+</label>
+
+
+<input
+type="text"
+id="aiServiceName"
+placeholder="Example: Business AI Assistant">
+
+
+
+<label>
+Service Type
+</label>
+
+
+<select id="aiServiceType">
+
+
+<option>
+AI Assistant
+</option>
+
+
+<option>
+AI Analysis
+</option>
+
+
+<option>
+AI Recommendation
+</option>
+
+
+<option>
+AI Agent Engine
+</option>
+
+
+</select>
+
+
+
+<label>
+API Status
+</label>
+
+
+<select id="aiApiStatus">
+
+
+<option>
+Connected
+</option>
+
+
+<option>
+Testing
+</option>
+
+
+<option>
+Offline
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveAIService">
+
+💾 Save AI Service
+
+  </button>
+  <div class="card">
+
+<h2>📊 AI Service Dashboard</h2>
+
+
+<p>
+
+Total AI Services:
+
+<b id="totalAIServicesAI">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Connected AI Services:
+
+<b id="connectedAIServicesAI">
+0
+</b>
+
+</p>
+
+
+<p>
+
+AI System Status:
+
+<b id="aiServiceSystemStatus">
+Ready
+</b>
+
+</p>
+
+
+</div>
+
+
+
+<div class="card">
+
+<h2>🤖 AI Service Activity</h2>
+
+
+<div id="aiServiceActivityAI">
+
+<p>
+No AI service records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+                            </div>
+  <script>
+
+
+const saveAIService =
+document.getElementById("saveAIService");
+
+
+function loadAIServiceIntegration(){
+
+
+let services =
+JSON.parse(localStorage.getItem("aiServicesAI")) || [];
+
+
+
+document.getElementById("totalAIServicesAI").innerHTML =
+services.length;
+
+
+
+let connected =
+services.filter(function(item){
+
+return item.status === "Connected";
+
+}).length;
+
+
+
+document.getElementById("connectedAIServicesAI").innerHTML =
+connected;
+
+
+
+if(services.length === 0){
+
+document.getElementById("aiServiceActivityAI").innerHTML =
+"<p>No AI service records available yet.</p>";
+
+return;
+
+}
+
+
+
+document.getElementById("aiServiceActivityAI").innerHTML = "";
+
+
+
+services.reverse().forEach(function(item){
+
+
+document.getElementById("aiServiceActivityAI").innerHTML += `
+
+<div class="card">
+
+<h3>🤖 ${item.name}</h3>
+
+<p><b>Type:</b> ${item.type}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Log:</b> AI service configured successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAIService.onclick = function(){
+
+
+let service = {
+
+
+name:
+document.getElementById("aiServiceName").value.trim(),
+
+
+type:
+document.getElementById("aiServiceType").value,
+
+
+status:
+document.getElementById("aiApiStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(service.name === ""){
+
+
+alert("Please enter AI service name.");
+
+return;
+
+}
+
+
+
+let services =
+JSON.parse(localStorage.getItem("aiServicesAI")) || [];
+
+
+services.push(service);
+
+
+localStorage.setItem(
+"aiServicesAI",
+JSON.stringify(services)
+);
+
+
+
+alert("AI Service saved successfully!");
+
+
+loadAIServiceIntegration();
+
+
+};
+
+
+
+window.onload =
+loadAIServiceIntegration;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
