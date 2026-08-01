@@ -1,1 +1,391 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Agents Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Business Agents Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="agent-center-ai.html">
+<button>🤖 Business Agents</button>
+</a>
+
+
+<a href="ai-intelligence-center.html">
+<button>🧠 Intelligence Center</button>
+</a>
+
+
+<a href="automation-engine-ai.html">
+<button>⚙ Automation Engine</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🤖 Create Business AI Agent</h2>
+
+
+<label>
+Agent Name
+</label>
+
+
+<input
+type="text"
+id="businessAgentName"
+placeholder="Example: Sales AI Agent">
+
+
+
+<label>
+Department
+</label>
+
+
+<select id="agentDepartment">
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Customer Support
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+Human Resources
+</option>
+
+
+</select>
+
+
+
+<label>
+Agent Responsibilities
+</label>
+
+
+<textarea
+id="agentResponsibilities"
+placeholder="Describe agent duties">
+</textarea>
+
+
+
+<label>
+AI Instructions
+</label>
+
+
+<textarea
+id="agentInstructions"
+placeholder="Tell the AI how to operate">
+</textarea>
+
+
+
+<label>
+Agent Status
+</label>
+
+
+<select id="businessAgentStatus">
+
+
+<option>
+Active
+</option>
+
+
+<option>
+Inactive
+</option>
+
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveBusinessAgentAI">
+
+💾 Create AI Agent
+
+                           </button>
+  <div class="card">
+
+<h2>📊 AI Agents Dashboard</h2>
+
+
+<p>
+
+Total Business Agents:
+
+<b id="totalBusinessAgentAI">
+0
+</b>
+
+</p>
+
+
+
+<p>
+
+Active Business Agents:
+
+<b id="activeBusinessAgentAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+<div class="card">
+
+<h2>🤖 Business Agent History</h2>
+
+
+<div id="businessAgentAIList">
+
+<p>
+No business AI agents created yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+  </div>
+  <script>
+
+const saveBusinessAgentAI =
+document.getElementById("saveBusinessAgentAI");
+
+const businessAgentAIList =
+document.getElementById("businessAgentAIList");
+
+
+function loadBusinessAgentAI(){
+
+let agents =
+JSON.parse(localStorage.getItem("businessAgentsAI")) || [];
+
+
+document.getElementById("totalBusinessAgentAI").innerHTML =
+agents.length;
+
+
+let active =
+agents.filter(function(item){
+
+return item.status === "Active";
+
+}).length;
+
+
+document.getElementById("activeBusinessAgentAI").innerHTML =
+active;
+
+
+
+if(agents.length === 0){
+
+businessAgentAIList.innerHTML =
+"<p>No business AI agents created yet.</p>";
+
+return;
+
+}
+
+
+
+businessAgentAIList.innerHTML = "";
+
+
+agents.reverse().forEach(function(item){
+
+
+businessAgentAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🤖 ${item.name}</h3>
+
+<p><b>Department:</b> ${item.department}</p>
+
+<p><b>Responsibilities:</b> ${item.responsibilities}</p>
+
+<p><b>AI Instructions:</b> ${item.instructions}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Agent Log:</b> Business agent created successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveBusinessAgentAI.onclick = function(){
+
+
+let agent = {
+
+
+name:
+document.getElementById("businessAgentName").value.trim(),
+
+
+department:
+document.getElementById("agentDepartment").value,
+
+
+responsibilities:
+document.getElementById("agentResponsibilities").value.trim(),
+
+
+instructions:
+document.getElementById("agentInstructions").value.trim(),
+
+
+status:
+document.getElementById("businessAgentStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(agent.name === ""){
+
+
+alert("Please enter agent name.");
+
+return;
+
+}
+
+
+
+let agents =
+JSON.parse(localStorage.getItem("businessAgentsAI")) || [];
+
+
+agents.push(agent);
+
+
+localStorage.setItem(
+"businessAgentsAI",
+JSON.stringify(agents)
+);
+
+
+alert("Business AI Agent created successfully!");
+
+
+loadBusinessAgentAI();
+
+
+};
+
+
+
+window.onload =
+loadBusinessAgentAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+                    </html>
