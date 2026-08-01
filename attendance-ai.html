@@ -1,1 +1,349 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Attendance Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Attendance Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="attendance-ai.html">
+<button>⏰ Attendance AI</button>
+</a>
+
+
+<a href="employee-ai.html">
+<button>👥 Employee AI</button>
+</a>
+
+
+<a href="finance-ai.html">
+<button>💰 Finance AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>⏰ Add Attendance Record</h2>
+
+
+<label>
+Employee Name
+</label>
+
+
+<input
+type="text"
+id="attendanceEmployee"
+placeholder="Enter employee name">
+
+
+
+<label>
+Date
+</label>
+
+
+<input
+type="date"
+id="attendanceDate">
+
+
+
+<label>
+Check-in Time
+</label>
+
+
+<input
+type="time"
+id="checkInTime">
+
+
+
+<label>
+Check-out Time
+</label>
+
+
+<input
+type="time"
+id="checkOutTime">
+
+
+
+<label>
+Attendance Status
+</label>
+
+
+<select id="attendanceStatus">
+
+
+<option>
+Present
+</option>
+
+
+<option>
+Late
+</option>
+
+
+<option>
+Absent
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Attendance Analysis
+</label>
+
+
+<textarea
+id="attendanceAnalysis"
+placeholder="Enter AI analysis"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveAttendanceAI">
+
+💾 Save Attendance
+
+  </button>
+  <div class="card">
+
+<h2>📊 Attendance Summary</h2>
+
+<p>
+
+Total Attendance Records:
+
+<b id="totalAttendanceAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Attendance History</h2>
+
+<div id="attendanceAIList">
+
+<p>
+No attendance records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+  <script>
+
+const saveAttendanceAI =
+document.getElementById("saveAttendanceAI");
+
+const attendanceAIList =
+document.getElementById("attendanceAIList");
+
+
+function loadAttendanceAI(){
+
+let records =
+JSON.parse(localStorage.getItem("attendanceAI")) || [];
+
+
+document.getElementById("totalAttendanceAI").innerHTML =
+records.length;
+
+
+if(records.length === 0){
+
+attendanceAIList.innerHTML =
+"<p>No attendance records available yet.</p>";
+
+return;
+
+}
+
+
+attendanceAIList.innerHTML = "";
+
+
+records.reverse().forEach(function(item){
+
+
+attendanceAIList.innerHTML += `
+
+<div class="card">
+
+<h3>⏰ ${item.employee}</h3>
+
+<p><b>Date:</b> ${item.date}</p>
+
+<p><b>Check-in:</b> ${item.checkIn}</p>
+
+<p><b>Check-out:</b> ${item.checkOut}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Analysis:</b> ${item.analysis}</p>
+
+<small>${item.created}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAttendanceAI.onclick = function(){
+
+
+let attendance = {
+
+
+employee:
+document.getElementById("attendanceEmployee").value.trim(),
+
+
+date:
+document.getElementById("attendanceDate").value,
+
+
+checkIn:
+document.getElementById("checkInTime").value,
+
+
+checkOut:
+document.getElementById("checkOutTime").value,
+
+
+status:
+document.getElementById("attendanceStatus").value,
+
+
+analysis:
+document.getElementById("attendanceAnalysis").value.trim(),
+
+
+created:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(attendance.employee === ""){
+
+
+alert("Please enter employee name.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("attendanceAI")) || [];
+
+
+records.push(attendance);
+
+
+localStorage.setItem(
+"attendanceAI",
+JSON.stringify(records)
+);
+
+
+alert("Attendance saved successfully!");
+
+
+loadAttendanceAI();
+
+
+};
+
+
+
+window.onload =
+loadAttendanceAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
