@@ -1,1 +1,372 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Order Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Order Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="order-ai.html">
+<button>📋 Order AI</button>
+</a>
+
+
+<a href="purchase-ai.html">
+<button>🛒 Purchase AI</button>
+</a>
+
+
+<a href="customer-ai.html">
+<button>👥 Customer AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📋 Add Customer Order</h2>
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="orderCustomer"
+placeholder="Enter customer name">
+
+
+
+<label>
+Product Ordered
+</label>
+
+
+<input
+type="text"
+id="orderProduct"
+placeholder="Enter product name">
+
+
+
+<label>
+Quantity
+</label>
+
+
+<input
+type="number"
+id="orderQuantity"
+placeholder="Enter quantity">
+
+
+
+<label>
+Order Status
+</label>
+
+
+<select id="orderStatus">
+
+
+<option>
+Pending
+</option>
+
+
+<option>
+Processing
+</option>
+
+
+<option>
+Completed
+</option>
+
+
+<option>
+Cancelled
+</option>
+
+
+</select>
+
+
+
+<label>
+Payment Status
+</label>
+
+
+<select id="paymentStatus">
+
+
+<option>
+Not Paid
+</option>
+
+
+<option>
+Paid
+</option>
+
+
+<option>
+Partial Payment
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Order Recommendation
+</label>
+
+
+<textarea
+id="orderRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveOrderAI">
+
+💾 Save Order
+
+                          </button>
+  <div class="card">
+
+<h2>📊 Order Summary</h2>
+
+<p>
+
+Total Orders:
+
+<b id="totalOrderAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Order History</h2>
+
+<div id="orderAIList">
+
+<p>
+No order records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveOrderAI =
+document.getElementById("saveOrderAI");
+
+const orderAIList =
+document.getElementById("orderAIList");
+
+
+function loadOrderAI(){
+
+let orders =
+JSON.parse(localStorage.getItem("orderAI")) || [];
+
+
+document.getElementById("totalOrderAI").innerHTML =
+orders.length;
+
+
+if(orders.length === 0){
+
+orderAIList.innerHTML =
+"<p>No order records available yet.</p>";
+
+return;
+
+}
+
+
+orderAIList.innerHTML = "";
+
+
+orders.reverse().forEach(function(item){
+
+
+orderAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📋 ${item.product}</h3>
+
+<p><b>Customer:</b> ${item.customer}</p>
+
+<p><b>Quantity:</b> ${item.quantity}</p>
+
+<p><b>Order Status:</b> ${item.status}</p>
+
+<p><b>Payment Status:</b> ${item.payment}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveOrderAI.onclick = function(){
+
+
+let order = {
+
+
+customer:
+document.getElementById("orderCustomer").value.trim(),
+
+
+product:
+document.getElementById("orderProduct").value.trim(),
+
+
+quantity:
+document.getElementById("orderQuantity").value,
+
+
+status:
+document.getElementById("orderStatus").value,
+
+
+payment:
+document.getElementById("paymentStatus").value,
+
+
+recommendation:
+document.getElementById("orderRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(order.customer === ""){
+
+
+alert("Please enter customer name.");
+
+return;
+
+}
+
+
+
+let orders =
+JSON.parse(localStorage.getItem("orderAI")) || [];
+
+
+orders.push(order);
+
+
+localStorage.setItem(
+"orderAI",
+JSON.stringify(orders)
+);
+
+
+alert("Order saved successfully!");
+
+
+loadOrderAI();
+
+
+};
+
+
+
+window.onload =
+loadOrderAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
