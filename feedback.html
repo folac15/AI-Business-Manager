@@ -1,1 +1,394 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Feedback & Review Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Feedback & Review Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="feedback.html">
+<button>⭐ Feedback</button>
+</a>
+
+
+<a href="support.html">
+<button>🎧 Support</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>⭐ Add Customer Review</h2>
+
+
+
+<label>
+Customer Name
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name">
+
+
+
+<label>
+Rating
+</label>
+
+
+<select id="rating">
+
+
+<option>
+5
+</option>
+
+
+<option>
+4
+</option>
+
+
+<option>
+3
+</option>
+
+
+<option>
+2
+</option>
+
+
+<option>
+1
+</option>
+
+
+</select>
+
+
+
+<label>
+Feedback Message
+</label>
+
+
+<textarea
+id="feedbackMessage"
+placeholder="Enter customer feedback"></textarea>
+
+
+<br><br>
+
+
+<button id="saveFeedback">
+
+💾 Save Feedback
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Feedback Summary</h2>
+
+
+<p>
+
+Total Reviews:
+
+<b id="totalFeedback">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Average Rating:
+
+<b id="averageRating">
+0
+</b>
+
+⭐
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Review History</h2>
+
+
+<div id="feedbackList">
+
+
+<p>
+No feedback available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveFeedback =
+document.getElementById("saveFeedback");
+
+
+const feedbackList =
+document.getElementById("feedbackList");
+
+
+
+function loadFeedback(){
+
+
+let feedbacks =
+JSON.parse(localStorage.getItem("feedbacks")) || [];
+
+
+
+document.getElementById("totalFeedback").innerHTML =
+feedbacks.length;
+
+
+
+let totalRating = 0;
+
+
+
+feedbacks.forEach(function(item){
+
+totalRating += Number(item.rating);
+
+});
+
+
+
+let average = 0;
+
+
+if(feedbacks.length > 0){
+
+average =
+(totalRating / feedbacks.length).toFixed(1);
+
+}
+
+
+
+document.getElementById("averageRating").innerHTML =
+average;
+
+
+
+if(feedbacks.length === 0){
+
+
+feedbackList.innerHTML =
+"<p>No feedback available yet.</p>";
+
+return;
+
+}
+
+
+
+feedbackList.innerHTML = "";
+
+
+
+feedbacks.reverse().forEach(function(item){
+
+
+feedbackList.innerHTML += `
+
+<div class="card">
+
+
+<h3>⭐ ${item.customer}</h3>
+
+
+<p>
+<b>Rating:</b> ${item.rating} ⭐
+</p>
+
+
+<p>
+${item.message}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveFeedback.onclick = function(){
+
+
+
+let feedback = {
+
+
+customer:
+document.getElementById("customerName").value.trim(),
+
+
+rating:
+document.getElementById("rating").value,
+
+
+message:
+document.getElementById("feedbackMessage").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(feedback.customer === "" || feedback.message === ""){
+
+
+alert("Please complete customer name and feedback.");
+
+return;
+
+}
+
+
+
+let feedbacks =
+JSON.parse(localStorage.getItem("feedbacks")) || [];
+
+
+
+feedbacks.push(feedback);
+
+
+
+localStorage.setItem(
+"feedbacks",
+JSON.stringify(feedbacks)
+);
+
+
+
+alert("Feedback saved successfully!");
+
+
+
+loadFeedback();
+
+
+
+};
+
+
+
+window.onload =
+loadFeedback;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
