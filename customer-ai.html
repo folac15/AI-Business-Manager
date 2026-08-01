@@ -1,1 +1,368 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Customer Intelligence Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Customer Intelligence Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customer-ai.html">
+<button>👥 Customer AI</button>
+</a>
+
+
+<a href="customers.html">
+<button>👤 Customers</button>
+</a>
+
+
+<a href="sales-ai.html">
+<button>💰 Sales AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>👥 Add Customer Intelligence</h2>
+
+
+
+<label>
+Customer Name / Type
+</label>
+
+
+<input
+type="text"
+id="customerName"
+placeholder="Enter customer name or type">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="customerCategory">
+
+
+<option>
+New Customer
+</option>
+
+
+<option>
+Regular Customer
+</option>
+
+
+<option>
+VIP Customer
+</option>
+
+
+<option>
+Business Customer
+</option>
+
+
+<option>
+Other
+</option>
+
+
+</select>
+
+
+
+<label>
+Buying Pattern
+</label>
+
+
+<textarea
+id="buyingPattern"
+placeholder="Describe customer buying behavior"></textarea>
+
+
+
+<label>
+AI Customer Recommendation
+</label>
+
+
+<textarea
+id="customerRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+<br><br>
+
+
+<button id="saveCustomerAI">
+
+💾 Save Customer Insight
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Customer Intelligence Summary</h2>
+
+
+<p>
+
+Total Customer Insights:
+
+<b id="totalCustomerAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Customer Intelligence History</h2>
+
+
+<div id="customerAIList">
+
+
+<p>
+No customer insights available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+  <script>
+
+const saveCustomerAI =
+document.getElementById("saveCustomerAI");
+
+
+const customerAIList =
+document.getElementById("customerAIList");
+
+
+
+function loadCustomerAI(){
+
+
+let records =
+JSON.parse(localStorage.getItem("customerAI")) || [];
+
+
+
+document.getElementById("totalCustomerAI").innerHTML =
+records.length;
+
+
+
+if(records.length === 0){
+
+
+customerAIList.innerHTML =
+"<p>No customer insights available yet.</p>";
+
+return;
+
+}
+
+
+
+customerAIList.innerHTML = "";
+
+
+
+records.reverse().forEach(function(item){
+
+
+customerAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>👥 ${item.name}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Buying Pattern:</b> ${item.pattern}
+</p>
+
+
+<p>
+<b>AI Recommendation:</b> ${item.recommendation}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveCustomerAI.onclick = function(){
+
+
+
+let record = {
+
+
+name:
+document.getElementById("customerName").value.trim(),
+
+
+category:
+document.getElementById("customerCategory").value,
+
+
+pattern:
+document.getElementById("buyingPattern").value.trim(),
+
+
+recommendation:
+document.getElementById("customerRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.name === ""){
+
+
+alert("Please enter customer name or type.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("customerAI")) || [];
+
+
+
+records.push(record);
+
+
+
+localStorage.setItem(
+"customerAI",
+JSON.stringify(records)
+);
+
+
+
+alert("Customer insight saved successfully!");
+
+
+
+loadCustomerAI();
+
+
+
+};
+
+
+
+window.onload =
+loadCustomerAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
