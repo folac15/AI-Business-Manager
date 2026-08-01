@@ -1,1 +1,367 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Forecasting Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Forecasting Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="forecast.html">
+<button>🔮 Forecasting</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="decision.html">
+<button>📈 Decision Support</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🔮 Add Business Forecast</h2>
+
+
+
+<label>
+Forecast Title
+</label>
+
+
+<input
+type="text"
+id="forecastTitle"
+placeholder="Enter forecast title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="forecastCategory">
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Customers
+</option>
+
+
+<option>
+Operations
+</option>
+
+
+</select>
+
+
+
+<label>
+Prediction Notes
+</label>
+
+
+<textarea
+id="forecastNotes"
+placeholder="Enter prediction details"></textarea>
+
+
+
+<label>
+Expected Outcome
+</label>
+
+
+<textarea
+id="forecastOutcome"
+placeholder="Enter expected outcome"></textarea>
+
+
+<br><br>
+
+
+<button id="saveForecast">
+
+💾 Save Forecast
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Forecast Summary</h2>
+
+
+<p>
+
+Total Forecasts:
+
+<b id="totalForecasts">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Forecast History</h2>
+
+
+<div id="forecastList">
+
+
+<p>
+No forecasts available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveForecast =
+document.getElementById("saveForecast");
+
+
+const forecastList =
+document.getElementById("forecastList");
+
+
+
+function loadForecasts(){
+
+
+let forecasts =
+JSON.parse(localStorage.getItem("forecasts")) || [];
+
+
+
+document.getElementById("totalForecasts").innerHTML =
+forecasts.length;
+
+
+
+if(forecasts.length === 0){
+
+
+forecastList.innerHTML =
+"<p>No forecasts available yet.</p>";
+
+return;
+
+}
+
+
+
+forecastList.innerHTML = "";
+
+
+
+forecasts.reverse().forEach(function(item){
+
+
+forecastList.innerHTML += `
+
+<div class="card">
+
+
+<h3>🔮 ${item.title}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Prediction Notes:</b> ${item.notes}
+</p>
+
+
+<p>
+<b>Expected Outcome:</b> ${item.outcome}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveForecast.onclick = function(){
+
+
+
+let forecast = {
+
+
+title:
+document.getElementById("forecastTitle").value.trim(),
+
+
+category:
+document.getElementById("forecastCategory").value,
+
+
+notes:
+document.getElementById("forecastNotes").value.trim(),
+
+
+outcome:
+document.getElementById("forecastOutcome").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(forecast.title === ""){
+
+
+alert("Please enter forecast title.");
+
+return;
+
+}
+
+
+
+let forecasts =
+JSON.parse(localStorage.getItem("forecasts")) || [];
+
+
+
+forecasts.push(forecast);
+
+
+
+localStorage.setItem(
+"forecasts",
+JSON.stringify(forecasts)
+);
+
+
+
+alert("Forecast saved successfully!");
+
+
+
+loadForecasts();
+
+
+
+};
+
+
+
+window.onload =
+loadForecasts;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
