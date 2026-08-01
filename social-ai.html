@@ -1,1 +1,387 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Social Media Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Social Media Manager</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="social-ai.html">
+<button>📱 Social AI</button>
+</a>
+
+
+<a href="content-ai.html">
+<button>✍️ Content AI</button>
+</a>
+
+
+<a href="marketing-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📱 Add Social Media Post</h2>
+
+
+
+<label>
+Post Title
+</label>
+
+
+<input
+type="text"
+id="postTitle"
+placeholder="Enter post title">
+
+
+
+<label>
+Platform
+</label>
+
+
+<select id="socialPlatform">
+
+
+<option>
+Facebook
+</option>
+
+
+<option>
+WhatsApp
+</option>
+
+
+<option>
+Instagram
+</option>
+
+
+<option>
+TikTok
+</option>
+
+
+<option>
+YouTube
+</option>
+
+
+</select>
+
+
+
+<label>
+Post Idea / Content
+</label>
+
+
+<textarea
+id="postContent"
+placeholder="Enter post idea"></textarea>
+
+
+
+<label>
+AI Caption Suggestion
+</label>
+
+
+<textarea
+id="aiCaption"
+placeholder="Enter AI caption"></textarea>
+
+
+
+<label>
+Publishing Schedule
+</label>
+
+
+<input
+type="datetime-local"
+id="publishTime">
+
+
+<br><br>
+
+
+<button id="saveSocialAI">
+
+💾 Save Social Post
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Social Media Summary</h2>
+
+
+<p>
+
+Total Social Posts:
+
+<b id="totalSocialAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Social Media History</h2>
+
+
+<div id="socialAIList">
+
+
+<p>
+No social posts available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveSocialAI =
+document.getElementById("saveSocialAI");
+
+
+const socialAIList =
+document.getElementById("socialAIList");
+
+
+
+function loadSocialAI(){
+
+
+let posts =
+JSON.parse(localStorage.getItem("socialAI")) || [];
+
+
+
+document.getElementById("totalSocialAI").innerHTML =
+posts.length;
+
+
+
+if(posts.length === 0){
+
+
+socialAIList.innerHTML =
+"<p>No social posts available yet.</p>";
+
+return;
+
+}
+
+
+
+socialAIList.innerHTML = "";
+
+
+
+posts.reverse().forEach(function(item){
+
+
+socialAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📱 ${item.title}</h3>
+
+
+<p>
+<b>Platform:</b> ${item.platform}
+</p>
+
+
+<p>
+<b>Post Content:</b> ${item.content}
+</p>
+
+
+<p>
+<b>AI Caption:</b> ${item.caption}
+</p>
+
+
+<p>
+<b>Schedule:</b> ${item.time}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveSocialAI.onclick = function(){
+
+
+
+let post = {
+
+
+title:
+document.getElementById("postTitle").value.trim(),
+
+
+platform:
+document.getElementById("socialPlatform").value,
+
+
+content:
+document.getElementById("postContent").value.trim(),
+
+
+caption:
+document.getElementById("aiCaption").value.trim(),
+
+
+time:
+document.getElementById("publishTime").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(post.title === ""){
+
+
+alert("Please enter post title.");
+
+return;
+
+}
+
+
+
+let posts =
+JSON.parse(localStorage.getItem("socialAI")) || [];
+
+
+
+posts.push(post);
+
+
+
+localStorage.setItem(
+"socialAI",
+JSON.stringify(posts)
+);
+
+
+
+alert("Social post saved successfully!");
+
+
+
+loadSocialAI();
+
+
+
+};
+
+
+
+window.onload =
+loadSocialAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
