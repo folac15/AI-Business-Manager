@@ -1,1 +1,382 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Automation Engine</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Automation Engine</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="automation-engine-ai.html">
+<button>⚙ Automation Engine</button>
+</a>
+
+
+<a href="ai-agent-core.html">
+<button>🤖 AI Agents</button>
+</a>
+
+
+<a href="knowledge-ai.html">
+<button>🧠 Knowledge AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>⚙ Create Automation</h2>
+
+
+<label>
+Automation Name
+</label>
+
+
+<input 
+type="text"
+id="automationName"
+placeholder="Enter automation name">
+
+
+
+<label>
+Trigger Event
+</label>
+
+
+<select id="triggerEvent">
+
+
+<option>
+New Customer
+</option>
+
+<option>
+New Message
+</option>
+
+<option>
+New Order
+</option>
+
+<option>
+Payment Received
+</option>
+
+<option>
+Low Stock Alert
+</option>
+
+<option>
+Scheduled Time
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Action
+</label>
+
+
+<textarea
+id="automationAction"
+placeholder="Describe what AI should do">
+</textarea>
+
+
+
+<label>
+Assigned AI Agent
+</label>
+
+
+<input
+type="text"
+id="assignedAI"
+placeholder="Enter AI agent">
+
+
+
+<label>
+Automation Status
+</label>
+
+
+<select id="automationStatus">
+
+<option>
+Active
+</option>
+
+<option>
+Inactive
+</option>
+
+</select>
+
+
+
+<br><br>
+
+
+<button id="saveAutomationAI">
+
+💾 Save Automation
+
+  </button>
+  <div class="card">
+
+<h2>📊 Automation Dashboard</h2>
+
+<p>
+Total Automations:
+
+<b id="totalAutomationAI">
+0
+</b>
+</p>
+
+
+<p>
+Active Automations:
+
+<b id="activeAutomationAI">
+0
+</b>
+</p>
+
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📡 Automation Monitor</h2>
+
+
+<div id="automationAIList">
+
+<p>
+No automation records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+  </div>
+  <script>
+
+const saveAutomationAI =
+document.getElementById("saveAutomationAI");
+
+const automationAIList =
+document.getElementById("automationAIList");
+
+
+function loadAutomationAI(){
+
+let automations =
+JSON.parse(localStorage.getItem("automationAI")) || [];
+
+
+document.getElementById("totalAutomationAI").innerHTML =
+automations.length;
+
+
+let active =
+automations.filter(function(item){
+
+return item.status === "Active";
+
+}).length;
+
+
+document.getElementById("activeAutomationAI").innerHTML =
+active;
+
+
+
+if(automations.length === 0){
+
+automationAIList.innerHTML =
+"<p>No automation records available yet.</p>";
+
+return;
+
+}
+
+
+automationAIList.innerHTML = "";
+
+
+automations.reverse().forEach(function(item){
+
+
+automationAIList.innerHTML += `
+
+<div class="card">
+
+<h3>⚙ ${item.name}</h3>
+
+<p><b>Trigger:</b> ${item.trigger}</p>
+
+<p><b>AI Action:</b> ${item.action}</p>
+
+<p><b>Assigned Agent:</b> ${item.agent}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Automation Log:</b> System ready for execution.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAutomationAI.onclick = function(){
+
+
+let automation = {
+
+
+name:
+document.getElementById("automationName").value.trim(),
+
+
+trigger:
+document.getElementById("triggerEvent").value,
+
+
+action:
+document.getElementById("automationAction").value.trim(),
+
+
+agent:
+document.getElementById("assignedAI").value.trim(),
+
+
+status:
+document.getElementById("automationStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(automation.name === ""){
+
+
+alert("Please enter automation name.");
+
+return;
+
+}
+
+
+
+let automations =
+JSON.parse(localStorage.getItem("automationAI")) || [];
+
+
+automations.push(automation);
+
+
+localStorage.setItem(
+"automationAI",
+JSON.stringify(automations)
+);
+
+
+alert("Automation created successfully!");
+
+
+loadAutomationAI();
+
+
+};
+
+
+
+window.onload =
+loadAutomationAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
