@@ -1,1 +1,353 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Intelligence Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Intelligence Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="ai-intelligence-center.html">
+<button>🧠 Intelligence Center</button>
+</a>
+
+
+<a href="communication-hub-ai.html">
+<button>📡 Communication Hub</button>
+</a>
+
+
+<a href="automation-engine-ai.html">
+<button>⚙ Automation Engine</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>🧠 Create AI Intelligence Record</h2>
+
+
+<label>
+Analysis Title
+</label>
+
+
+<input
+type="text"
+id="analysisTitle"
+placeholder="Enter analysis title">
+
+
+
+<label>
+Data Category
+</label>
+
+
+<select id="dataCategory">
+
+
+<option>
+Sales
+</option>
+
+
+<option>
+Customers
+</option>
+
+
+<option>
+Finance
+</option>
+
+
+<option>
+Marketing
+</option>
+
+
+<option>
+Operations
+</option>
+
+
+</select>
+
+
+
+<label>
+Business Data</label>
+
+
+<textarea
+id="businessData"
+placeholder="Enter business information">
+</textarea>
+
+
+
+<label>
+AI Insight</label>
+
+
+<textarea
+id="aiInsight"
+placeholder="Enter AI generated insight">
+</textarea>
+
+
+
+<label>
+AI Recommendation</label>
+
+
+<textarea
+id="aiRecommendation"
+placeholder="Enter AI recommendation">
+</textarea>
+
+
+
+<br><br>
+
+
+<button id="saveIntelligenceAI">
+
+💾 Save Intelligence
+
+  </button>
+  <div class="card">
+
+<h2>📊 Intelligence Dashboard</h2>
+
+
+<p>
+
+Total Intelligence Records:
+
+<b id="totalIntelligenceAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+<div class="card">
+
+<h2>🧠 AI Intelligence History</h2>
+
+
+<div id="intelligenceAIList">
+
+<p>
+No intelligence records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+  </div>
+  <script>
+
+const saveIntelligenceAI =
+document.getElementById("saveIntelligenceAI");
+
+const intelligenceAIList =
+document.getElementById("intelligenceAIList");
+
+
+function loadIntelligenceAI(){
+
+let records =
+JSON.parse(localStorage.getItem("intelligenceAI")) || [];
+
+
+document.getElementById("totalIntelligenceAI").innerHTML =
+records.length;
+
+
+if(records.length === 0){
+
+intelligenceAIList.innerHTML =
+"<p>No intelligence records available yet.</p>";
+
+return;
+
+}
+
+
+intelligenceAIList.innerHTML = "";
+
+
+records.reverse().forEach(function(item){
+
+
+intelligenceAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🧠 ${item.title}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Business Data:</b> ${item.data}</p>
+
+<p><b>AI Insight:</b> ${item.insight}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<p><b>Decision Status:</b> Analysis completed.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveIntelligenceAI.onclick = function(){
+
+
+let record = {
+
+
+title:
+document.getElementById("analysisTitle").value.trim(),
+
+
+category:
+document.getElementById("dataCategory").value,
+
+
+data:
+document.getElementById("businessData").value.trim(),
+
+
+insight:
+document.getElementById("aiInsight").value.trim(),
+
+
+recommendation:
+document.getElementById("aiRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.title === ""){
+
+
+alert("Please enter analysis title.");
+
+return;
+
+}
+
+
+
+let records =
+JSON.parse(localStorage.getItem("intelligenceAI")) || [];
+
+
+records.push(record);
+
+
+localStorage.setItem(
+"intelligenceAI",
+JSON.stringify(records)
+);
+
+
+alert("AI Intelligence saved successfully!");
+
+
+loadIntelligenceAI();
+
+
+};
+
+
+
+window.onload =
+loadIntelligenceAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
