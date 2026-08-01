@@ -1,1 +1,316 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Analytics Dashboard Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Analytics Dashboard Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="report-ai.html">
+<button>📊 Report AI</button>
+</a>
+
+
+<a href="finance-ai.html">
+<button>💰 Finance AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📈 Add Analytics Record</h2>
+
+
+<label>
+Analytics Title
+</label>
+
+
+<input
+type="text"
+id="analyticsTitle"
+placeholder="Enter analytics title">
+
+
+
+<label>
+Sales Data
+</label>
+
+
+<textarea
+id="salesData"
+placeholder="Enter sales information"></textarea>
+
+
+
+<label>
+Customer Data
+</label>
+
+
+<textarea
+id="customerData"
+placeholder="Enter customer information"></textarea>
+
+
+
+<label>
+Employee Performance Data
+</label>
+
+
+<textarea
+id="employeeData"
+placeholder="Enter employee performance"></textarea>
+
+
+
+<label>
+AI Performance Insight
+</label>
+
+
+<textarea
+id="analyticsInsight"
+placeholder="Enter AI insight"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveAnalyticsAI">
+
+💾 Save Analytics
+
+  </button>
+  <div class="card">
+
+<h2>📊 Analytics Summary</h2>
+
+<p>
+
+Total Analytics Records:
+
+<b id="totalAnalyticsAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Analytics History</h2>
+
+<div id="analyticsAIList">
+
+<p>
+No analytics records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveAnalyticsAI =
+document.getElementById("saveAnalyticsAI");
+
+const analyticsAIList =
+document.getElementById("analyticsAIList");
+
+
+function loadAnalyticsAI(){
+
+let analytics =
+JSON.parse(localStorage.getItem("analyticsAI")) || [];
+
+
+document.getElementById("totalAnalyticsAI").innerHTML =
+analytics.length;
+
+
+if(analytics.length === 0){
+
+analyticsAIList.innerHTML =
+"<p>No analytics records available yet.</p>";
+
+return;
+
+}
+
+
+analyticsAIList.innerHTML = "";
+
+
+analytics.reverse().forEach(function(item){
+
+
+analyticsAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📈 ${item.title}</h3>
+
+<p><b>Sales Data:</b> ${item.sales}</p>
+
+<p><b>Customer Data:</b> ${item.customer}</p>
+
+<p><b>Employee Performance:</b> ${item.employee}</p>
+
+<p><b>AI Performance Insight:</b> ${item.insight}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAnalyticsAI.onclick = function(){
+
+
+let record = {
+
+
+title:
+document.getElementById("analyticsTitle").value.trim(),
+
+
+sales:
+document.getElementById("salesData").value.trim(),
+
+
+customer:
+document.getElementById("customerData").value.trim(),
+
+
+employee:
+document.getElementById("employeeData").value.trim(),
+
+
+insight:
+document.getElementById("analyticsInsight").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(record.title === ""){
+
+
+alert("Please enter analytics title.");
+
+return;
+
+}
+
+
+
+let analytics =
+JSON.parse(localStorage.getItem("analyticsAI")) || [];
+
+
+analytics.push(record);
+
+
+localStorage.setItem(
+"analyticsAI",
+JSON.stringify(analytics)
+);
+
+
+alert("Analytics saved successfully!");
+
+
+loadAnalyticsAI();
+
+
+};
+
+
+
+window.onload =
+loadAnalyticsAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
