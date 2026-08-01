@@ -1,1 +1,425 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Manager Core</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Core Business Platform</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<button>🏠 Dashboard</button>
+
+<button>👤 User Account</button>
+
+<button>🤖 AI Assistant</button>
+
+<button>📡 Communication</button>
+
+<button>📊 Analytics</button>
+
+<button>🌍 Language</button>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>👤 User Account Center</h2>
+
+
+<p>
+
+Account Status:
+
+<b id="userAccountStatus">
+Preparing...
+</b>
+
+</p>
+
+
+<p>
+
+Profile System:
+
+<b id="profileSystemStatus">
+Preparing...
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🗄️ Database Foundation</h2>
+
+
+<p>
+
+Database Connection:
+
+<b id="databaseCoreStatus">
+Preparing...
+</b>
+
+</p>
+
+
+<p>
+
+Permanent Storage:
+
+<b id="storageCoreStatus">
+Preparing...
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🤖 AI Assistant Core</h2>
+
+
+<textarea id="aiQuestionCore"
+
+placeholder="Ask AI Business Assistant">
+
+</textarea>
+
+
+<br><br>
+
+
+<button id="askAICore">
+
+Ask AI
+
+</button>
+
+
+<div id="aiResponseCore">
+
+AI response will appear here.
+
+</div>
+
+
+  </div>
+  <div class="card">
+
+
+<h2>📡 Communication Automation</h2>
+
+
+<p>
+
+Customer Communication:
+
+<b id="communicationCoreStatus">
+Preparing...
+</b>
+
+</p>
+
+
+<textarea id="customerMessageCore"
+
+placeholder="Enter customer message">
+
+</textarea>
+
+
+<br><br>
+
+
+<button id="replyCustomerCore">
+
+Generate Reply
+
+</button>
+
+
+<div id="customerReplyCore">
+
+AI customer reply will appear here.
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📊 Business Analytics</h2>
+
+
+<p>
+
+Analytics System:
+
+<b id="analyticsCoreStatus">
+Preparing...
+</b>
+
+</p>
+
+
+<p>
+
+Business Insights:
+
+<b id="insightsCoreStatus">
+Preparing...
+</b>
+
+</p>
+
+
+<p>
+
+Growth Recommendations:
+
+<b id="growthCoreStatus">
+Preparing...
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>🌍 Language Center</h2>
+
+
+<button onclick="setCoreLanguage('English')">
+
+🇬🇧 English
+
+</button>
+
+
+<button onclick="setCoreLanguage('French')">
+
+🇫🇷 French
+
+</button>
+
+
+
+<p>
+
+Current Language:
+
+<b id="coreLanguageStatus">
+English
+</b>
+
+</p>
+
+
+  </div>
+  <script>
+
+
+function loadCoreSystem(){
+
+
+document.getElementById("userAccountStatus").innerHTML =
+"Ready";
+
+
+document.getElementById("profileSystemStatus").innerHTML =
+"Active";
+
+
+document.getElementById("databaseCoreStatus").innerHTML =
+"Prepared";
+
+
+document.getElementById("storageCoreStatus").innerHTML =
+"Ready";
+
+
+
+document.getElementById("communicationCoreStatus").innerHTML =
+"Active";
+
+
+document.getElementById("analyticsCoreStatus").innerHTML =
+"Online";
+
+
+document.getElementById("insightsCoreStatus").innerHTML =
+"Available";
+
+
+document.getElementById("growthCoreStatus").innerHTML =
+"Ready";
+
+
+
+let language =
+localStorage.getItem("coreLanguage") || "English";
+
+
+document.getElementById("coreLanguageStatus").innerHTML =
+language;
+
+
+}
+
+
+
+document.getElementById("askAICore").onclick = function(){
+
+
+let question =
+document.getElementById("aiQuestionCore").value;
+
+
+if(question.trim()==""){
+
+
+alert("Ask a question first");
+
+return;
+
+}
+
+
+
+document.getElementById("aiResponseCore").innerHTML =
+
+"🤖 AI Analysis: " +
+"Based on your business question, improve customer service, automation, and decision making.";
+
+
+
+};
+
+
+
+
+document.getElementById("replyCustomerCore").onclick = function(){
+
+
+let message =
+document.getElementById("customerMessageCore").value;
+
+
+
+if(message.trim()==""){
+
+
+alert("Enter customer message");
+
+return;
+
+}
+
+
+
+document.getElementById("customerReplyCore").innerHTML =
+
+"🤖 AI Reply: Thank you for contacting us. We have received your message and will assist you shortly.";
+
+
+
+};
+
+
+
+
+
+function setCoreLanguage(language){
+
+
+localStorage.setItem(
+"coreLanguage",
+language
+);
+
+
+
+document.getElementById("coreLanguageStatus").innerHTML =
+language;
+
+
+}
+
+
+
+
+window.onload =
+loadCoreSystem;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
