@@ -1,1 +1,336 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Marketing Campaign Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Marketing Campaign Manager</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="marketing-campaign-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="sales-ai.html">
+<button>💰 Sales AI</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📢 Create Marketing Campaign</h2>
+
+
+<label>
+Campaign Name
+</label>
+
+
+<input
+type="text"
+id="campaignName"
+placeholder="Enter campaign name">
+
+
+
+<label>
+Target Audience
+</label>
+
+
+<input
+type="text"
+id="targetAudience"
+placeholder="Enter target audience">
+
+
+
+<label>
+Marketing Channel
+</label>
+
+
+<input
+type="text"
+id="marketingChannel"
+placeholder="Facebook, WhatsApp, Website etc.">
+
+
+
+<label>
+Campaign Budget
+</label>
+
+
+<input
+type="number"
+id="campaignBudget"
+placeholder="Enter budget">
+
+
+
+<label>
+Campaign Goals
+</label>
+
+
+<textarea
+id="campaignGoals"
+placeholder="Enter campaign goals"></textarea>
+
+
+
+<label>
+AI Marketing Strategy
+</label>
+
+
+<textarea
+id="marketingStrategy"
+placeholder="Enter AI strategy"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveMarketingAI">
+
+💾 Save Campaign
+
+  </button>
+  <div class="card">
+
+<h2>📊 Campaign Summary</h2>
+
+<p>
+
+Total Campaigns:
+
+<b id="totalMarketingAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Campaign History</h2>
+
+<div id="marketingAIList">
+
+<p>
+No campaign records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveMarketingAI =
+document.getElementById("saveMarketingAI");
+
+const marketingAIList =
+document.getElementById("marketingAIList");
+
+
+function loadMarketingAI(){
+
+let campaigns =
+JSON.parse(localStorage.getItem("marketingAI")) || [];
+
+
+document.getElementById("totalMarketingAI").innerHTML =
+campaigns.length;
+
+
+if(campaigns.length === 0){
+
+marketingAIList.innerHTML =
+"<p>No campaign records available yet.</p>";
+
+return;
+
+}
+
+
+marketingAIList.innerHTML = "";
+
+
+campaigns.reverse().forEach(function(item){
+
+
+marketingAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📢 ${item.name}</h3>
+
+<p><b>Target Audience:</b> ${item.audience}</p>
+
+<p><b>Marketing Channel:</b> ${item.channel}</p>
+
+<p><b>Budget:</b> ${item.budget}</p>
+
+<p><b>Goals:</b> ${item.goals}</p>
+
+<p><b>AI Strategy:</b> ${item.strategy}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveMarketingAI.onclick = function(){
+
+
+let campaign = {
+
+
+name:
+document.getElementById("campaignName").value.trim(),
+
+
+audience:
+document.getElementById("targetAudience").value.trim(),
+
+
+channel:
+document.getElementById("marketingChannel").value.trim(),
+
+
+budget:
+document.getElementById("campaignBudget").value,
+
+
+goals:
+document.getElementById("campaignGoals").value.trim(),
+
+
+strategy:
+document.getElementById("marketingStrategy").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(campaign.name === ""){
+
+
+alert("Please enter campaign name.");
+
+return;
+
+}
+
+
+
+let campaigns =
+JSON.parse(localStorage.getItem("marketingAI")) || [];
+
+
+campaigns.push(campaign);
+
+
+localStorage.setItem(
+"marketingAI",
+JSON.stringify(campaigns)
+);
+
+
+alert("Campaign saved successfully!");
+
+
+loadMarketingAI();
+
+
+};
+
+
+
+window.onload =
+loadMarketingAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
