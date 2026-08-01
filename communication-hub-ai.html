@@ -1,1 +1,395 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Communication Hub</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Communication Hub</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="communication-hub-ai.html">
+<button>📡 Communication Hub</button>
+</a>
+
+
+<a href="automation-engine-ai.html">
+<button>⚙ Automation Engine</button>
+</a>
+
+
+<a href="ai-agent-core.html">
+<button>🤖 AI Agents</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📡 Create Communication Channel</h2>
+
+
+<label>
+Channel Name
+</label>
+
+
+<input
+type="text"
+id="channelName"
+placeholder="Example: Customer Support">
+
+
+
+<label>
+Communication Type
+</label>
+
+
+<select id="communicationType">
+
+<option>
+WhatsApp
+</option>
+
+<option>
+Email
+</option>
+
+<option>
+Facebook
+</option>
+
+<option>
+Instagram
+</option>
+
+<option>
+Notification
+</option>
+
+</select>
+
+
+
+<label>
+Customer / Contact
+</label>
+
+
+<input
+type="text"
+id="contactName"
+placeholder="Enter customer name">
+
+
+
+<label>
+AI Response Instructions
+</label>
+
+
+<textarea
+id="responseInstruction"
+placeholder="Describe how AI should respond">
+</textarea>
+
+
+
+<label>
+Assigned AI Agent
+</label>
+
+
+<input
+type="text"
+id="communicationAgent"
+placeholder="Enter AI agent">
+
+
+
+<label>
+Channel Status
+</label>
+
+
+<select id="channelStatus">
+
+<option>
+Active
+</option>
+
+<option>
+Inactive
+</option>
+
+</select>
+
+
+<br><br>
+
+
+<button id="saveCommunicationAI">
+
+💾 Save Channel
+
+  </button>
+  <div class="card">
+
+<h2>📊 Communication Dashboard</h2>
+
+<p>
+
+Total Channels:
+
+<b id="totalCommunicationAI">
+0
+</b>
+
+</p>
+
+
+<p>
+
+Active Channels:
+
+<b id="activeCommunicationAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📡 Communication History</h2>
+
+
+<div id="communicationAIList">
+
+<p>
+No communication records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+  </div>
+  <script>
+
+const saveCommunicationAI =
+document.getElementById("saveCommunicationAI");
+
+const communicationAIList =
+document.getElementById("communicationAIList");
+
+
+function loadCommunicationAI(){
+
+let channels =
+JSON.parse(localStorage.getItem("communicationAI")) || [];
+
+
+document.getElementById("totalCommunicationAI").innerHTML =
+channels.length;
+
+
+let active =
+channels.filter(function(item){
+
+return item.status === "Active";
+
+}).length;
+
+
+document.getElementById("activeCommunicationAI").innerHTML =
+active;
+
+
+
+if(channels.length === 0){
+
+communicationAIList.innerHTML =
+"<p>No communication records available yet.</p>";
+
+return;
+
+}
+
+
+communicationAIList.innerHTML = "";
+
+
+channels.reverse().forEach(function(item){
+
+
+communicationAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📡 ${item.name}</h3>
+
+<p><b>Type:</b> ${item.type}</p>
+
+<p><b>Contact:</b> ${item.contact}</p>
+
+<p><b>AI Instructions:</b> ${item.instruction}</p>
+
+<p><b>Assigned Agent:</b> ${item.agent}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Communication Log:</b> Channel created successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveCommunicationAI.onclick = function(){
+
+
+let channel = {
+
+
+name:
+document.getElementById("channelName").value.trim(),
+
+
+type:
+document.getElementById("communicationType").value,
+
+
+contact:
+document.getElementById("contactName").value.trim(),
+
+
+instruction:
+document.getElementById("responseInstruction").value.trim(),
+
+
+agent:
+document.getElementById("communicationAgent").value.trim(),
+
+
+status:
+document.getElementById("channelStatus").value,
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(channel.name === ""){
+
+
+alert("Please enter channel name.");
+
+return;
+
+}
+
+
+
+let channels =
+JSON.parse(localStorage.getItem("communicationAI")) || [];
+
+
+channels.push(channel);
+
+
+localStorage.setItem(
+"communicationAI",
+JSON.stringify(channels)
+);
+
+
+alert("Communication channel saved successfully!");
+
+
+loadCommunicationAI();
+
+
+};
+
+
+
+window.onload =
+loadCommunicationAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
