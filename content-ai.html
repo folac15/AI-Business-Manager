@@ -1,1 +1,393 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Content Creator Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Content Creator Center</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="content-ai.html">
+<button>✍️ Content AI</button>
+</a>
+
+
+<a href="marketing-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="chat-ai.html">
+<button>💬 Chat AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>✍️ Add AI Content Idea</h2>
+
+
+
+<label>
+Content Title
+</label>
+
+
+<input
+type="text"
+id="contentTitle"
+placeholder="Enter content title">
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="contentCategory">
+
+
+<option>
+Social Media Post
+</option>
+
+
+<option>
+Video Script
+</option>
+
+
+<option>
+Advertisement
+</option>
+
+
+<option>
+Blog Content
+</option>
+
+
+<option>
+Educational Content
+</option>
+
+
+</select>
+
+
+
+<label>
+Platform
+</label>
+
+
+<select id="contentPlatform">
+
+
+<option>
+Facebook
+</option>
+
+
+<option>
+WhatsApp
+</option>
+
+
+<option>
+Instagram
+</option>
+
+
+<option>
+TikTok
+</option>
+
+
+<option>
+YouTube
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Content Notes
+</label>
+
+
+<textarea
+id="contentNotes"
+placeholder="Enter AI content details"></textarea>
+
+
+<br><br>
+
+
+<button id="saveContentAI">
+
+💾 Save Content
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Content Summary</h2>
+
+
+<p>
+
+Total Content Records:
+
+<b id="totalContentAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Content History</h2>
+
+
+<div id="contentAIList">
+
+
+<p>
+No content records available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveContentAI =
+document.getElementById("saveContentAI");
+
+
+const contentAIList =
+document.getElementById("contentAIList");
+
+
+
+function loadContentAI(){
+
+
+let contents =
+JSON.parse(localStorage.getItem("contentAI")) || [];
+
+
+
+document.getElementById("totalContentAI").innerHTML =
+contents.length;
+
+
+
+if(contents.length === 0){
+
+
+contentAIList.innerHTML =
+"<p>No content records available yet.</p>";
+
+return;
+
+}
+
+
+
+contentAIList.innerHTML = "";
+
+
+
+contents.reverse().forEach(function(item){
+
+
+contentAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>✍️ ${item.title}</h3>
+
+
+<p>
+<b>Category:</b> ${item.category}
+</p>
+
+
+<p>
+<b>Platform:</b> ${item.platform}
+</p>
+
+
+<p>
+<b>AI Content Notes:</b> ${item.notes}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveContentAI.onclick = function(){
+
+
+
+let content = {
+
+
+title:
+document.getElementById("contentTitle").value.trim(),
+
+
+category:
+document.getElementById("contentCategory").value,
+
+
+platform:
+document.getElementById("contentPlatform").value,
+
+
+notes:
+document.getElementById("contentNotes").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(content.title === ""){
+
+
+alert("Please enter content title.");
+
+return;
+
+}
+
+
+
+let contents =
+JSON.parse(localStorage.getItem("contentAI")) || [];
+
+
+
+contents.push(content);
+
+
+
+localStorage.setItem(
+"contentAI",
+JSON.stringify(contents)
+);
+
+
+
+alert("Content saved successfully!");
+
+
+
+loadContentAI();
+
+
+
+};
+
+
+
+window.onload =
+loadContentAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
