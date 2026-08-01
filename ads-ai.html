@@ -1,1 +1,388 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Ad Campaign Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Ad Campaign Manager</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="ads-ai.html">
+<button>📣 Ads AI</button>
+</a>
+
+
+<a href="social-ai.html">
+<button>📱 Social AI</button>
+</a>
+
+
+<a href="marketing-ai.html">
+<button>📢 Marketing AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📣 Add Ad Campaign</h2>
+
+
+
+<label>
+Campaign Name
+</label>
+
+
+<input
+type="text"
+id="campaignName"
+placeholder="Enter campaign name">
+
+
+
+<label>
+Advertising Platform
+</label>
+
+
+<select id="adPlatform">
+
+
+<option>
+Facebook Ads
+</option>
+
+
+<option>
+Google Ads
+</option>
+
+
+<option>
+Instagram Ads
+</option>
+
+
+<option>
+TikTok Ads
+</option>
+
+
+<option>
+WhatsApp Promotion
+</option>
+
+
+</select>
+
+
+
+<label>
+Target Audience
+</label>
+
+
+<textarea
+id="adAudience"
+placeholder="Describe target audience"></textarea>
+
+
+
+<label>
+Budget Planning
+</label>
+
+
+<input
+type="number"
+id="adBudget"
+placeholder="Enter budget">
+
+
+
+<label>
+AI Ad Recommendation
+</label>
+
+
+<textarea
+id="adRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+<br><br>
+
+
+<button id="saveAdsAI">
+
+💾 Save Ad Campaign
+
+  </button>
+  <div class="card">
+
+
+<h2>📊 Ad Campaign Summary</h2>
+
+
+<p>
+
+Total Ad Campaigns:
+
+<b id="totalAdsAI">
+0
+</b>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>📚 Ad Campaign History</h2>
+
+
+<div id="adsAIList">
+
+
+<p>
+No ad campaigns available yet.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+  </div>
+  <script>
+
+const saveAdsAI =
+document.getElementById("saveAdsAI");
+
+
+const adsAIList =
+document.getElementById("adsAIList");
+
+
+
+function loadAdsAI(){
+
+
+let ads =
+JSON.parse(localStorage.getItem("adsAI")) || [];
+
+
+
+document.getElementById("totalAdsAI").innerHTML =
+ads.length;
+
+
+
+if(ads.length === 0){
+
+
+adsAIList.innerHTML =
+"<p>No ad campaigns available yet.</p>";
+
+return;
+
+}
+
+
+
+adsAIList.innerHTML = "";
+
+
+
+ads.reverse().forEach(function(item){
+
+
+adsAIList.innerHTML += `
+
+<div class="card">
+
+
+<h3>📣 ${item.name}</h3>
+
+
+<p>
+<b>Platform:</b> ${item.platform}
+</p>
+
+
+<p>
+<b>Target Audience:</b> ${item.audience}
+</p>
+
+
+<p>
+<b>Budget:</b> ${item.budget}
+</p>
+
+
+<p>
+<b>AI Recommendation:</b> ${item.recommendation}
+</p>
+
+
+<small>
+${item.date}
+</small>
+
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveAdsAI.onclick = function(){
+
+
+
+let ad = {
+
+
+name:
+document.getElementById("campaignName").value.trim(),
+
+
+platform:
+document.getElementById("adPlatform").value,
+
+
+audience:
+document.getElementById("adAudience").value.trim(),
+
+
+budget:
+document.getElementById("adBudget").value,
+
+
+recommendation:
+document.getElementById("adRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(ad.name === ""){
+
+
+alert("Please enter campaign name.");
+
+return;
+
+}
+
+
+
+let ads =
+JSON.parse(localStorage.getItem("adsAI")) || [];
+
+
+
+ads.push(ad);
+
+
+
+localStorage.setItem(
+"adsAI",
+JSON.stringify(ads)
+);
+
+
+
+alert("Ad campaign saved successfully!");
+
+
+
+loadAdsAI();
+
+
+
+};
+
+
+
+window.onload =
+loadAdsAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
