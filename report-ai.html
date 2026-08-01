@@ -1,1 +1,317 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Report Generator Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Report Generator Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="report-ai.html">
+<button>📊 Report AI</button>
+</a>
+
+
+<a href="document-ai.html">
+<button>📄 Document AI</button>
+</a>
+
+
+<a href="analytics-ai.html">
+<button>📈 Analytics AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📊 Create Business Report</h2>
+
+
+<label>
+Report Title
+</label>
+
+
+<input
+type="text"
+id="reportTitle"
+placeholder="Enter report title">
+
+
+
+<label>
+Report Category
+</label>
+
+
+<input
+type="text"
+id="reportCategory"
+placeholder="Enter report category">
+
+
+
+<label>
+Data Summary
+</label>
+
+
+<textarea
+id="reportData"
+placeholder="Enter report data summary"></textarea>
+
+
+
+<label>
+Business Insights
+</label>
+
+
+<textarea
+id="businessInsights"
+placeholder="Enter business insights"></textarea>
+
+
+
+<label>
+AI Report Recommendation
+</label>
+
+
+<textarea
+id="reportRecommendation"
+placeholder="Enter AI recommendation"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveReportAI">
+
+💾 Save Report
+
+  </button>
+  <div class="card">
+
+<h2>📊 Report Summary</h2>
+
+<p>
+
+Total Reports:
+
+<b id="totalReportAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Report History</h2>
+
+<div id="reportAIList">
+
+<p>
+No report records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveReportAI =
+document.getElementById("saveReportAI");
+
+const reportAIList =
+document.getElementById("reportAIList");
+
+
+function loadReportAI(){
+
+let reports =
+JSON.parse(localStorage.getItem("reportAI")) || [];
+
+
+document.getElementById("totalReportAI").innerHTML =
+reports.length;
+
+
+if(reports.length === 0){
+
+reportAIList.innerHTML =
+"<p>No report records available yet.</p>";
+
+return;
+
+}
+
+
+reportAIList.innerHTML = "";
+
+
+reports.reverse().forEach(function(item){
+
+
+reportAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📊 ${item.title}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Data Summary:</b> ${item.data}</p>
+
+<p><b>Business Insights:</b> ${item.insights}</p>
+
+<p><b>AI Recommendation:</b> ${item.recommendation}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveReportAI.onclick = function(){
+
+
+let report = {
+
+
+title:
+document.getElementById("reportTitle").value.trim(),
+
+
+category:
+document.getElementById("reportCategory").value.trim(),
+
+
+data:
+document.getElementById("reportData").value.trim(),
+
+
+insights:
+document.getElementById("businessInsights").value.trim(),
+
+
+recommendation:
+document.getElementById("reportRecommendation").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(report.title === ""){
+
+
+alert("Please enter report title.");
+
+return;
+
+}
+
+
+
+let reports =
+JSON.parse(localStorage.getItem("reportAI")) || [];
+
+
+reports.push(report);
+
+
+localStorage.setItem(
+"reportAI",
+JSON.stringify(reports)
+);
+
+
+alert("Report saved successfully!");
+
+
+loadReportAI();
+
+
+};
+
+
+
+window.onload =
+loadReportAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
