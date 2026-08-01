@@ -1,1 +1,246 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Task Execution Engine</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Task Execution Engine</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="task-execution-ai.html"><button>🚀 Task AI</button></a>
+
+<a href="workflow-ai.html"><button>⚙ Workflow AI</button></a>
+
+<a href="ai-agent-core.html"><button>🤖 AI Agents</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>🚀 Create AI Task</h2>
+
+<label>Task Name</label>
+
+<input type="text" id="taskName" placeholder="Enter task name">
+
+<label>Task Description</label>
+
+<textarea id="taskDescription" placeholder="Describe the task"></textarea>
+
+<label>Assigned AI Agent</label>
+
+<input type="text" id="taskAgent" placeholder="Enter AI agent name">
+
+<label>Priority</label>
+
+<select id="taskPriority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+<option>Critical</option>
+</select>
+
+<label>Task Status</label>
+
+<select id="taskStatus">
+<option>Pending</option>
+<option>Running</option>
+<option>Completed</option>
+<option>Failed</option>
+</select>
+
+<br><br>
+
+<button id="saveTaskAI">
+💾 Save Task
+  </button>
+  <div class="card">
+
+<h2>📊 Task Summary</h2>
+
+<p>
+
+Total Tasks:
+
+<b id="totalTaskAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Task Execution History</h2>
+
+<div id="taskAIList">
+
+<p>
+No AI tasks created yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+  <script>
+
+const saveTaskAI =
+document.getElementById("saveTaskAI");
+
+const taskAIList =
+document.getElementById("taskAIList");
+
+
+function loadTaskAI(){
+
+let tasks =
+JSON.parse(localStorage.getItem("taskAI")) || [];
+
+
+document.getElementById("totalTaskAI").innerHTML =
+tasks.length;
+
+
+if(tasks.length === 0){
+
+taskAIList.innerHTML =
+"<p>No AI tasks created yet.</p>";
+
+return;
+
+}
+
+
+taskAIList.innerHTML = "";
+
+
+tasks.reverse().forEach(function(item){
+
+taskAIList.innerHTML += `
+
+<div class="card">
+
+<h3>🚀 ${item.name}</h3>
+
+<p><b>Description:</b> ${item.description}</p>
+
+<p><b>Assigned Agent:</b> ${item.agent}</p>
+
+<p><b>Priority:</b> ${item.priority}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>Execution Log:</b> Task registered successfully.</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+saveTaskAI.onclick = function(){
+
+let task = {
+
+name:
+document.getElementById("taskName").value.trim(),
+
+description:
+document.getElementById("taskDescription").value.trim(),
+
+agent:
+document.getElementById("taskAgent").value.trim(),
+
+priority:
+document.getElementById("taskPriority").value,
+
+status:
+document.getElementById("taskStatus").value,
+
+date:
+new Date().toLocaleString()
+
+};
+
+
+if(task.name === ""){
+
+alert("Please enter task name.");
+
+return;
+
+}
+
+
+let tasks =
+JSON.parse(localStorage.getItem("taskAI")) || [];
+
+
+tasks.push(task);
+
+
+localStorage.setItem(
+"taskAI",
+JSON.stringify(tasks)
+);
+
+
+alert("Task saved successfully!");
+
+
+loadTaskAI();
+
+};
+
+
+window.onload =
+loadTaskAI;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+  </html>
