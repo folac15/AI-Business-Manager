@@ -1,1 +1,334 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Document Management Center</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Document Management Center</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="document-ai.html">
+<button>📄 Document AI</button>
+</a>
+
+
+<a href="project-ai.html">
+<button>📁 Project AI</button>
+</a>
+
+
+<a href="report-ai.html">
+<button>📊 Report AI</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>📄 Add Document Record</h2>
+
+
+<label>
+Document Title
+</label>
+
+
+<input
+type="text"
+id="documentTitle"
+placeholder="Enter document title">
+
+
+
+<label>
+Document Category
+</label>
+
+
+<input
+type="text"
+id="documentCategory"
+placeholder="Enter category">
+
+
+
+<label>
+Document Reference / Link
+</label>
+
+
+<input
+type="text"
+id="documentReference"
+placeholder="Enter file reference or link">
+
+
+
+<label>
+Document Status
+</label>
+
+
+<select id="documentStatus">
+
+
+<option>
+Active
+</option>
+
+
+<option>
+Archived
+</option>
+
+
+<option>
+Pending Review
+</option>
+
+
+</select>
+
+
+
+<label>
+AI Document Summary
+</label>
+
+
+<textarea
+id="documentSummary"
+placeholder="Enter AI document summary"></textarea>
+
+
+
+<br><br>
+
+
+<button id="saveDocumentAI">
+
+💾 Save Document
+
+  </button>
+  <div class="card">
+
+<h2>📊 Document Summary</h2>
+
+<p>
+
+Total Documents:
+
+<b id="totalDocumentAI">
+0
+</b>
+
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>📚 Document History</h2>
+
+<div id="documentAIList">
+
+<p>
+No document records available yet.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+  <script>
+
+const saveDocumentAI =
+document.getElementById("saveDocumentAI");
+
+const documentAIList =
+document.getElementById("documentAIList");
+
+
+function loadDocumentAI(){
+
+let documents =
+JSON.parse(localStorage.getItem("documentAI")) || [];
+
+
+document.getElementById("totalDocumentAI").innerHTML =
+documents.length;
+
+
+if(documents.length === 0){
+
+documentAIList.innerHTML =
+"<p>No document records available yet.</p>";
+
+return;
+
+}
+
+
+documentAIList.innerHTML = "";
+
+
+documents.reverse().forEach(function(item){
+
+
+documentAIList.innerHTML += `
+
+<div class="card">
+
+<h3>📄 ${item.title}</h3>
+
+<p><b>Category:</b> ${item.category}</p>
+
+<p><b>Reference:</b> ${item.reference}</p>
+
+<p><b>Status:</b> ${item.status}</p>
+
+<p><b>AI Summary:</b> ${item.summary}</p>
+
+<small>${item.date}</small>
+
+</div>
+
+`;
+
+});
+
+
+}
+
+
+
+saveDocumentAI.onclick = function(){
+
+
+let documentData = {
+
+
+title:
+document.getElementById("documentTitle").value.trim(),
+
+
+category:
+document.getElementById("documentCategory").value.trim(),
+
+
+reference:
+document.getElementById("documentReference").value.trim(),
+
+
+status:
+document.getElementById("documentStatus").value,
+
+
+summary:
+document.getElementById("documentSummary").value.trim(),
+
+
+date:
+new Date().toLocaleString()
+
+
+};
+
+
+
+if(documentData.title === ""){
+
+
+alert("Please enter document title.");
+
+return;
+
+}
+
+
+
+let documents =
+JSON.parse(localStorage.getItem("documentAI")) || [];
+
+
+documents.push(documentData);
+
+
+localStorage.setItem(
+"documentAI",
+JSON.stringify(documents)
+);
+
+
+alert("Document saved successfully!");
+
+
+loadDocumentAI();
+
+
+};
+
+
+
+window.onload =
+loadDocumentAI;
+
+
+</script>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
