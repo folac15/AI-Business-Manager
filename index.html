@@ -786,6 +786,87 @@ alert("Authentication service is being connected.");
 
 
 </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co";
+
+/*
+PASTE YOUR CURRENT SUPABASE PUBLISHABLE (ANON) KEY
+BETWEEN THE QUOTES BELOW.
+*/
+
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+window.supabaseAuth = {
+
+  async signUp(user) {
+
+    const { data, error } = await supabaseClient.auth.signUp({
+
+      email: user.email,
+
+      password: user.password,
+
+      options: {
+
+        data: {
+
+          name: user.name,
+
+          business: user.business
+
+        }
+
+      }
+
+    });
+
+    if (error) {
+
+      alert(error.message);
+
+      return;
+
+    }
+
+    alert("Account created successfully. Please check your email to verify your account.");
+
+  },
+
+
+
+  async login(email, password) {
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+
+      email,
+
+      password
+
+    });
+
+    if (error) {
+
+      alert(error.message);
+
+      return { success: false };
+
+    }
+
+    window.location.href = "dashboard.html";
+
+    return { success: true };
+
+  }
+
+};
+</script>
 
 </body>
 
