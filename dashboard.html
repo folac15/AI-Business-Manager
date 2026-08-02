@@ -1,3 +1,9 @@
+<!-- ==========================================
+AI BUSINESS MANAGER
+DASHBOARD.HTML
+PART 1
+========================================== -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,149 +15,185 @@
 
 <title>AI Business Manager Dashboard</title>
 
-<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+
+body{
+
+display:flex;
+background:#f4f7fb;
+
+}
+
+
+
+.sidebar{
+
+width:250px;
+height:100vh;
+background:#0b1f3a;
+color:white;
+padding:25px;
+
+}
+
+
+
+.logo{
+
+font-size:22px;
+font-weight:bold;
+margin-bottom:40px;
+
+}
+
+
+
+.sidebar a{
+
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+
+}
+
+
+
+.sidebar a:hover{
+
+background:#0066ff;
+
+}
+
+
+
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+
+
+.header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:white;
+padding:20px;
+border-radius:12px;
+
+}
+
+
+
+.profile{
+
+font-weight:bold;
+
+}
+
+
+
+
+.card-container{
+
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:30px;
+
+}
+
+
+
+.card{
+
+background:white;
+padding:25px;
+border-radius:12px;
+flex:1;
+min-width:220px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+
+}
+
+
+
+</style>
+
 
 </head>
+
 
 
 <body>
 
 
-<header class="topbar">
-
-<h1>AI Business Manager</h1>
-
-<p>Professional Business Control Center</p>
-
-</header>
-
-
-
-<div class="container">
-
 
 <div class="sidebar">
 
 
-<h2>MENU</h2>
+<div class="logo">
+
+🤖 AI Business Manager
+
+</div>
 
 
-<a href="dashboard.html">
-<button>🏠 Dashboard</button>
-</a>
 
+<a href="#">Dashboard</a>
 
-<a href="customers.html">
-<button>👥 Customers</button>
-</a>
+<a href="#">AI Assistant</a>
 
+<a href="#">Customers</a>
 
-<a href="ai_assistant.html">
-<button>🤖 AI Assistant</button>
-</a>
+<a href="#">Analytics</a>
 
+<a href="#">Automation</a>
 
-<a href="posts.html">
-<button>📝 Marketing</button>
-</a>
+<a href="#">Reports</a>
 
+<a href="#">Settings</a>
 
-<a href="videos.html">
-<button>🎥 Videos</button>
-</a>
+<a href="index.html">Logout</a>
 
-
-<a href="analytics.html">
-<button>📊 Analytics</button>
-</a>
-
-
-<a href="reports.html">
-<button>📄 Reports</button>
-</a>
-
-
-<a href="settings.html">
-<button>⚙ Settings</button>
-</a>
 
 
 </div>
 
 
 
-<div class="content">
 
-
-<h2>Business Overview</h2>
-
-
-<div class="dashboard-grid">
+<div class="main">
 
 
 
-<div class="dashboard-card">
-
-<h3>👥 Customers</h3>
-
-<h1 id="customerCount">
-0
-</h1>
-
-<p>Total Customers</p>
-
-</div>
+<div class="header">
 
 
-
-<div class="dashboard-card">
-
-<h3>🤖 AI Activity</h3>
-
-<h1 id="aiCount">
-0
-</h1>
-
-<p>AI Conversations</p>
-
-</div>
+<h2>
+Business Dashboard
+</h2>
 
 
+<div class="profile">
 
-<div class="dashboard-card">
-
-<h3>📝 Posts</h3>
-
-<h1 id="postCount">
-0
-</h1>
-
-<p>Marketing Content</p>
-
-  </div>
-  <div class="dashboard-card">
-
-<h3>📹 Videos</h3>
-
-<h1 id="videoCount">
-0
-</h1>
-
-<p>Uploaded Videos</p>
-
-</div>
-
-
-
-<div class="dashboard-card">
-
-<h3>⚡ System</h3>
-
-<h1>
-🟢
-</h1>
-
-<p>AI Manager Online</p>
+Welcome User
 
 </div>
 
@@ -161,157 +203,331 @@
 
 
 
-<br>
+<div class="card-container">
+
+
+<div class="card">
+
+<h3>
+AI Assistant
+</h3>
+
+<p>
+Your intelligent business helper is ready.
+</p>
+
+</div>
 
 
 
 <div class="card">
 
+<h3>
+Customers
+</h3>
 
-<h2>Quick Actions</h2>
+<p>
+Manage customer messages and information.
+</p>
 
-
-<a href="customers.html">
-
-<button>
-➕ Add Customer
-</button>
-
-</a>
+</div>
 
 
-<a href="ai_assistant.html">
-
-<button>
-🤖 Ask AI
-</button>
-
-</a>
-
-
-<a href="posts.html">
-
-<button>
-📝 Create Post
-</button>
-
-</a>
-
-
-<a href="videos.html">
-
-<button>
-🎥 Upload Video
-</button>
-
-</a>
-
-
-  </div>
-  <!-- Activity Center -->
 
 <div class="card">
 
-<h2>📌 Recent Activity</h2>
-
-
-<div class="notification">
+<h3>
+Analytics
+</h3>
 
 <p>
-🟢 System online
+Track your business performance.
 </p>
 
+</div>
+
+
+  </div>
+  
+<!-- ==========================================
+PART 2
+AI ASSISTANT + BUSINESS MODULES
+========================================== -->
+
+
+<section style="margin-top:40px;">
+
+
+<div class="card">
+
+
+<h3>
+🤖 AI Assistant
+</h3>
+
+
 <p>
-AI Business Manager is running successfully.
+Ask your AI business assistant anything.
+</p>
+
+
+<textarea id="aiQuestion"
+placeholder="Ask a business question..."
+style="
+width:100%;
+height:100px;
+margin-top:15px;
+padding:15px;
+border-radius:8px;
+border:1px solid #ddd;
+">
+</textarea>
+
+
+
+<button onclick="askAI()"
+style="
+margin-top:15px;
+padding:12px 25px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+
+Generate Insight
+
+</button>
+
+
+
+<div id="aiResponse"
+style="
+margin-top:20px;
+background:#f4f7fb;
+padding:15px;
+border-radius:8px;
+">
+
+No insight generated yet.
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section style="margin-top:40px;">
+
+
+<div class="card">
+
+
+<h3>
+👥 Customers
+</h3>
+
+
+<p>
+Customer management center.
+</p>
+
+
+<input id="customerName"
+placeholder="Customer name"
+style="
+padding:10px;
+margin-top:15px;
+width:100%;
+">
+
+
+
+<button onclick="addCustomer()"
+style="
+margin-top:15px;
+padding:12px 25px;
+background:#0b1f3a;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+
+Add Customer
+
+</button>
+
+
+
+<div id="customerList"
+style="
+margin-top:20px;
+">
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section style="margin-top:40px;">
+
+
+<div class="card">
+
+
+<h3>
+📊 Analytics
+</h3>
+
+
+<p>
+Business performance overview.
+</p>
+
+
+<div class="card-container">
+
+
+<div class="card">
+
+<h4>
+Customers
+</h4>
+
+<p id="customerCount">
+0
 </p>
 
 </div>
 
 
 
-<div class="notification">
+<div class="card">
 
-<p>
-🤖 AI Assistant ready
-</p>
+<h4>
+AI Requests
+</h4>
 
-<p>
-Customer conversations can be handled automatically.
-</p>
-
-</div>
-
-
-
-<div class="notification">
-
-<p>
-📊 Analytics module prepared
-</p>
-
-<p>
-Business performance tracking will appear here.
+<p id="requestCount">
+0
 </p>
 
 </div>
 
 
+
+<div class="card">
+
+<h4>
+Automation Status
+</h4>
+
+<p>
+Active
+</p>
+
+</div>
+
+
+
 </div>
 
 
 </div>
 
-</div>
 
+  </section>
+  
+<!-- ==========================================
+PART 3
+FUNCTIONS + FINAL CONNECTION
+========================================== -->
 
 
 <script>
 
 
-// Load dashboard statistics
+let aiRequests = 0;
 
-async function loadDashboard(){
+let customers = [];
+
+
+
+
+// AI ASSISTANT FUNCTION
+
+async function askAI(){
+
+
+const question =
+document.getElementById("aiQuestion").value;
+
+
+
+if(!question){
+
+alert("Please enter a question");
+
+return;
+
+}
+
+
+
+aiRequests++;
+
+
+
+document.getElementById("requestCount").innerText =
+aiRequests;
+
+
+
+let response =
+"AI is analyzing your business question: " + question;
+
+
+
+// Connect to existing AI service if available
+
+if(window.AIBusinessManagerAI){
 
 
 try{
 
 
-let customers =
-await fetch(
-"https://ai-business-manager.onrender.com/api/customers"
-);
-
-
-let customerData =
-await customers.json();
-
-
-
-document.getElementById("customerCount").innerHTML =
-customerData.length;
+response =
+await window.AIBusinessManagerAI.ask(question);
 
 
 
 }
-
 
 catch(error){
 
 
-console.log(error);
+response =
+"AI service is currently in demo mode.";
 
 
 }
-
-
-
-let posts =
-JSON.parse(localStorage.getItem("posts")) || [];
-
-
-
-document.getElementById("postCount").innerHTML =
-posts.length;
 
 
 
@@ -319,14 +535,105 @@ posts.length;
 
 
 
-window.onload = loadDashboard;
+document.getElementById("aiResponse").innerText =
+response;
+
+
+
+}
+
+
+
+
+// CUSTOMER FUNCTION
+
+
+function addCustomer(){
+
+
+const name =
+document.getElementById("customerName").value;
+
+
+
+if(!name){
+
+alert("Enter customer name");
+
+return;
+
+}
+
+
+
+customers.push(name);
+
+
+
+document.getElementById("customerCount").innerText =
+customers.length;
+
+
+
+document.getElementById("customerList").innerHTML +=
+
+`
+
+<p style="
+background:#f4f7fb;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+">
+
+${name}
+
+</p>
+
+`;
+
+
+
+}
+
+
+
+
+
+// SYSTEM CONNECTION STATUS
+
+
+function checkSystem(){
+
+
+if(window.AIBusinessManagerLoader){
+
+
+console.log(
+
+window.AIBusinessManagerLoader.status()
+
+);
+
+
+}
+
+
+}
+
+
+
+checkSystem();
+
 
 
 </script>
 
 
 
-<script src="script.js"></script>
+
+
+</div>
 
 
 </body>
