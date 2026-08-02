@@ -3,8 +3,18 @@ from flask_cors import CORS
 from datetime import datetime
 import requests
 import os
+import google.generativeai as genai
+import os
 
 app = Flask(__name__)
+# Gemini AI Configuration
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel("gemini-1.5-flash")
 CORS(app)
 
 # ===============================
@@ -65,34 +75,35 @@ def status():
     # ===============================
 # AI ASSISTANT API
 # ===============================
-
 @app.route("/api/ai", methods=["POST"])
 def ai_reply():
 
-    data = request.get_json() or {}
+    data = request.get_json()
 
-    question = data.get("question", "").strip().lower()
+    question = data.get("question", "").strip()
 
-    if question == "":
-        answer = "Please enter your question."
 
-    elif "delivery" in question:
-        answer = "Yes, we provide delivery services. Please send us your location."
+    if not question:
 
-    elif "price" in question or "prices" in question or "cost" in question:
-        answer = "Thank you for your interest. Please contact us for our current prices and offers."
+        return jsonify({
+            "answer": "Please enter your question."
+        })
 
-    elif "hello" in question or "hi" in question:
-        answer = "Hello! Welcome to our business. How can we help you today?"
 
-    elif "thank" in question:
-        answer = "You're welcome. We are always happy to help."
+    try:
 
-    else:
-        answer = "Thank you for your message. We will assist you shortly."
+        response = model.generate_content(question)
+
+        answer = response.text
+
+
+    except Exception as e:
+
+        answer = "AI service error: " + str(e)
+
 
     return jsonify({
-        "response": answer
+        "answer": answer
     })
 
 
