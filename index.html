@@ -181,18 +181,150 @@ Automate customer replies, manage your business, analyze data, and grow faster w
 <div class="buttons">
 
 
-<button class="start-btn">
+
+<!-- REAL ACCOUNT ACCESS SECTION -->
+
+<div class="auth-box" style="margin-top:30px;">
+
+
+<button onclick="openSignup()"
+style="
+padding:15px 30px;
+border:none;
+border-radius:8px;
+background:#0066ff;
+color:white;
+font-size:16px;
+cursor:pointer;
+margin-right:15px;
+">
 
 Create Free Account
 
 </button>
 
 
-<button class="login-btn">
+
+<button onclick="openLogin()"
+style="
+padding:15px 30px;
+border:none;
+border-radius:8px;
+background:#0b1f3a;
+color:white;
+font-size:16px;
+cursor:pointer;
+">
 
 Login
 
 </button>
+
+
+</div>
+
+
+
+
+<!-- SIGNUP FORM -->
+
+<div id="signupForm"
+style="
+display:none;
+margin-top:30px;
+background:#f5f8ff;
+padding:25px;
+border-radius:10px;
+max-width:400px;
+">
+
+
+<h3>Create Account</h3>
+
+
+<input id="signupName"
+placeholder="Full Name"
+style="width:100%;padding:12px;margin:10px 0;">
+
+
+<input id="signupEmail"
+placeholder="Email"
+style="width:100%;padding:12px;margin:10px 0;">
+
+
+<input id="signupPassword"
+type="password"
+placeholder="Password"
+style="width:100%;padding:12px;margin:10px 0;">
+
+
+<input id="businessName"
+placeholder="Business Name"
+style="width:100%;padding:12px;margin:10px 0;">
+
+
+<button onclick="createAccount()"
+style="
+padding:12px 25px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+">
+
+Create Account
+
+</button>
+
+
+</div>
+
+
+
+
+
+<!-- LOGIN FORM -->
+
+<div id="loginForm"
+style="
+display:none;
+margin-top:30px;
+background:#f5f8ff;
+padding:25px;
+border-radius:10px;
+max-width:400px;
+">
+
+
+<h3>Login</h3>
+
+
+<input id="loginEmail"
+placeholder="Email"
+style="width:100%;padding:12px;margin:10px 0;">
+
+
+<input id="loginPassword"
+type="password"
+placeholder="Password"
+style="width:100%;padding:12px;margin:10px 0;">
+
+
+<button onclick="loginUser()"
+style="
+padding:12px 25px;
+background:#0b1f3a;
+color:white;
+border:none;
+border-radius:8px;
+">
+
+Login
+
+</button>
+
+
+    </div>
 
 
 </div>
@@ -499,6 +631,161 @@ window.location.href="dashboard.html";
 
 
 
+<script>
+
+
+// OPEN SIGNUP FORM
+
+function openSignup(){
+
+document.getElementById("signupForm").style.display="block";
+
+document.getElementById("loginForm").style.display="none";
+
+}
+
+
+
+// OPEN LOGIN FORM
+
+function openLogin(){
+
+document.getElementById("loginForm").style.display="block";
+
+document.getElementById("signupForm").style.display="none";
+
+}
+
+
+
+
+// CREATE ACCOUNT
+
+async function createAccount(){
+
+
+const name =
+document.getElementById("signupName").value;
+
+
+const email =
+document.getElementById("signupEmail").value;
+
+
+const password =
+document.getElementById("signupPassword").value;
+
+
+const business =
+document.getElementById("businessName").value;
+
+
+
+if(!name || !email || !password){
+
+alert("Please complete all required fields");
+
+return;
+
+}
+
+
+
+// Supabase authentication connection point
+
+if(window.supabaseAuth){
+
+
+await window.supabaseAuth.signUp({
+
+name:name,
+
+email:email,
+
+password:password,
+
+business:business
+
+});
+
+
+}else{
+
+
+alert("Authentication service is being connected.");
+
+
+}
+
+
+
+}
+
+
+
+
+// LOGIN USER
+
+async function loginUser(){
+
+
+const email =
+document.getElementById("loginEmail").value;
+
+
+const password =
+document.getElementById("loginPassword").value;
+
+
+
+if(!email || !password){
+
+alert("Enter email and password");
+
+return;
+
+}
+
+
+
+// Authentication connection point
+
+if(window.supabaseAuth){
+
+
+const result =
+await window.supabaseAuth.login(
+
+email,
+
+password
+
+);
+
+
+
+if(result.success){
+
+window.location.href="dashboard.html";
+
+}
+
+
+}else{
+
+
+alert("Authentication service is being connected.");
+
+
+}
+
+
+
+}
+
+
+
+</script>
 
 </body>
 
