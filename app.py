@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 import os
 import google.generativeai as genai
-import os
+
 
 app = Flask(__name__)
 # Gemini AI Configuration
