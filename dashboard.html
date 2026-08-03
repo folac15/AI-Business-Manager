@@ -510,8 +510,10 @@ if(window.AIBusinessManagerAI){
 try{
 
 
-response =
-await window.AIBusinessManagerAI.ask(question);
+const result =
+await window.AIBusinessManagerAI.assistant.ask(question);
+
+response = result.answer;
 
 
 
@@ -532,8 +534,8 @@ response =
 
 
 
-document.getElementById("aiResponse").innerText =
-response;
+document.getElementById("aiResponse").innerHTML =
+"<b>AI Answer:</b><br><br>" + response;
 
 
 
