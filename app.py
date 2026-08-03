@@ -3,19 +3,12 @@ from flask_cors import CORS
 from datetime import datetime
 import requests
 import os
-import google.generativeai as genai
+
 
 
 app = Flask(__name__)
-# Gemini AI Configuration
-
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-
-model = genai.GenerativeModel("gemini-2.0-flash")
 CORS(app)
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 # ===============================
 # SUPABASE CONFIGURATION
@@ -78,29 +71,43 @@ def status():
 @app.route("/api/ai", methods=["POST"])
 def ai_reply():
 
-    data = request.get_json()
-
+    data = request.get_json() or {}
     question = data.get("question", "").strip()
 
-
-    if not question:
-
+    if question == "":
         return jsonify({
             "answer": "Please enter your question."
         })
 
-
     try:
 
-        response = model.generate_content(question)
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "openai/gpt-oss-20b:free",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": question
+                    }
+                ]
+            },
+            timeout=30
+        )
 
-        answer = response.text
+        result = response.json()
 
+        if "choices" in result:
+            answer = result["choices"][0]["message"]["content"]
+        else:
+            answer = str(result)
 
     except Exception as e:
-
         answer = "AI service error: " + str(e)
-
 
     return jsonify({
         "answer": answer
