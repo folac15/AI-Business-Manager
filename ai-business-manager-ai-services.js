@@ -25,23 +25,49 @@ const AIAssistant = {
 
     conversationHistory: [],
 
-    ask(question){
+    async ask(question){
 
-        const response = {
+    const response = await fetch("/api/ai", {
 
-            question: question,
+        method: "POST",
 
-            answer: "AI Assistant is ready. Live AI connection will be attached during deployment.",
+        headers: {
 
-            time: new Date().toISOString()
+            "Content-Type": "application/json"
 
-        };
+        },
 
-        this.conversationHistory.push(response);
+        body: JSON.stringify({
 
-        return response;
+            question: question
 
-    },
+        })
+
+    });
+
+    const result = await response.json();
+
+    this.conversationHistory.push({
+
+        question: question,
+
+        answer: result.answer,
+
+        time: new Date().toISOString()
+
+    });
+
+    return {
+
+        question: question,
+
+        answer: result.answer,
+
+        time: new Date().toISOString()
+
+    };
+
+    }
 
     history(){
 
