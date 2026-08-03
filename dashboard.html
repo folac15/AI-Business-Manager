@@ -470,77 +470,48 @@ let customers = [];
 
 // AI ASSISTANT FUNCTION
 
+
 async function askAI(){
 
-
-const question =
-document.getElementById("aiQuestion").value;
-
-
+const question = document.getElementById("aiQuestion").value.trim();
 
 if(!question){
-
-alert("Please enter a question");
-
-return;
-
+    alert("Please enter a question");
+    return;
 }
 
-
-
 aiRequests++;
+document.getElementById("requestCount").innerText = aiRequests;
 
-
-
-document.getElementById("requestCount").innerText =
-aiRequests;
-
-
-
-let response =
-"AI is analyzing your business question: " + question;
-
-
-
-// Connect to existing AI service if available
-
-if(window.AIBusinessManagerAI){
-
+document.getElementById("aiResponse").innerHTML =
+"<b>AI Answer:</b><br><br>Thinking...";
 
 try{
 
+const response = await fetch("/api/ai",{
+    method:"POST",
+    headers:{
+        "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+        question:question
+    })
+});
 
-const result =
-await window.AIBusinessManagerAI.assistant.ask(question);
-
-response = result.answer;
-
-
-
-}
-
-catch(error){
-
-
-response =
-"AI service is currently in demo mode.";
-
-
-}
-
-
-
-}
-
-
+const data = await response.json();
 
 document.getElementById("aiResponse").innerHTML =
-"<b>AI Answer:</b><br><br>" + response;
+"<b>AI Answer:</b><br><br>"+data.answer;
 
+}
+catch(error){
 
+document.getElementById("aiResponse").innerHTML =
+"<b>AI Error:</b><br><br>"+error.message;
 
 }
 
+  }
 
 
 
