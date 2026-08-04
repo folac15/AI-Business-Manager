@@ -1,1 +1,611 @@
+<!-- ==========================================
+AI BUSINESS MANAGER
+DASHBOARD.HTML
+PART 1
+========================================== -->
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Business Manager Dashboard</title>
+
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+
+body{
+
+display:flex;
+background:#f4f7fb;
+
+}
+
+
+
+.sidebar{
+
+width:250px;
+height:100vh;
+background:#0b1f3a;
+color:white;
+padding:25px;
+
+}
+
+
+
+.logo{
+
+font-size:22px;
+font-weight:bold;
+margin-bottom:40px;
+
+}
+
+
+
+.sidebar a{
+
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+
+}
+
+
+
+.sidebar a:hover{
+
+background:#0066ff;
+
+}
+
+
+
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+
+
+.header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:white;
+padding:20px;
+border-radius:12px;
+
+}
+
+
+
+.profile{
+
+font-weight:bold;
+
+}
+
+
+
+
+.card-container{
+
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:30px;
+
+}
+
+
+
+.card{
+
+background:white;
+padding:25px;
+border-radius:12px;
+flex:1;
+min-width:220px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+
+🤖 AI Business Manager
+
+</div>
+
+
+
+<a href="#">Dashboard</a>
+
+<a href="#">AI Assistant</a>
+
+<a href="#">Customers</a>
+
+<a href="#">Analytics</a>
+
+<a href="#">Automation</a>
+
+<a href="#">Reports</a>
+
+<a href="#">Settings</a>
+
+<a href="index.html">Logout</a>
+
+
+
+</div>
+
+
+
+
+<div class="main">
+
+
+
+<div class="header">
+
+
+<h2>
+Business Dashboard
+</h2>
+
+
+<div class="profile">
+
+Welcome User
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="card-container">
+
+
+<div class="card">
+
+<h3>
+AI Assistant
+</h3>
+
+<p>
+Your intelligent business helper is ready.
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+Customers
+</h3>
+
+<p>
+Manage customer messages and information.
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+Analytics
+</h3>
+
+<p>
+Track your business performance.
+</p>
+
+</div>
+
+
+  </div>
+  
+<!-- ==========================================
+PART 2
+AI ASSISTANT + BUSINESS MODULES
+========================================== -->
+
+
+
+<section style="margin-top:40px;">
+
+<div class="card">
+
+
+<h3>
+🤖 AI Business Assistant
+</h3>
+
+
+<p>
+Ask your AI assistant for business advice, ideas, and solutions.
+</p>
+
+
+
+<textarea id="aiQuestion"
+placeholder="Example: How can I increase my customers?"
+style="
+width:100%;
+height:120px;
+margin-top:15px;
+padding:15px;
+border-radius:8px;
+border:1px solid #ddd;
+">
+</textarea>
+
+
+
+<button onclick="askAI()"
+style="
+margin-top:15px;
+padding:12px 25px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+
+Ask AI
+
+</button>
+
+
+
+<div id="aiResponse"
+style="
+margin-top:20px;
+padding:15px;
+background:#f4f7fb;
+border-radius:8px;
+">
+
+AI response will appear here.
+
+</div>
+
+
+</div>
+
+  </section>
+
+
+
+<section style="margin-top:40px;">
+
+
+<div class="card">
+
+
+<h3>
+👥 Customers
+</h3>
+
+
+<p>
+Customer management center.
+</p>
+
+
+<input id="customerName"
+placeholder="Customer name"
+style="
+padding:10px;
+margin-top:15px;
+width:100%;
+">
+
+
+
+<button onclick="addCustomer()"
+style="
+margin-top:15px;
+padding:12px 25px;
+background:#0b1f3a;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+
+Add Customer
+
+</button>
+
+
+
+<div id="customerList"
+style="
+margin-top:20px;
+">
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section style="margin-top:40px;">
+
+
+<div class="card">
+
+
+<h3>
+📊 Analytics
+</h3>
+
+
+<p>
+Business performance overview.
+</p>
+
+
+<div class="card-container">
+
+
+<div class="card">
+
+<h4>
+Customers
+</h4>
+
+<p id="customerCount">
+0
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h4>
+AI Requests
+</h4>
+
+<p id="requestCount">
+0
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h4>
+Automation Status
+</h4>
+
+<p>
+Active
+</p>
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+  </section>
+  
+<!-- ==========================================
+PART 3
+FUNCTIONS + FINAL CONNECTION
+========================================== -->
+
+
+<script>
+
+
+let aiRequests = 0;
+
+let customers = [];
+
+
+
+
+// AI ASSISTANT FUNCTION
+
+
+async function askAI(){
+
+const question = document.getElementById("aiQuestion").value.trim();
+
+if(!question){
+    alert("Please enter a question");
+    return;
+}
+
+aiRequests++;
+document.getElementById("requestCount").innerText = aiRequests;
+
+document.getElementById("aiResponse").innerHTML =
+"<b>AI Answer:</b><br><br>Thinking...";
+
+try{
+
+const response = await fetch("/api/ai",{
+    method:"POST",
+    headers:{
+        "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+        question:question
+    })
+});
+
+const data = await response.json();
+
+document.getElementById("aiResponse").innerHTML =
+"<b>AI Answer:</b><br><br>"+data.answer;
+
+}
+catch(error){
+
+document.getElementById("aiResponse").innerHTML =
+"<b>AI Error:</b><br><br>"+error.message;
+
+}
+
+  }
+
+
+
+// CUSTOMER FUNCTION
+
+
+function addCustomer(){
+
+
+const name =
+document.getElementById("customerName").value;
+
+
+
+if(!name){
+
+alert("Enter customer name");
+
+return;
+
+}
+
+
+
+customers.push(name);
+
+
+
+document.getElementById("customerCount").innerText =
+customers.length;
+
+
+
+document.getElementById("customerList").innerHTML +=
+
+`
+
+<p style="
+background:#f4f7fb;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+">
+
+${name}
+
+</p>
+
+`;
+
+
+
+}
+
+
+
+
+
+// SYSTEM CONNECTION STATUS
+
+
+function checkSystem(){
+
+
+if(window.AIBusinessManagerLoader){
+
+
+console.log(
+
+window.AIBusinessManagerLoader.status()
+
+);
+
+
+}
+
+
+}
+
+
+
+checkSystem();
+
+
+
+</script>
+
+
+
+
+
+</div>
+
+
+</body>
+
+  </html>
