@@ -1,1 +1,226 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Assistant Pro</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>AI Assistant Pro</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
+
+<a href="posts.html"><button>📝 Marketing</button></a>
+
+<a href="videos.html"><button>🎥 Videos</button></a>
+
+<a href="analytics.html"><button>📊 Analytics</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>🤖 AI Assistant Pro</h2>
+
+<div
+id="chatArea"
+style="height:420px;
+overflow-y:auto;
+background:#f7f7f7;
+border:1px solid #ddd;
+border-radius:10px;
+padding:15px;">
+
+<p>
+
+<b>AI:</b>
+
+Welcome to AI Business Manager.
+
+I can help you with customers, products, marketing, pricing, delivery and business advice.
+
+How may I assist you today?
+
+</p>
+
+</div>
+
+<br>
+
+<textarea
+
+id="question"
+
+placeholder="Type your message..."
+
+rows="4">
+
+</textarea>
+
+<br><br>
+
+<button id="sendButton">
+
+Send Message
+
+</button>
+
+<button id="clearButton">
+
+Clear Chat
+
+  </button>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://ai-business-manager.onrender.com";
+
+const chat =
+document.getElementById("chatArea");
+
+const question =
+document.getElementById("question");
+
+document
+.getElementById("sendButton")
+.addEventListener("click", askAI);
+
+document
+.getElementById("clearButton")
+.addEventListener("click", function(){
+
+chat.innerHTML = `
+<p>
+<b>AI:</b>
+Chat cleared.
+How can I help you today?
+</p>
+`;
+
+});
+
+question.addEventListener("keypress", function(event){
+
+if(event.key==="Enter" && !event.shiftKey){
+
+event.preventDefault();
+
+askAI();
+
+}
+
+});
+
+async function askAI(){
+
+let text = question.value.trim();
+
+if(text===""){
+
+alert("Please type a message.");
+
+return;
+
+}
+
+chat.innerHTML +=
+"<p><b>You:</b> " + text + "</p>";
+
+chat.innerHTML +=
+"<p id='thinking'><b>AI:</b> Thinking...</p>";
+
+chat.scrollTop = chat.scrollHeight;
+
+try{
+
+let response = await fetch(
+
+API_URL + "/api/ai",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+question:text
+
+})
+
+}
+
+);
+
+let data = await response.json();
+
+document.getElementById("thinking").remove();
+
+chat.innerHTML +=
+"<p><b>AI:</b> " + data.response + "</p>";
+
+question.value="";
+
+chat.scrollTop = chat.scrollHeight;
+
+}
+
+catch(error){
+
+document.getElementById("thinking").innerHTML =
+"<b>AI:</b> Unable to connect to the server.";
+
+console.log(error);
+
+}
+
+}
+  </script>
+  <script src="script.js"></script>
+
+</body>
+
+                                                   </html>
