@@ -1,181 +1,363 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI Assistant Pro</title>
+<title>AI Assistant</title>
 
-<link rel="stylesheet" href="style.css">
 
-</head>
+<style>
 
-<body>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
 
-<header class="topbar">
 
-<h1>AI Business Manager</h1>
+body{
 
-<p>AI Assistant Pro</p>
-
-</header>
-
-<div class="container">
-
-<div class="sidebar">
-
-<h2>MENU</h2>
-
-<a href="dashboard.html"><button>🏠 Dashboard</button></a>
-
-<a href="customers.html"><button>👥 Customers</button></a>
-
-<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
-
-<a href="posts.html"><button>📝 Marketing</button></a>
-
-<a href="videos.html"><button>🎥 Videos</button></a>
-
-<a href="analytics.html"><button>📊 Analytics</button></a>
-
-<a href="reports.html"><button>📄 Reports</button></a>
-
-<a href="settings.html"><button>⚙ Settings</button></a>
-
-</div>
-
-<div class="content">
-
-<div class="card">
-
-<h2>🤖 AI Assistant Pro</h2>
-
-<div
-id="chatArea"
-style="height:420px;
-overflow-y:auto;
-background:#f7f7f7;
-border:1px solid #ddd;
-border-radius:10px;
-padding:15px;">
-
-<p>
-
-<b>AI:</b>
-
-Welcome to AI Business Manager.
-
-I can help you with customers, products, marketing, pricing, delivery and business advice.
-
-How may I assist you today?
-
-</p>
-
-</div>
-
-<br>
-
-<textarea
-
-id="question"
-
-placeholder="Type your message..."
-
-rows="4">
-
-</textarea>
-
-<br><br>
-
-<button id="sendButton">
-
-Send Message
-
-</button>
-
-<button id="clearButton">
-
-Clear Chat
-
-  </button>
-  </div>
-
-</div>
-
-</div>
-
-<script>
-
-const API_URL =
-"https://ai-business-manager.onrender.com";
-
-const chat =
-document.getElementById("chatArea");
-
-const question =
-document.getElementById("question");
-
-document
-.getElementById("sendButton")
-.addEventListener("click", askAI);
-
-document
-.getElementById("clearButton")
-.addEventListener("click", function(){
-
-chat.innerHTML = `
-<p>
-<b>AI:</b>
-Chat cleared.
-How can I help you today?
-</p>
-`;
-
-});
-
-question.addEventListener("keypress", function(event){
-
-if(event.key==="Enter" && !event.shiftKey){
-
-event.preventDefault();
-
-askAI();
+background:#f4f7fb;
+display:flex;
+min-height:100vh;
 
 }
 
-});
+
+/* SIDEBAR */
+
+.sidebar{
+
+width:250px;
+background:#0b1f3a;
+color:white;
+padding:25px;
+
+}
+
+
+.logo{
+
+font-size:22px;
+font-weight:bold;
+margin-bottom:30px;
+
+}
+
+
+.business-logo{
+
+width:70px;
+height:70px;
+background:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+color:#0b1f3a;
+margin-bottom:15px;
+
+}
+
+
+.sidebar a{
+
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:8px;
+border-radius:8px;
+
+}
+
+
+.sidebar a:hover{
+
+background:#0066ff;
+
+}
+
+
+
+/* MAIN */
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+
+
+.header{
+
+background:white;
+padding:20px;
+border-radius:12px;
+margin-bottom:30px;
+
+}
+
+
+
+/* AI BOX */
+
+.ai-box{
+
+background:white;
+padding:30px;
+border-radius:12px;
+max-width:800px;
+
+}
+
+
+textarea{
+
+width:100%;
+height:120px;
+padding:15px;
+margin-top:15px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:16px;
+
+}
+
+
+
+button{
+
+margin-top:15px;
+padding:12px 25px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+
+}
+
+
+button:hover{
+
+background:#004ccc;
+
+}
+
+
+
+.response{
+
+margin-top:25px;
+background:#f4f7fb;
+padding:20px;
+border-radius:10px;
+min-height:100px;
+
+}
+
+
+
+@media(max-width:800px){
+
+body{
+
+display:block;
+
+}
+
+.sidebar{
+
+width:100%;
+
+}
+
+.main{
+
+padding:15px;
+
+}
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+
+NexaFlow AI
+
+</div>
+
+
+<div class="business-logo">
+
+🏢
+
+</div>
+
+
+<h3>
+Your Business
+</h3>
+
+
+<br>
+
+
+<a href="dashboard.html">
+Dashboard
+</a>
+
+
+<a href="ai-assistant.html">
+AI Assistant
+</a>
+
+
+<a href="customers.html">
+Customers
+</a>
+
+
+<a href="analytics.html">
+Analytics
+</a>
+
+
+<a href="automation.html">
+Automation
+</a>
+
+
+<a href="reports.html">
+Reports
+</a>
+
+
+<a href="settings.html">
+Settings
+</a>
+
+
+</div>
+
+
+
+
+
+<div class="main">
+
+
+
+<div class="header">
+
+<h2>
+🤖 AI Business Assistant
+</h2>
+
+<p>
+Ask questions and get intelligent business support.
+</p>
+
+</div>
+
+
+
+
+
+<div class="ai-box">
+
+
+<h3>
+Chat with AI
+</h3>
+
+
+<textarea 
+id="question"
+placeholder="Example: How can I increase my sales?">
+</textarea>
+
+
+
+<button onclick="askAI()">
+
+Ask AI
+
+</button>
+
+
+
+<div class="response" id="answer">
+
+AI answer will appear here.
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<script>
+
 
 async function askAI(){
 
-let text = question.value.trim();
 
-if(text===""){
+let question =
+document.getElementById("question").value;
 
-alert("Please type a message.");
+
+
+if(question.trim()==""){
+
+alert("Please enter a question");
 
 return;
 
 }
 
-chat.innerHTML +=
-"<p><b>You:</b> " + text + "</p>";
 
-chat.innerHTML +=
-"<p id='thinking'><b>AI:</b> Thinking...</p>";
 
-chat.scrollTop = chat.scrollHeight;
+document.getElementById("answer").innerHTML =
+"AI is thinking...";
+
+
 
 try{
 
-let response = await fetch(
 
-API_URL + "/api/ai",
-
-{
+let response = await fetch("/api/ai",{
 
 method:"POST",
 
@@ -187,40 +369,50 @@ headers:{
 
 body:JSON.stringify({
 
-question:text
+question:question
 
 })
 
-}
+});
 
-);
+
 
 let data = await response.json();
 
-document.getElementById("thinking").remove();
 
-chat.innerHTML +=
-"<p><b>AI:</b> " + data.response + "</p>";
 
-question.value="";
+document.getElementById("answer").innerHTML =
 
-chat.scrollTop = chat.scrollHeight;
+"<b>AI Answer:</b><br><br>" +
+
+data.answer;
+
+
 
 }
+
+
 
 catch(error){
 
-document.getElementById("thinking").innerHTML =
-"<b>AI:</b> Unable to connect to the server.";
 
-console.log(error);
+document.getElementById("answer").innerHTML =
+
+"AI connection error: " + error;
+
 
 }
 
+
+
 }
-  </script>
-  <script src="script.js"></script>
+
+
+
+</script>
+
+
 
 </body>
 
-</html>
+  </html>
