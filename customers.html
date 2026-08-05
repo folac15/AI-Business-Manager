@@ -4,507 +4,405 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Customers - AI Business Manager</title>
+<title>Customers</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+display:flex;
+background:#f4f7fb;
+min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:250px;
+background:#0b1f3a;
+color:white;
+padding:25px;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+margin-bottom:30px;
+}
+
+.business-logo{
+width:70px;
+height:70px;
+background:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+color:#0b1f3a;
+margin-bottom:15px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:8px;
+border-radius:8px;
+}
+
+.sidebar a:hover{
+background:#0066ff;
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+padding:30px;
+}
+
+.header{
+background:white;
+padding:20px;
+border-radius:12px;
+margin-bottom:25px;
+}
+
+.customer-box{
+background:white;
+padding:25px;
+border-radius:12px;
+margin-bottom:25px;
+}
+
+input,
+textarea{
+width:100%;
+padding:12px;
+margin-top:12px;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:15px;
+}
+
+textarea{
+height:100px;
+resize:none;
+}
+
+button{
+margin-top:15px;
+padding:12px 25px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#004ccc;
+}
+
+.customer-list{
+background:white;
+padding:25px;
+border-radius:12px;
+}
+
+.customer-card{
+background:#f4f7fb;
+padding:15px;
+margin-top:15px;
+border-radius:8px;
+border-left:5px solid #0066ff;
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+body{
+display:flex;
+}
+
+.sidebar{
+width:85px;
+min-height:100vh;
+padding:12px;
+}
+
+.logo{
+font-size:16px;
+}
+
+.business-logo{
+width:45px;
+height:45px;
+font-size:20px;
+}
+
+.sidebar h3{
+display:none;
+}
+
+.sidebar a{
+font-size:12px;
+padding:8px;
+}
+
+.main{
+flex:1;
+padding:15px;
+}
+
+}
+
+</style>
 
 </head>
 
-
 <body>
-
-
-<header class="topbar">
-
-<h1>AI Business Manager</h1>
-
-<p>Customer Relationship Management</p>
-
-</header>
-
-
-
-<div class="container">
-
-
 
 <div class="sidebar">
 
+<div class="logo">
+NexaFlow AI
+</div>
 
-<h2>MENU</h2>
+<div class="business-logo">
+🏢
+</div>
 
+<h3>Your Business</h3>
 
-<a href="dashboard.html">
-<button>🏠 Dashboard</button>
-</a>
+<br>
 
-
-<a href="customers.html">
-<button>👥 Customers</button>
-</a>
-
-
-<a href="ai_assistant.html">
-<button>🤖 AI Assistant</button>
-</a>
-
-
-<a href="posts.html">
-<button>📝 Marketing</button>
-</a>
-
-
-<a href="videos.html">
-<button>🎥 Videos</button>
-</a>
-
-
-<a href="analytics.html">
-<button>📊 Analytics</button>
-</a>
-
-
-<a href="reports.html">
-<button>📄 Reports</button>
-</a>
-
-
-<a href="settings.html">
-<button>⚙ Settings</button>
-</a>
-
+<a href="dashboard.html">Dashboard</a>
+<a href="ai-assistant.html">AI Assistant</a>
+<a href="customers.html">Customers</a>
+<a href="analytics.html">Analytics</a>
+<a href="automation.html">Automation</a>
+<a href="reports.html">Reports</a>
+<a href="settings.html">Settings</a>
 
 </div>
 
+<div class="main">
 
+<div class="header">
 
-<div class="content">
+<h2>👥 Customers Management</h2>
 
+<p>Manage customer information and AI replies.</p>
 
-<div class="card">
+</div>
 
+<div class="customer-box">
 
-<h2>➕ Add Customer</h2>
+<h3>Add Customer</h3>
 
-
-<label>Customer Name</label>
-
-<input 
+<input
+type="text"
 id="customerName"
+placeholder="Customer Name">
+
+<input
 type="text"
-placeholder="Enter customer name"
->
-
-
-
-<label>Phone Number</label>
-
-<input 
 id="customerPhone"
+placeholder="Phone Number">
+
+<input
 type="text"
-placeholder="Enter phone number"
->
-
-
-
-<label>Location</label>
-
-<input 
 id="customerLocation"
-type="text"
-placeholder="Enter location"
->
-
-
-
-<label>Customer Message</label>
+placeholder="Location">
 
 <textarea
 id="customerMessage"
-placeholder="Type customer message">
+placeholder="Customer Message">
 </textarea>
 
-
-<br><br>
-
-
-<button id="saveButton">
-
+<button onclick="saveCustomer()">
 Save Customer
-
 </button>
 
+<div
+id="saveStatus"
+style="margin-top:20px;font-weight:bold;">
+</div>
+
+</div>
+
+<div class="customer-list">
+
+<h3>Customer History</h3>
+
+<div id="customerHistory">
+
+Loading...
+
+</div>
+
+</div>
 
   </div>
-  <!-- CUSTOMER HISTORY -->
-
-
-<div class="card">
-
-
-<h2>👥 Customer History</h2>
-
-
-<input
-id="searchCustomer"
-type="text"
-placeholder="🔍 Search customer..."
->
-
-
-<br><br>
-
-
-<div id="customerList">
-
-<p>
-Loading customers...
-</p>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-<script>
-
-
-const API_URL =
-"https://ai-business-manager.onrender.com";
-
-
-
-document
-.getElementById("saveButton")
-.addEventListener(
-"click",
-saveCustomer
-);
-
-
+  <script>
 
 async function saveCustomer(){
 
+const name=document.getElementById("customerName").value.trim();
+const phone=document.getElementById("customerPhone").value.trim();
+const location=document.getElementById("customerLocation").value.trim();
+const message=document.getElementById("customerMessage").value.trim();
 
-let customer = {
+if(name=="" || message==""){
 
-
-name:
-document
-.getElementById("customerName")
-.value
-.trim(),
-
-
-phone:
-document
-.getElementById("customerPhone")
-.value
-.trim(),
-
-
-location:
-document
-.getElementById("customerLocation")
-.value
-.trim(),
-
-
-message:
-document
-.getElementById("customerMessage")
-.value
-.trim()
-
-
-};
-
-
-
-if(customer.name === "" || customer.message === ""){
-
-
-alert("Please enter customer name and message.");
-
+document.getElementById("saveStatus").innerHTML="Please enter customer name and message.";
 return;
-
 
 }
 
-
+document.getElementById("saveStatus").innerHTML="Saving customer...";
 
 try{
 
-
-let response =
-await fetch(
-API_URL + "/api/customers",
-{
-
+const response=await fetch("/api/customers",{
 
 method:"POST",
 
-
 headers:{
-
-
 "Content-Type":"application/json"
-
-
 },
 
+body:JSON.stringify({
 
-body:JSON.stringify(customer)
+name:name,
+phone:phone,
+location:location,
+message:message
 
+})
 
-}
+});
 
-);
+const result=await response.json();
 
+if(response.ok){
 
+document.getElementById("saveStatus").innerHTML=
+"✅ Customer saved successfully.";
 
-let data =
-await response.json();
-
-
-
-alert("Customer saved successfully!");
-
-
-
-document
-.getElementById("customerName")
-.value="";
-
-
-document
-.getElementById("customerPhone")
-.value="";
-
-
-document
-.getElementById("customerLocation")
-.value="";
-
-
-document
-.getElementById("customerMessage")
-.value="";
-
-
+document.getElementById("customerName").value="";
+document.getElementById("customerPhone").value="";
+document.getElementById("customerLocation").value="";
+document.getElementById("customerMessage").value="";
 
 loadCustomers();
 
+}else{
 
+document.getElementById("saveStatus").innerHTML=
+"❌ "+(result.error || "Unable to save customer.");
+
+}
+
+}catch(error){
+
+document.getElementById("saveStatus").innerHTML=
+"❌ Connection error.";
+
+}
 
 }
 
 
-catch(error){
 
-
-console.log(error);
-
-
-alert("Unable to save customer. Check server connection.");
-
-
-}
-
-
-
-}
-  async function loadCustomers(){
-
+async function loadCustomers(){
 
 try{
 
+const response=await fetch("/api/customers");
 
-let response =
-await fetch(
-API_URL + "/api/customers"
-);
+const customers=await response.json();
 
+let html="";
 
+if(!Array.isArray(customers) || customers.length===0){
 
-let customers =
-await response.json();
+html="<p>No customers found.</p>";
 
+}else{
 
+customers.forEach(customer=>{
 
-let area =
-document.getElementById("customerList");
+html+=`
 
+<div class="customer-card">
 
+<b>Name:</b> ${customer.name || ""}<br>
 
-area.innerHTML="";
+<b>Phone:</b> ${customer.phone || ""}<br>
 
+<b>Location:</b> ${customer.location || ""}<br><br>
 
-
-if(customers.length === 0){
-
-
-area.innerHTML =
-"<p>No customers available.</p>";
-
-
-return;
-
-
-}
-
-
-
-customers.forEach(function(customer){
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-
-<h3>👤 ${customer.name || "Unknown"}</h3>
-
-
-<p>
-<b>Phone:</b>
-${customer.phone || "Not provided"}
-</p>
-
-
-<p>
-<b>Location:</b>
-${customer.location || "Not provided"}
-</p>
-
-
-<p>
 <b>Message:</b><br>
-${customer.message}
-</p>
 
+${customer.message || ""}
 
-<p>
-<b>🤖 AI Reply:</b><br>
-${customer.ai_reply || "No reply"}
-</p>
+<br><br>
 
+<b>AI Reply:</b><br>
 
-<p>
-<b>Date:</b>
+${customer.ai_reply || ""}
+
+<br><br>
+
+<small>
+
 ${customer.created_at || ""}
-</p>
 
-
-<span class="status-online">
-Active Customer
-</span>
-
+</small>
 
 </div>
 
 `;
 
-
-
 });
 
-
-
 }
 
-catch(error){
+document.getElementById("customerHistory").innerHTML=html;
 
+}catch(error){
 
-console.log(error);
+document.getElementById("customerHistory").innerHTML=
+"Unable to load customers.";
 
-
-document.getElementById("customerList").innerHTML =
-
-"<p>Unable to load customers.</p>";
-
+}
 
 }
 
 
 
-}
+window.onload=function(){
 
+window.scrollTo(0,0);
 
+loadCustomers();
 
-
-document
-.getElementById("searchCustomer")
-.addEventListener(
-"keyup",
-function(){
-
-
-let search =
-this.value.toLowerCase();
-
-
-
-let cards =
-document.querySelectorAll(
-"#customerList .card"
-);
-
-
-
-cards.forEach(function(card){
-
-
-if(card.innerText.toLowerCase().includes(search)){
-
-
-card.style.display="block";
-
-
-}
-
-else{
-
-
-card.style.display="none";
-
-
-}
-
-
-});
-
-
-
-});
-
-
-
-
-window.onload =
-loadCustomers;
-
-
+};
 
 </script>
-
-
-
-<script src="script.js"></script>
-
 
 </body>
 
