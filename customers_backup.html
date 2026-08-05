@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customers - AI Business Manager</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Customer Relationship Management</p>
+
+</header>
+
+
+
+<div class="container">
+
+
+
+<div class="sidebar">
+
+
+<h2>MENU</h2>
+
+
+<a href="dashboard.html">
+<button>🏠 Dashboard</button>
+</a>
+
+
+<a href="customers.html">
+<button>👥 Customers</button>
+</a>
+
+
+<a href="ai_assistant.html">
+<button>🤖 AI Assistant</button>
+</a>
+
+
+<a href="posts.html">
+<button>📝 Marketing</button>
+</a>
+
+
+<a href="videos.html">
+<button>🎥 Videos</button>
+</a>
+
+
+<a href="analytics.html">
+<button>📊 Analytics</button>
+</a>
+
+
+<a href="reports.html">
+<button>📄 Reports</button>
+</a>
+
+
+<a href="settings.html">
+<button>⚙ Settings</button>
+</a>
+
+
+</div>
+
+
+
+<div class="content">
+
+
+<div class="card">
+
+
+<h2>➕ Add Customer</h2>
+
+
+<label>Customer Name</label>
+
+<input 
+id="customerName"
+type="text"
+placeholder="Enter customer name"
+>
+
+
+
+<label>Phone Number</label>
+
+<input 
+id="customerPhone"
+type="text"
+placeholder="Enter phone number"
+>
+
+
+
+<label>Location</label>
+
+<input 
+id="customerLocation"
+type="text"
+placeholder="Enter location"
+>
+
+
+
+<label>Customer Message</label>
+
+<textarea
+id="customerMessage"
+placeholder="Type customer message">
+</textarea>
+
+
+<br><br>
+
+
+<button id="saveButton">
+
+Save Customer
+
+</button>
+
+
+  </div>
+  <!-- CUSTOMER HISTORY -->
+
+
+<div class="card">
+
+
+<h2>👥 Customer History</h2>
+
+
+<input
+id="searchCustomer"
+type="text"
+placeholder="🔍 Search customer..."
+>
+
+
+<br><br>
+
+
+<div id="customerList">
+
+<p>
+Loading customers...
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+const API_URL =
+"https://ai-business-manager.onrender.com";
+
+
+
+document
+.getElementById("saveButton")
+.addEventListener(
+"click",
+saveCustomer
+);
+
+
+
+async function saveCustomer(){
+
+
+let customer = {
+
+
+name:
+document
+.getElementById("customerName")
+.value
+.trim(),
+
+
+phone:
+document
+.getElementById("customerPhone")
+.value
+.trim(),
+
+
+location:
+document
+.getElementById("customerLocation")
+.value
+.trim(),
+
+
+message:
+document
+.getElementById("customerMessage")
+.value
+.trim()
+
+
+};
+
+
+
+if(customer.name === "" || customer.message === ""){
+
+
+alert("Please enter customer name and message.");
+
+return;
+
+
+}
+
+
+
+try{
+
+
+let response =
+await fetch(
+API_URL + "/api/customers",
+{
+
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+
+},
+
+
+body:JSON.stringify(customer)
+
+
+}
+
+);
+
+
+
+let data =
+await response.json();
+
+
+
+alert("Customer saved successfully!");
+
+
+
+document
+.getElementById("customerName")
+.value="";
+
+
+document
+.getElementById("customerPhone")
+.value="";
+
+
+document
+.getElementById("customerLocation")
+.value="";
+
+
+document
+.getElementById("customerMessage")
+.value="";
+
+
+
+loadCustomers();
+
+
+
+}
+
+
+catch(error){
+
+
+console.log(error);
+
+
+alert("Unable to save customer. Check server connection.");
+
+
+}
+
+
+
+}
+  async function loadCustomers(){
+
+
+try{
+
+
+let response =
+await fetch(
+API_URL + "/api/customers"
+);
+
+
+
+let customers =
+await response.json();
+
+
+
+let area =
+document.getElementById("customerList");
+
+
+
+area.innerHTML="";
+
+
+
+if(customers.length === 0){
+
+
+area.innerHTML =
+"<p>No customers available.</p>";
+
+
+return;
+
+
+}
+
+
+
+customers.forEach(function(customer){
+
+
+
+area.innerHTML += `
+
+<div class="card">
+
+
+<h3>👤 ${customer.name || "Unknown"}</h3>
+
+
+<p>
+<b>Phone:</b>
+${customer.phone || "Not provided"}
+</p>
+
+
+<p>
+<b>Location:</b>
+${customer.location || "Not provided"}
+</p>
+
+
+<p>
+<b>Message:</b><br>
+${customer.message}
+</p>
+
+
+<p>
+<b>🤖 AI Reply:</b><br>
+${customer.ai_reply || "No reply"}
+</p>
+
+
+<p>
+<b>Date:</b>
+${customer.created_at || ""}
+</p>
+
+
+<span class="status-online">
+Active Customer
+</span>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+document.getElementById("customerList").innerHTML =
+
+"<p>Unable to load customers.</p>";
+
+
+}
+
+
+
+}
+
+
+
+
+document
+.getElementById("searchCustomer")
+.addEventListener(
+"keyup",
+function(){
+
+
+let search =
+this.value.toLowerCase();
+
+
+
+let cards =
+document.querySelectorAll(
+"#customerList .card"
+);
+
+
+
+cards.forEach(function(card){
+
+
+if(card.innerText.toLowerCase().includes(search)){
+
+
+card.style.display="block";
+
+
+}
+
+else{
+
+
+card.style.display="none";
+
+
+}
+
+
+});
+
+
+
+});
+
+
+
+
+window.onload =
+loadCustomers;
+
+
+
+</script>
+
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+  </html>
+  
