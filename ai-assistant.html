@@ -169,24 +169,44 @@ min-height:100px;
 @media(max-width:800px){
 
 body{
-
-display:block;
-
+    display:flex;
 }
 
 .sidebar{
+    width:85px;
+    min-height:100vh;
+    padding:12px;
+}
 
-width:100%;
+.logo{
+    font-size:16px;
+}
 
+.business-logo{
+    width:45px;
+    height:45px;
+    font-size:20px;
+}
+
+.sidebar h3{
+    display:none;
+}
+
+.sidebar a{
+    font-size:12px;
+    padding:8px;
 }
 
 .main{
-
-padding:15px;
-
+    flex:1;
+    padding:15px;
 }
 
+.ai-box{
+    max-width:100%;
 }
+
+    }
 
 
 </style>
