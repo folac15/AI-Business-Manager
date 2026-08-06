@@ -16,6 +16,8 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/customers"
 
+SUPABASE_STORAGE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/storage/v1/object/business-logos"
+
 BUSINESS_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/businesses"
 
 SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
@@ -256,6 +258,79 @@ def save_business():
 
     return jsonify({
         "message": "Business profile saved successfully."
+    })
+# ===============================
+# LOGO UPLOAD API
+# ===============================
+
+@app.route("/api/upload-logo", methods=["POST"])
+def upload_logo():
+
+    if "logo" not in request.files:
+        return jsonify({
+            "error": "No logo file provided"
+        }), 400
+
+
+    file = request.files["logo"]
+
+
+    if file.filename == "":
+        return jsonify({
+            "error": "No selected file"
+        }), 400
+
+
+    filename = file.filename
+
+
+    storage_url = f"{SUPABASE_STORAGE_URL}/{filename}"
+
+
+    upload_headers = {
+
+        "apikey": SUPABASE_KEY,
+
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+
+        "Content-Type": file.content_type
+
+    }
+
+
+    response = requests.post(
+
+        storage_url,
+
+        headers=upload_headers,
+
+        data=file.read()
+
+    )
+
+
+    if response.status_code not in [200,201]:
+
+        return jsonify({
+
+            "error": response.text
+
+        }), response.status_code
+
+
+
+    public_url = (
+        "https://xfjroysinifwncfjvrsg.supabase.co/storage/v1/object/public/business-logos/"
+        + filename
+    )
+
+
+    return jsonify({
+
+        "message":"Logo uploaded successfully",
+
+        "logo_url":public_url
+
     })
 # ===============================
 # START SERVER
