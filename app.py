@@ -214,8 +214,9 @@ def get_business():
         BUSINESS_URL,
         headers=HEADERS,
         params={
-            "select": "*",
-            "limit": 1
+    "select": "*",
+    "order": "id.desc",
+    "limit": 1
         }
     )
 
