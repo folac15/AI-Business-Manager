@@ -268,20 +268,18 @@ def upload_logo():
 
     app.logger.info(f"FILES RECEIVED: {request.files}")
 
-    if "logo" not in request.files:
-        app.logger.info(f"REQUEST FILE KEYS: {list(request.files.keys())}")
-
-        return jsonify({
-            "error": "No logo file provided",
-            "received": list(request.files.keys())
-        }), 400
+   if "logo" not in request.files:
+    return jsonify({
+        "error": "No logo file provided",
+        "received_keys": list(request.files.keys())
+    }), 400
 
     file = request.files["logo"]
 
     if file.filename == "":
-        return jsonify({
-            "error": "No selected file"
-        }), 400
+    return jsonify({
+        "error": "Filename is empty"
+    }), 400
 
     filename = file.filename
 
