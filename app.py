@@ -234,13 +234,13 @@ def save_business():
     data = request.get_json() or {}
 
     business = {
-        "business_name": data.get("business_name", ""),
-        "phone": data.get("phone", ""),
-        "email": data.get("email", ""),
-        "description": data.get("description", ""),
-        "logo": data.get("logo", "")
-    }
-
+    "business_name": data.get("business_name", ""),
+    "phone": data.get("phone", ""),
+    "email": data.get("email", ""),
+    "address": data.get("address", ""),
+    "description": data.get("description", ""),
+    "logo": data.get("logo", "")
+        }
     response = requests.post(
         BUSINESS_URL,
         headers=HEADERS,
