@@ -1,204 +1,583 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Analytics Dashboard</title>
+<title>Analytics</title>
 
-<link rel="stylesheet" href="style.css">
 
-</head>
+<style>
 
-<body>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
 
-<header class="topbar">
 
-<h1>AI Business Manager</h1>
+body{
 
-<p>Business Analytics Dashboard</p>
-
-</header>
-
-<div class="container">
-
-<div class="sidebar">
-
-<h2>MENU</h2>
-
-<a href="dashboard.html"><button>🏠 Dashboard</button></a>
-
-<a href="customers.html"><button>👥 Customers</button></a>
-
-<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
-
-<a href="posts.html"><button>📝 Marketing</button></a>
-
-<a href="videos.html"><button>🎥 Videos</button></a>
-
-<a href="analytics.html"><button>📊 Analytics</button></a>
-
-<a href="reports.html"><button>📄 Reports</button></a>
-
-<a href="settings.html"><button>⚙ Settings</button></a>
-
-</div>
-
-<div class="content">
-
-<div class="card">
-
-<h2>📊 Business Overview</h2>
-
-<div style="display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:15px;">
-
-<div class="card">
-
-<h3>Total Customers</h3>
-
-<h1 id="totalCustomers">0</h1>
-
-</div>
-
-<div class="card">
-
-<h3>Marketing Posts</h3>
-
-<h1 id="totalPosts">0</h1>
-
-</div>
-
-<div class="card">
-
-<h3>Saved Videos</h3>
-
-<h1 id="totalVideos">0</h1>
-
-</div>
-
-<div class="card">
-
-<h3>AI Conversations</h3>
-
-<h1 id="totalChats">0</h1>
-
-</div>
-
-</div>
-
-                                                    </div>
-  <div class="card">
-
-<h2>📈 Business Activity</h2>
-
-<table style="width:100%;border-collapse:collapse;">
-
-<tr>
-
-<td><b>Today's Customers</b></td>
-
-<td id="todayCustomers">0</td>
-
-</tr>
-
-<tr>
-
-<td><b>Today's Posts</b></td>
-
-<td id="todayPosts">0</td>
-
-</tr>
-
-<tr>
-
-<td><b>Today's Videos</b></td>
-
-<td id="todayVideos">0</td>
-
-</tr>
-
-<tr>
-
-<td><b>System Status</b></td>
-
-<td style="color:green;"><b>🟢 Online</b></td>
-
-</tr>
-
-</table>
-
-</div>
-
-<div class="card">
-
-<h2>📋 Quick Summary</h2>
-
-<p id="summaryText">
-
-Loading business statistics...
-
-</p>
-
-</div>
-
-</div>
-
-                                                      </div>
-  <script>
-
-function loadAnalytics(){
-
-    // Customers are currently stored in Supabase,
-    // so we will connect this later.
-    document.getElementById("totalCustomers").innerHTML = "--";
-
-    // Posts
-    let posts =
-    JSON.parse(localStorage.getItem("posts")) || [];
-
-    document.getElementById("totalPosts").innerHTML =
-    posts.length;
-
-    // Videos
-    let videos =
-    JSON.parse(localStorage.getItem("videos")) || [];
-
-    document.getElementById("totalVideos").innerHTML =
-    videos.length;
-
-    // AI conversations (prepared for future backend tracking)
-    let chats =
-    JSON.parse(localStorage.getItem("aiChats")) || [];
-
-    document.getElementById("totalChats").innerHTML =
-    chats.length;
-
-    // Today's activity
-    document.getElementById("todayCustomers").innerHTML = "--";
-    document.getElementById("todayPosts").innerHTML = posts.length;
-    document.getElementById("todayVideos").innerHTML = videos.length;
-
-    // Summary
-    document.getElementById("summaryText").innerHTML =
-    "Your business currently has <b>" +
-    posts.length +
-    "</b> saved marketing posts, <b>" +
-    videos.length +
-    "</b> saved videos, and the analytics dashboard is ready for future real-time reporting.";
+display:flex;
+background:#f4f7fb;
+min-height:100vh;
 
 }
 
-window.onload = loadAnalytics;
+
+/* SIDEBAR */
+
+.sidebar{
+
+width:250px;
+background:#0b1f3a;
+color:white;
+padding:25px;
+
+}
+
+
+.logo{
+
+font-size:22px;
+font-weight:bold;
+margin-bottom:30px;
+
+}
+
+
+.business-logo{
+
+width:70px;
+height:70px;
+background:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+color:#0b1f3a;
+margin-bottom:15px;
+
+}
+
+
+.sidebar a{
+
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:8px;
+border-radius:8px;
+
+}
+
+
+.sidebar a:hover{
+
+background:#0066ff;
+
+}
+
+
+/* MAIN */
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+
+.header{
+
+background:white;
+padding:20px;
+border-radius:12px;
+margin-bottom:30px;
+
+}
+
+
+
+/* ANALYTICS CARDS */
+
+
+.analytics-grid{
+
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+
+}
+
+
+.card{
+
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+
+}
+
+
+.card h3{
+
+margin-bottom:15px;
+
+}
+
+
+.number{
+
+font-size:35px;
+font-weight:bold;
+color:#0066ff;
+
+}
+
+
+
+/* ACTIVITY */
+
+
+.activity{
+
+margin-top:30px;
+background:white;
+padding:25px;
+border-radius:12px;
+
+}
+
+
+.activity-item{
+
+background:#f4f7fb;
+padding:15px;
+margin-top:12px;
+border-radius:8px;
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+
+body{
+
+display:flex;
+
+}
+
+
+.sidebar{
+
+width:85px;
+padding:12px;
+
+}
+
+
+.logo{
+
+font-size:16px;
+
+}
+
+
+.business-logo{
+
+width:45px;
+height:45px;
+font-size:20px;
+
+}
+
+
+.sidebar h3{
+
+display:none;
+
+}
+
+
+.sidebar a{
+
+font-size:12px;
+padding:8px;
+
+}
+
+
+.main{
+
+padding:15px;
+
+}
+
+
+.analytics-grid{
+
+grid-template-columns:1fr;
+
+}
+
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+
+NexaFlow AI
+
+</div>
+
+
+<div class="business-logo">
+
+🏢
+
+</div>
+
+
+<h3>
+Your Business
+</h3>
+
+
+<br>
+
+
+<a href="dashboard.html">
+Dashboard
+</a>
+
+
+<a href="ai-assistant.html">
+AI Assistant
+</a>
+
+
+<a href="customers.html">
+Customers
+</a>
+
+
+<a href="analytics.html">
+Analytics
+</a>
+
+
+<a href="automation.html">
+Automation
+</a>
+
+
+<a href="reports.html">
+Reports
+</a>
+
+
+<a href="settings.html">
+Settings
+</a>
+
+
+</div>
+
+
+
+
+<div class="main">
+
+
+
+<div class="header">
+
+
+<h2>
+📊 Business Analytics
+</h2>
+
+
+<p>
+Monitor your business performance.
+</p>
+
+
+</div>
+
+
+
+
+<div class="analytics-grid">
+
+
+<div class="card">
+
+<h3>
+Customers
+</h3>
+
+<div class="number" id="customerTotal">
+0
+</div>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+AI Conversations
+</h3>
+
+<div class="number" id="aiTotal">
+0
+</div>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+Messages
+</h3>
+
+<div class="number" id="messageTotal">
+0
+</div>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+Automation
+</h3>
+
+<div class="number">
+ON
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+
+<div class="activity">
+
+
+<h3>
+Recent Customer Activity
+</h3>
+
+
+<div id="activityList">
+
+Loading activity...
+
+</div>
+
+
+  </div>
+  <script>
+
+
+async function loadAnalytics(){
+
+
+try{
+
+
+const response = await fetch("/api/customers");
+
+
+const customers = await response.json();
+
+
+
+if(Array.isArray(customers)){
+
+
+/* TOTAL CUSTOMERS */
+
+document.getElementById("customerTotal").innerText =
+customers.length;
+
+
+
+/* TOTAL MESSAGES */
+
+document.getElementById("messageTotal").innerText =
+customers.length;
+
+
+
+/* AI CONVERSATIONS */
+
+let aiCount = 0;
+
+
+customers.forEach(customer=>{
+
+
+if(customer.ai_reply){
+
+aiCount++;
+
+}
+
+
+});
+
+
+document.getElementById("aiTotal").innerText =
+aiCount;
+
+
+
+/* RECENT ACTIVITY */
+
+
+let html="";
+
+
+if(customers.length===0){
+
+
+html="<p>No customer activity yet.</p>";
+
+
+}else{
+
+
+customers.slice(0,10).forEach(customer=>{
+
+
+html += `
+
+<div class="activity-item">
+
+<b>
+${customer.name || "Customer"}
+</b>
+
+<br><br>
+
+Message:
+
+<br>
+
+${customer.message || ""}
+
+
+<br><br>
+
+AI Reply:
+
+<br>
+
+${customer.ai_reply || ""}
+
+
+<br><br>
+
+<small>
+
+${customer.created_at || ""}
+
+</small>
+
+
+</div>
+
+`;
+
+
+});
+
+
+}
+
+
+
+document.getElementById("activityList").innerHTML =
+html;
+
+
+
+}
+
+
+
+}catch(error){
+
+
+document.getElementById("activityList").innerHTML =
+"Unable to load analytics data.";
+
+
+}
+
+
+
+}
+
+
+
+
+window.onload=function(){
+
+
+window.scrollTo(0,0);
+
+
+loadAnalytics();
+
+
+};
+
 
 </script>
 
-<script src="script.js"></script>
 
 </body>
 
