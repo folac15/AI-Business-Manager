@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -8,151 +7,565 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Business Reports</title>
+<title>Reports</title>
 
-<link rel="stylesheet" href="style.css">
 
-</head>
+<style>
 
-<body>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
 
-<header class="topbar">
 
-<h1>AI Business Manager</h1>
+body{
 
-<p>Business Reports Center</p>
-
-</header>
-
-<div class="container">
-
-<div class="sidebar">
-
-<h2>MENU</h2>
-
-<a href="dashboard.html"><button>🏠 Dashboard</button></a>
-
-<a href="customers.html"><button>👥 Customers</button></a>
-
-<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
-
-<a href="posts.html"><button>📝 Marketing</button></a>
-
-<a href="videos.html"><button>🎥 Videos</button></a>
-
-<a href="analytics.html"><button>📊 Analytics</button></a>
-
-<a href="reports.html"><button>📄 Reports</button></a>
-
-<a href="settings.html"><button>⚙ Settings</button></a>
-
-</div>
-
-<div class="content">
-
-<div class="card">
-
-<h2>📄 Business Report Summary</h2>
-
-<table style="width:100%;border-collapse:collapse;">
-
-<tr>
-
-<td><b>Total Customers</b></td>
-
-<td id="reportCustomers">--</td>
-
-</tr>
-
-<tr>
-
-<td><b>Total Marketing Posts</b></td>
-
-<td id="reportPosts">0</td>
-
-</tr>
-
-<tr>
-
-<td><b>Total Videos</b></td>
-
-<td id="reportVideos">0</td>
-
-</tr>
-
-<tr>
-
-<td><b>AI Conversations</b></td>
-
-<td id="reportChats">0</td>
-
-</tr>
-
-</table>
-
-                       </div>
-  <div class="card">
-
-<h2>📊 Report Details</h2>
-
-<p id="reportSummary">
-
-Loading report...
-
-</p>
-
-<button id="refreshReport">
-
-🔄 Refresh Report
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-function loadReport(){
-
-let posts =
-JSON.parse(localStorage.getItem("posts")) || [];
-
-let videos =
-JSON.parse(localStorage.getItem("videos")) || [];
-
-let chats =
-JSON.parse(localStorage.getItem("aiChats")) || [];
-
-document.getElementById("reportCustomers").innerHTML = "--";
-document.getElementById("reportPosts").innerHTML = posts.length;
-document.getElementById("reportVideos").innerHTML = videos.length;
-document.getElementById("reportChats").innerHTML = chats.length;
-
-document.getElementById("reportSummary").innerHTML =
-
-"Business Summary:<br><br>" +
-
-"📝 Marketing Posts: <b>" + posts.length + "</b><br>" +
-
-"🎥 Saved Videos: <b>" + videos.length + "</b><br>" +
-
-"🤖 AI Conversations: <b>" + chats.length + "</b><br><br>" +
-
-"The reports module is working correctly and is ready for future PDF and Excel export.";
+display:flex;
+background:#f4f7fb;
+min-height:100vh;
 
 }
 
-document.getElementById("refreshReport").onclick = loadReport;
 
-window.onload = loadReport;
+/* SIDEBAR */
+
+.sidebar{
+
+width:250px;
+background:#0b1f3a;
+color:white;
+padding:25px;
+
+}
+
+
+.logo{
+
+font-size:22px;
+font-weight:bold;
+margin-bottom:30px;
+
+}
+
+
+.business-logo{
+
+width:70px;
+height:70px;
+background:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+color:#0b1f3a;
+margin-bottom:15px;
+
+}
+
+
+.sidebar a{
+
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:8px;
+border-radius:8px;
+
+}
+
+
+.sidebar a:hover{
+
+background:#0066ff;
+
+}
+
+
+
+/* MAIN */
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+
+
+.header{
+
+background:white;
+padding:20px;
+border-radius:12px;
+margin-bottom:30px;
+
+}
+
+
+
+/* REPORT CARDS */
+
+.report-grid{
+
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+
+}
+
+
+.card{
+
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+
+}
+
+
+.card h3{
+
+margin-bottom:15px;
+
+}
+
+
+.number{
+
+font-size:35px;
+font-weight:bold;
+color:#0066ff;
+
+}
+
+
+
+/* REPORT SECTION */
+
+.report-section{
+
+margin-top:30px;
+background:white;
+padding:25px;
+border-radius:12px;
+
+}
+
+
+.report-item{
+
+background:#f4f7fb;
+padding:15px;
+margin-top:10px;
+border-radius:8px;
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+
+body{
+
+display:flex;
+
+}
+
+
+.sidebar{
+
+width:85px;
+padding:12px;
+
+}
+
+
+.logo{
+
+font-size:16px;
+
+}
+
+
+.business-logo{
+
+width:45px;
+height:45px;
+font-size:20px;
+
+}
+
+
+.sidebar h3{
+
+display:none;
+
+}
+
+
+.sidebar a{
+
+font-size:12px;
+padding:8px;
+
+}
+
+
+.main{
+
+padding:15px;
+
+}
+
+
+.report-grid{
+
+grid-template-columns:1fr;
+
+}
+
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+
+NexaFlow AI
+
+</div>
+
+
+<div class="business-logo">
+
+📑
+
+</div>
+
+
+<h3>Your Business</h3>
+
+
+<br>
+
+
+<a href="dashboard.html">
+Dashboard
+</a>
+
+
+<a href="ai-assistant.html">
+AI Assistant
+</a>
+
+
+<a href="customers.html">
+Customers
+</a>
+
+
+<a href="analytics.html">
+Analytics
+</a>
+
+
+<a href="automation.html">
+Automation
+</a>
+
+
+<a href="reports.html">
+Reports
+</a>
+
+
+<a href="settings.html">
+Settings
+</a>
+
+
+</div>
+
+
+
+<div class="main">
+
+
+<div class="header">
+
+<h2>
+📑 Business Reports
+</h2>
+
+<p>
+View your business performance reports.
+</p>
+
+</div>
+
+
+
+<div class="report-grid">
+
+
+<div class="card">
+
+<h3>
+Customers
+</h3>
+
+<div class="number" id="totalCustomers">
+0
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+AI Conversations
+</h3>
+
+<div class="number" id="totalAI">
+0
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+Automation
+</h3>
+
+<div class="number">
+ON
+</div>
+
+</div>
+
+
+</div>
+
+
+
+<div class="report-section">
+
+
+<h3>
+Recent Report Activity
+</h3>
+
+
+<div id="reportActivity">
+
+Loading reports...
+
+</div>
+
+
+  </div>
+  <script>
+
+
+async function loadReports(){
+
+
+try{
+
+
+const response = await fetch("/api/customers");
+
+
+const customers = await response.json();
+
+
+
+if(Array.isArray(customers)){
+
+
+
+// TOTAL CUSTOMERS
+
+document.getElementById("totalCustomers").innerText =
+customers.length;
+
+
+
+// TOTAL AI CONVERSATIONS
+
+let aiCount = 0;
+
+
+customers.forEach(customer=>{
+
+
+if(customer.ai_reply){
+
+aiCount++;
+
+}
+
+
+});
+
+
+
+document.getElementById("totalAI").innerText =
+aiCount;
+
+
+
+// REPORT ACTIVITY
+
+
+let html="";
+
+
+
+if(customers.length===0){
+
+
+html="<p>No report activity available.</p>";
+
+
+}else{
+
+
+customers.slice(0,10).forEach(customer=>{
+
+
+html += `
+
+
+<div class="report-item">
+
+
+<b>
+Customer:
+</b>
+
+${customer.name || "Unknown"}
+
+
+<br><br>
+
+
+<b>
+Message:
+</b>
+
+<br>
+
+${customer.message || ""}
+
+
+
+<br><br>
+
+
+<b>
+AI Response:
+</b>
+
+<br>
+
+${customer.ai_reply || ""}
+
+
+
+<br><br>
+
+
+<small>
+
+${customer.created_at || ""}
+
+</small>
+
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+}
+
+
+
+document.getElementById("reportActivity").innerHTML =
+html;
+
+
+
+}
+
+
+
+}catch(error){
+
+
+document.getElementById("reportActivity").innerHTML =
+
+"Unable to load reports.";
+
+
+}
+
+
+
+}
+
+
+
+
+
+window.onload=function(){
+
+
+window.scrollTo(0,0);
+
+
+loadReports();
+
+
+};
+
+
 
 </script>
 
-<script src="script.js"></script>
+
 
 </body>
 
-                           </html>
+</html>
