@@ -266,13 +266,15 @@ def save_business():
 @app.route("/api/upload-logo", methods=["POST"])
 def upload_logo():
 
-    print("FILES RECEIVED:", request.files)
+   app.logger.info(f"FILES RECEIVED: {request.files}") 
 
     if "logo" not in request.files:
-        return jsonify({
-            "error": "No logo file provided",
-            "received": list(request.files.keys())
-        }), 400
+        app.logger.info(f"REQUEST FILE KEYS: {list(request.files.keys())}")
+
+return jsonify({
+    "error": "No logo file provided",
+    "received": list(request.files.keys())
+}), 400
 
     file = request.files["logo"]
 
