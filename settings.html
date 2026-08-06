@@ -288,36 +288,92 @@ reader.readAsDataURL(file);
 
 async function saveSettings(){
 
-const business={
-
-business_name:
-document.getElementById("businessName").value.trim(),
-
-phone:
-document.getElementById("businessPhone").value.trim(),
-
-email:
-document.getElementById("businessEmail").value.trim(),
-
-description:
-document.getElementById("businessDescription").value.trim(),
-
-logo:"",
-
-address:
-document.getElementById("businessAddress").value.trim()
-
-};
+let logoURL="";
 
 
-document.getElementById("saveMessage").innerHTML=
-"Saving settings...";
+const logoFile =
+document.getElementById("logoFile").files[0];
+
 
 
 try{
 
 
-const response=await fetch("/api/business",{
+// Upload logo first if selected
+
+if(logoFile){
+
+
+let formData = new FormData();
+
+formData.append("logo", logoFile);
+
+
+
+let uploadResponse = await fetch("/api/upload-logo",{
+
+method:"POST",
+
+body:formData
+
+});
+
+
+
+let uploadResult = await uploadResponse.json();
+
+
+
+if(uploadResponse.ok){
+
+logoURL = uploadResult.logo_url;
+
+}else{
+
+document.getElementById("saveMessage").innerHTML =
+"❌ Logo upload failed.";
+
+return;
+
+}
+
+
+}
+
+
+
+
+const business={
+
+
+business_name:
+document.getElementById("businessName").value.trim(),
+
+
+phone:
+document.getElementById("businessPhone").value.trim(),
+
+
+email:
+document.getElementById("businessEmail").value.trim(),
+
+
+address:
+document.getElementById("businessAddress").value.trim(),
+
+
+description:
+document.getElementById("businessDescription").value.trim(),
+
+
+logo:logoURL
+
+
+};
+
+
+
+let response = await fetch("/api/business",{
 
 method:"POST",
 
@@ -333,23 +389,22 @@ body:JSON.stringify(business)
 
 
 
-const result=await response.json();
+let result = await response.json();
 
 
 
 if(response.ok){
 
 
-document.getElementById("saveMessage").innerHTML=
+document.getElementById("saveMessage").innerHTML =
 "✅ Settings saved successfully.";
 
 
 }else{
 
 
-document.getElementById("saveMessage").innerHTML=
-"❌ "+(result.error || "Unable to save settings.");
-
+document.getElementById("saveMessage").innerHTML =
+"❌ "+(result.error || "Save failed.");
 
 }
 
@@ -358,14 +413,14 @@ document.getElementById("saveMessage").innerHTML=
 }catch(error){
 
 
-document.getElementById("saveMessage").innerHTML=
-"❌ Connection error.";
-
-}
-
+document.getElementById("saveMessage").innerHTML =
+"❌ Connection error: "+error;
 
 
 }
+
+
+  }
 
 
 
@@ -407,6 +462,12 @@ business.address || "";
 
 document.getElementById("businessDescription").value=
 business.description || "";
+if(business.logo){
+
+document.getElementById("logoPreview").src =
+business.logo;
+
+  }
 
 
 }
