@@ -331,7 +331,7 @@ logoURL = uploadResult.logo_url;
 }else{
 
 document.getElementById("saveMessage").innerHTML =
-"❌ Logo upload failed.";
+"❌ " + JSON.stringify(uploadResult);
 
 return;
 
