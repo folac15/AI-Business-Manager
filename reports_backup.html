@@ -1,1 +1,159 @@
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Business Reports</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>AI Business Manager</h1>
+
+<p>Business Reports Center</p>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>MENU</h2>
+
+<a href="dashboard.html"><button>🏠 Dashboard</button></a>
+
+<a href="customers.html"><button>👥 Customers</button></a>
+
+<a href="ai_assistant.html"><button>🤖 AI Assistant</button></a>
+
+<a href="posts.html"><button>📝 Marketing</button></a>
+
+<a href="videos.html"><button>🎥 Videos</button></a>
+
+<a href="analytics.html"><button>📊 Analytics</button></a>
+
+<a href="reports.html"><button>📄 Reports</button></a>
+
+<a href="settings.html"><button>⚙ Settings</button></a>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<h2>📄 Business Report Summary</h2>
+
+<table style="width:100%;border-collapse:collapse;">
+
+<tr>
+
+<td><b>Total Customers</b></td>
+
+<td id="reportCustomers">--</td>
+
+</tr>
+
+<tr>
+
+<td><b>Total Marketing Posts</b></td>
+
+<td id="reportPosts">0</td>
+
+</tr>
+
+<tr>
+
+<td><b>Total Videos</b></td>
+
+<td id="reportVideos">0</td>
+
+</tr>
+
+<tr>
+
+<td><b>AI Conversations</b></td>
+
+<td id="reportChats">0</td>
+
+</tr>
+
+</table>
+
+                       </div>
+  <div class="card">
+
+<h2>📊 Report Details</h2>
+
+<p id="reportSummary">
+
+Loading report...
+
+</p>
+
+<button id="refreshReport">
+
+🔄 Refresh Report
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function loadReport(){
+
+let posts =
+JSON.parse(localStorage.getItem("posts")) || [];
+
+let videos =
+JSON.parse(localStorage.getItem("videos")) || [];
+
+let chats =
+JSON.parse(localStorage.getItem("aiChats")) || [];
+
+document.getElementById("reportCustomers").innerHTML = "--";
+document.getElementById("reportPosts").innerHTML = posts.length;
+document.getElementById("reportVideos").innerHTML = videos.length;
+document.getElementById("reportChats").innerHTML = chats.length;
+
+document.getElementById("reportSummary").innerHTML =
+
+"Business Summary:<br><br>" +
+
+"📝 Marketing Posts: <b>" + posts.length + "</b><br>" +
+
+"🎥 Saved Videos: <b>" + videos.length + "</b><br>" +
+
+"🤖 AI Conversations: <b>" + chats.length + "</b><br><br>" +
+
+"The reports module is working correctly and is ready for future PDF and Excel export.";
+
+}
+
+document.getElementById("refreshReport").onclick = loadReport;
+
+window.onload = loadReport;
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+                                              </html>
+  
