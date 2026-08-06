@@ -1,1 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Settings</title>
+
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+
+body{
+
+display:flex;
+background:#f4f7fb;
+min-height:100vh;
+
+}
+
+
+/* SIDEBAR */
+
+.sidebar{
+
+width:250px;
+background:#0b1f3a;
+color:white;
+padding:25px;
+
+}
+
+
+.logo{
+
+font-size:22px;
+font-weight:bold;
+margin-bottom:30px;
+
+}
+
+
+.business-logo{
+
+width:70px;
+height:70px;
+background:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+color:#0b1f3a;
+margin-bottom:15px;
+
+}
+
+
+.sidebar a{
+
+display:block;
+color:white;
+text-decoration:none;
+padding:12px;
+margin-bottom:8px;
+border-radius:8px;
+
+}
+
+
+.sidebar a:hover{
+
+background:#0066ff;
+
+}
+
+
+
+/* MAIN */
+
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+
+.header{
+
+background:white;
+padding:20px;
+border-radius:12px;
+margin-bottom:30px;
+
+}
+
+
+
+.settings-box{
+
+background:white;
+padding:25px;
+border-radius:12px;
+max-width:700px;
+
+}
+
+
+
+input,
+textarea{
+
+width:100%;
+padding:12px;
+margin-top:12px;
+border:1px solid #ddd;
+border-radius:8px;
+
+}
+
+
+textarea{
+
+height:100px;
+
+}
+
+
+
+button{
+
+margin-top:15px;
+padding:12px 25px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+
+}
+
+
+button:hover{
+
+background:#004ccc;
+
+}
+
+
+
+.logo-preview{
+
+width:90px;
+height:90px;
+border-radius:50%;
+background:#f4f7fb;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+margin-top:15px;
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+
+body{
+
+display:flex;
+
+}
+
+
+.sidebar{
+
+width:85px;
+padding:12px;
+
+}
+
+
+.logo{
+
+font-size:16px;
+
+}
+
+
+.business-logo{
+
+width:45px;
+height:45px;
+font-size:20px;
+
+}
+
+
+.sidebar h3{
+
+display:none;
+
+}
+
+
+.sidebar a{
+
+font-size:12px;
+padding:8px;
+
+}
+
+
+.main{
+
+padding:15px;
+
+}
+
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+
+NexaFlow AI
+
+</div>
+
+
+<div class="business-logo">
+
+⚙️
+
+</div>
+
+
+<h3>Your Business</h3>
+
+
+<br>
+
+
+<a href="dashboard.html">
+Dashboard
+</a>
+
+
+<a href="ai-assistant.html">
+AI Assistant
+</a>
+
+
+<a href="customers.html">
+Customers
+</a>
+
+
+<a href="analytics.html">
+Analytics
+</a>
+
+
+<a href="automation.html">
+Automation
+</a>
+
+
+<a href="reports.html">
+Reports
+</a>
+
+
+<a href="settings.html">
+Settings
+</a>
+
+
+</div>
+
+
+
+<div class="main">
+
+
+<div class="header">
+
+<h2>
+⚙️ Business Settings
+</h2>
+
+<p>
+Customize your business profile.
+</p>
+
+</div>
+
+
+
+<div class="settings-box">
+
+
+<h3>
+Business Profile
+</h3>
+
+
+
+<div class="logo-preview" id="logoPreview">
+
+🏢
+
+</div>
+
+
+
+<input 
+type="text"
+id="businessName"
+placeholder="Business Name">
+
+
+
+<input 
+type="text"
+id="businessPhone"
+placeholder="Business Phone">
+
+
+
+<input 
+type="text"
+id="businessEmail"
+placeholder="Business Email">
+
+
+
+<textarea
+id="businessDescription"
+placeholder="Business Description">
+</textarea>
+
+
+
+<button onclick="saveSettings()">
+
+Save Settings
+
+</button>
+
+
+
+<div id="saveMessage"
+style="margin-top:20px;font-weight:bold;">
+
+</div>
+
+
+  </div>
+  <script>
+
+
+function saveSettings(){
+
+
+const name =
+document.getElementById("businessName").value;
+
+
+const phone =
+document.getElementById("businessPhone").value;
+
+
+const email =
+document.getElementById("businessEmail").value;
+
+
+const description =
+document.getElementById("businessDescription").value;
+
+
+
+const businessProfile = {
+
+
+name:name,
+
+phone:phone,
+
+email:email,
+
+description:description
+
+
+};
+
+
+
+localStorage.setItem(
+"businessProfile",
+JSON.stringify(businessProfile)
+);
+
+
+
+document.getElementById("saveMessage").innerHTML =
+
+"✅ Business settings saved successfully.";
+
+
+
+updateBusinessName();
+
+
+
+}
+
+
+
+
+function loadSettings(){
+
+
+const saved =
+localStorage.getItem("businessProfile");
+
+
+
+if(saved){
+
+
+const profile =
+JSON.parse(saved);
+
+
+
+document.getElementById("businessName").value =
+profile.name || "";
+
+
+document.getElementById("businessPhone").value =
+profile.phone || "";
+
+
+document.getElementById("businessEmail").value =
+profile.email || "";
+
+
+document.getElementById("businessDescription").value =
+profile.description || "";
+
+
+
+}
+
+
+
+updateBusinessName();
+
+
+
+}
+
+
+
+
+
+function updateBusinessName(){
+
+
+const saved =
+localStorage.getItem("businessProfile");
+
+
+
+if(saved){
+
+
+const profile =
+JSON.parse(saved);
+
+
+
+const names =
+document.querySelectorAll(".sidebar h3");
+
+
+
+names.forEach(item=>{
+
+
+if(profile.name){
+
+
+item.innerHTML =
+profile.name;
+
+
+}
+
+
+});
+
+
+}
+
+
+
+}
+
+
+
+
+window.onload=function(){
+
+
+window.scrollTo(0,0);
+
+
+loadSettings();
+
+
+};
+
+
+
+</script>
+
+
+</body>
+
+</html>
