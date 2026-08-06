@@ -16,6 +16,8 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/customers"
 
+BUSINESS_URL = "https://xfjroysinifwncfjvrsg.supabase.co/rest/v1/businesses"
+
 SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
 HEADERS = {
@@ -201,6 +203,59 @@ def get_customers():
         }), response.status_code
 
     return jsonify(response.json())
+# ===============================
+# BUSINESS PROFILE API
+# ===============================
+
+@app.route("/api/business", methods=["GET"])
+def get_business():
+
+    response = requests.get(
+        BUSINESS_URL,
+        headers=HEADERS,
+        params={
+            "select": "*",
+            "limit": 1
+        }
+    )
+
+    if response.status_code != 200:
+        return jsonify({
+            "status": response.status_code,
+            "error": response.text
+        }), response.status_code
+
+    return jsonify(response.json())
+
+
+@app.route("/api/business", methods=["POST"])
+def save_business():
+
+    data = request.get_json() or {}
+
+    business = {
+        "business_name": data.get("business_name", ""),
+        "phone": data.get("phone", ""),
+        "email": data.get("email", ""),
+        "description": data.get("description", ""),
+        "logo": data.get("logo", "")
+    }
+
+    response = requests.post(
+        BUSINESS_URL,
+        headers=HEADERS,
+        json=business
+    )
+
+    if response.status_code not in [200, 201]:
+        return jsonify({
+            "status": response.status_code,
+            "error": response.text
+        }), response.status_code
+
+    return jsonify({
+        "message": "Business profile saved successfully."
+    })
 # ===============================
 # START SERVER
 # ===============================
