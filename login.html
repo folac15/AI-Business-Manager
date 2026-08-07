@@ -588,12 +588,21 @@ async function loginUser(){
 
         if(!response.ok){
 
-            message.innerHTML =
-            "❌ " + (result.message || "Login failed.");
+    const errorMessage =
+        result.message ||
+        result.error_description ||
+        result.error ||
+        result.msg ||
+        "Login failed.";
 
-            return;
+    message.innerHTML =
+        "❌ " + errorMessage;
 
-        }
+    console.error("Supabase login error:", result);
+
+    return;
+
+  }
 
 
         /* Save authentication token */
