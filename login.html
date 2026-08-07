@@ -400,7 +400,6 @@ function showRegister(){
 /* ===============================
    REGISTER USER
 ================================ */
-
 async function registerUser(){
 
     const ownerName =
@@ -433,8 +432,6 @@ async function registerUser(){
 
 
     try{
-
-        /* Create Supabase Auth account */
 
         const response = await fetch(
 
@@ -478,26 +475,10 @@ async function registerUser(){
         }
 
 
-        /* Get the newly-created user's ID */
-
-        const userId =
-        result.user ? result.user.id : null;
-
-
-        if(!userId){
-
-            message.innerHTML =
-            "❌ Account created, but user ID was not returned.";
-
-            return;
-
-        }
-
-
         /*
         Save the business information temporarily.
-        It will be connected to the authenticated
-        user immediately after the first successful login.
+        We will connect it to the user's UUID
+        after the user successfully logs in.
         */
 
         localStorage.setItem(
@@ -505,8 +486,6 @@ async function registerUser(){
             "pending_business_profile",
 
             JSON.stringify({
-
-                user_id:userId,
 
                 business_name:businessName,
 
@@ -520,14 +499,15 @@ async function registerUser(){
 
 
         message.innerHTML =
-        "✅ Account created successfully. You can now log in.";
+        "✅ Account created successfully. " +
+        "Please verify your email if required, then log in.";
 
 
         setTimeout(function(){
 
             showLogin();
 
-        },1500);
+        },2000);
 
 
     }catch(error){
@@ -539,7 +519,10 @@ async function registerUser(){
 
     }
 
-}
+  }
+
+
+        
 
 
 /* ===============================
@@ -621,13 +604,33 @@ async function loginUser(){
         );
 
 
+        /* Get authenticated user's UUID */
+
+        const userId =
+        result.user && result.user.id
+        ? result.user.id
+        : null;
+
+
+        if(!userId){
+
+            message.innerHTML =
+            "❌ Login succeeded, but user ID was not returned.";
+
+            return;
+
+        }
+
+
         /*
-        Connect the business profile to
-        the authenticated Supabase user.
+        Get the business information saved
+        during registration.
         */
 
         const pendingProfile =
-        localStorage.getItem("pending_business_profile");
+        localStorage.getItem(
+            "pending_business_profile"
+        );
 
 
         if(pendingProfile){
@@ -662,7 +665,7 @@ async function loginUser(){
 
                     body:JSON.stringify({
 
-                        user_id:result.user.id,
+                        user_id:userId,
 
                         business_name:
                         profile.business_name,
@@ -688,13 +691,18 @@ async function loginUser(){
 
             }else{
 
-                const businessError =
+                const errorText =
                 await businessResponse.text();
 
                 console.error(
-                    "Business profile error:",
-                    businessError
+                    "Business account error:",
+                    errorText
                 );
+
+                message.innerHTML =
+                "❌ Login succeeded, but business profile could not be saved.";
+
+                return;
 
             }
 
@@ -722,7 +730,8 @@ async function loginUser(){
 
     }
 
-}
+  }
+
 
   </script>
 
