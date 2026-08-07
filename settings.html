@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Settings</title>
+<title>Business Settings</title>
 
 <style>
 
@@ -75,25 +75,39 @@ padding:30px;
 background:white;
 padding:20px;
 border-radius:12px;
-margin-bottom:30px;
+margin-bottom:25px;
 }
 
 .settings-box{
 background:white;
 padding:25px;
 border-radius:12px;
-max-width:800px;
 box-shadow:0 3px 10px rgba(0,0,0,.08);
+max-width:850px;
 }
 
-.settings-box h3{
+.logo-preview{
+width:110px;
+height:110px;
+border-radius:50%;
+overflow:hidden;
+background:#f4f7fb;
+display:flex;
+align-items:center;
+justify-content:center;
 margin-bottom:20px;
 }
 
+.logo-preview img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
 label{
-font-weight:bold;
 display:block;
 margin-top:15px;
+font-weight:bold;
 }
 
 input,
@@ -111,18 +125,6 @@ height:120px;
 resize:none;
 }
 
-.logo-preview{
-width:100px;
-height:100px;
-background:#f4f7fb;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:45px;
-margin-bottom:20px;
-}
-
 button{
 margin-top:20px;
 padding:12px 25px;
@@ -130,8 +132,8 @@ border:none;
 border-radius:8px;
 background:#0066ff;
 color:white;
-cursor:pointer;
 font-size:16px;
+cursor:pointer;
 }
 
 button:hover{
@@ -182,7 +184,6 @@ padding:15px;
 </style>
 
 </head>
-
 <body>
 
 <div class="sidebar">
@@ -215,7 +216,7 @@ NexaFlow AI
 
 <h2>⚙ Business Settings</h2>
 
-<p>Manage your business profile and branding.</p>
+<p>Manage your business information and logo.</p>
 
 </div>
 
@@ -223,18 +224,16 @@ NexaFlow AI
 
 <div class="logo-preview">
 
-<img id="logoPreview"
-src="https://via.placeholder.com/100"
-style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+<img
+id="logoPreview"
+src="https://via.placeholder.com/110"
+alt="Business Logo">
 
 </div>
 
+<label>Business Logo</label>
 
-<label>
-Business Logo
-</label>
-
-<input 
+<input
 type="file"
 id="logoFile"
 accept="image/*"
@@ -243,27 +242,52 @@ onchange="previewLogo(event)">
 <h3>Business Profile</h3>
 
 <label>Business Name</label>
-<input type="text" id="businessName">
+
+<input
+type="text"
+id="businessName">
 
 <label>Phone Number</label>
-<input type="text" id="businessPhone">
+
+<input
+type="text"
+id="businessPhone">
 
 <label>Email Address</label>
-<input type="email" id="businessEmail">
+
+<input
+type="email"
+id="businessEmail">
 
 <label>Business Address</label>
-<input type="text" id="businessAddress">
+
+<input
+type="text"
+id="businessAddress">
 
 <label>Business Description</label>
-<textarea id="businessDescription"></textarea>
+
+<textarea
+id="businessDescription"></textarea>
 
 <button onclick="saveSettings()">
 Save Settings
 </button>
 
 <div id="saveMessage"></div>
+
+</div>
+
+</div>
+
 <script>
-  function previewLogo(event){
+  const SUPABASE_URL =
+"https://xfjroysinifwncfjvrsg.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
+
+function previewLogo(event){
 
 const file = event.target.files[0];
 
@@ -271,221 +295,186 @@ if(file){
 
 const reader = new FileReader();
 
-
-reader.onload=function(){
+reader.onload = function(){
 
 document.getElementById("logoPreview").src =
 reader.result;
 
 }
 
-
 reader.readAsDataURL(file);
 
 }
 
-  }
+}
 
 async function saveSettings(){
 
 let logoURL="";
 
-
 const logoFile =
 document.getElementById("logoFile").files[0];
 
-
-
 try{
-
-
-// Upload logo first if selected
 
 if(logoFile){
 
+const fileName =
+Date.now()+"_"+logoFile.name;
 
-let formData = new FormData();
+const uploadResponse =
+await fetch(
 
-formData.append("logo", logoFile);
+SUPABASE_URL +
+"/storage/v1/object/business-logos/" +
+fileName,
 
-
-
-let uploadResponse = await fetch("/api/upload-logo",{
+{
 
 method:"POST",
 
-body:formData
+headers:{
 
-});
+"apikey":SUPABASE_ANON_KEY,
 
+"Authorization":"Bearer "+SUPABASE_ANON_KEY,
 
+"Content-Type":logoFile.type
 
-let uploadResult = await uploadResponse.json();
+},
 
+body:logoFile
 
+}
 
-if(uploadResponse.ok){
+);
 
-logoURL = uploadResult.logo_url;
+if(!uploadResponse.ok){
 
-}else{
+const errorText =
+await uploadResponse.text();
 
 document.getElementById("saveMessage").innerHTML =
-"❌ " + JSON.stringify(uploadResult);
+"❌ Upload failed : " + errorText;
 
 return;
 
 }
 
+logoURL =
+SUPABASE_URL +
+"/storage/v1/object/public/business-logos/" +
+fileName;
 
-}
-
-
-
-
-const business={
-
+  }
+  const business={
 
 business_name:
 document.getElementById("businessName").value.trim(),
 
-
 phone:
 document.getElementById("businessPhone").value.trim(),
-
 
 email:
 document.getElementById("businessEmail").value.trim(),
 
-
 address:
 document.getElementById("businessAddress").value.trim(),
-
 
 description:
 document.getElementById("businessDescription").value.trim(),
 
-
 logo:logoURL
 
-
 };
-
-
 
 let response = await fetch("/api/business",{
 
 method:"POST",
 
 headers:{
-
 "Content-Type":"application/json"
-
 },
 
 body:JSON.stringify(business)
 
 });
 
-
-
 let result = await response.json();
 
-
-
 if(response.ok){
-
 
 document.getElementById("saveMessage").innerHTML =
 "✅ Settings saved successfully.";
 
-
 }else{
 
-
 document.getElementById("saveMessage").innerHTML =
-"❌ "+(result.error || "Save failed.");
+"❌ " + (result.error || "Save failed.");
 
 }
-
-
 
 }catch(error){
 
-
 document.getElementById("saveMessage").innerHTML =
-"❌ Connection error: "+error;
-
+"❌ Connection error: " + error;
 
 }
 
-
   }
-
-
-
-
-async function loadSettings(){
-
+  async function loadSettings(){
 
 try{
 
+const response =
+await fetch("/api/business");
 
-const response=await fetch("/api/business");
-
-
-const result=await response.json();
-
-
-
-if(Array.isArray(result) && result.length>0){
+const result =
+await response.json();
 
 
-const business=result[0];
+if(Array.isArray(result) && result.length > 0){
+
+const business = result[0];
 
 
-document.getElementById("businessName").value=
+document.getElementById("businessName").value =
 business.business_name || "";
 
 
-document.getElementById("businessPhone").value=
+document.getElementById("businessPhone").value =
 business.phone || "";
 
 
-document.getElementById("businessEmail").value=
+document.getElementById("businessEmail").value =
 business.email || "";
 
 
-document.getElementById("businessAddress").value=
+document.getElementById("businessAddress").value =
 business.address || "";
 
 
-document.getElementById("businessDescription").value=
+document.getElementById("businessDescription").value =
 business.description || "";
+
+
 if(business.logo){
 
 document.getElementById("logoPreview").src =
 business.logo;
 
-  }
-
-
 }
 
+}
 
 
 }catch(error){
 
-
 console.log(error);
 
-
 }
 
-
-
 }
-
 
 
 window.onload=function(){
@@ -498,7 +487,6 @@ loadSettings();
 
 
 </script>
-
 
 </body>
 
