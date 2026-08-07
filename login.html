@@ -365,233 +365,366 @@ class="message">
 
 
   </div>
-    <script>
+    
+<script>
 
 const SUPABASE_URL =
 "https://xfjroysinifwncfjvrsg.supabase.co";
 
-
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
-
+"YOUR_EXISTING_SUPABASE_ANON_KEY";
 
 
 function showLogin(){
 
-document.getElementById("loginForm").style.display="block";
+    document.getElementById("loginForm").style.display="block";
+    document.getElementById("registerForm").style.display="none";
 
-document.getElementById("registerForm").style.display="none";
-
-
-document.getElementById("loginTab").classList.add("active");
-
-document.getElementById("registerTab").classList.remove("active");
+    document.getElementById("loginTab").classList.add("active");
+    document.getElementById("registerTab").classList.remove("active");
 
 }
-
-
 
 
 function showRegister(){
 
-document.getElementById("loginForm").style.display="none";
+    document.getElementById("loginForm").style.display="none";
+    document.getElementById("registerForm").style.display="block";
 
-document.getElementById("registerForm").style.display="block";
-
-
-document.getElementById("registerTab").classList.add("active");
-
-document.getElementById("loginTab").classList.remove("active");
+    document.getElementById("registerTab").classList.add("active");
+    document.getElementById("loginTab").classList.remove("active");
 
 }
 
 
-
-
+/* ===============================
+   REGISTER USER
+================================ */
 
 async function registerUser(){
 
+    const ownerName =
+    document.getElementById("ownerName").value.trim();
 
-let email =
-document.getElementById("registerEmail").value;
+    const businessName =
+    document.getElementById("businessName").value.trim();
+
+    const phone =
+    document.getElementById("phone").value.trim();
+
+    const email =
+    document.getElementById("registerEmail").value.trim();
+
+    const password =
+    document.getElementById("registerPassword").value;
+
+    const message =
+    document.getElementById("message");
 
 
-let password =
-document.getElementById("registerPassword").value;
+    if(!ownerName || !businessName || !email || !password){
+
+        message.innerHTML =
+        "❌ Please complete all required fields.";
+
+        return;
+
+    }
 
 
-let message =
-document.getElementById("message");
+    try{
+
+        /* Create Supabase Auth account */
+
+        const response = await fetch(
+
+            SUPABASE_URL + "/auth/v1/signup",
+
+            {
+
+                method:"POST",
+
+                headers:{
+
+                    "apikey":SUPABASE_ANON_KEY,
+
+                    "Content-Type":"application/json"
+
+                },
+
+                body:JSON.stringify({
+
+                    email:email,
+
+                    password:password
+
+                })
+
+            }
+
+        );
 
 
+        const result = await response.json();
 
-try{
+
+        if(!response.ok){
+
+            message.innerHTML =
+            "❌ " + (result.message || "Registration failed.");
+
+            return;
+
+        }
 
 
-let response = await fetch(
+        /* Get the newly-created user's ID */
 
-SUPABASE_URL + "/auth/v1/signup",
+        const userId =
+        result.user ? result.user.id : null;
 
-{
 
-method:"POST",
+        if(!userId){
 
-headers:{
+            message.innerHTML =
+            "❌ Account created, but user ID was not returned.";
 
-"apikey":SUPABASE_ANON_KEY,
+            return;
 
-"Content-Type":"application/json"
+        }
 
-},
 
-body:JSON.stringify({
+        /*
+        Save the business information temporarily.
+        It will be connected to the authenticated
+        user immediately after the first successful login.
+        */
 
-email:email,
+        localStorage.setItem(
 
-password:password
+            "pending_business_profile",
 
-})
+            JSON.stringify({
+
+                user_id:userId,
+
+                business_name:businessName,
+
+                owner_name:ownerName,
+
+                phone:phone
+
+            })
+
+        );
+
+
+        message.innerHTML =
+        "✅ Account created successfully. You can now log in.";
+
+
+        setTimeout(function(){
+
+            showLogin();
+
+        },1500);
+
+
+    }catch(error){
+
+        console.error(error);
+
+        message.innerHTML =
+        "❌ Connection error.";
+
+    }
 
 }
 
-);
 
-
-
-let result = await response.json();
-
-
-
-if(response.ok){
-
-message.innerHTML =
-"✅ Account created successfully. Check email if verification is required.";
-
-}else{
-
-message.innerHTML =
-"❌ " + result.message;
-
-}
-
-
-
-}catch(error){
-
-message.innerHTML =
-"❌ Connection error";
-
-}
-
-
-
-}
-
-
-
-
-
+/* ===============================
+   LOGIN USER
+================================ */
 
 async function loginUser(){
 
+    const email =
+    document.getElementById("loginEmail").value.trim();
 
-let email =
-document.getElementById("loginEmail").value;
+    const password =
+    document.getElementById("loginPassword").value;
 
-
-let password =
-document.getElementById("loginPassword").value;
-
-
-let message =
-document.getElementById("message");
+    const message =
+    document.getElementById("message");
 
 
+    if(!email || !password){
 
-try{
+        message.innerHTML =
+        "❌ Enter your email and password.";
+
+        return;
+
+    }
 
 
-let response = await fetch(
+    try{
 
-SUPABASE_URL + "/auth/v1/token?grant_type=password",
+        const response = await fetch(
 
-{
+            SUPABASE_URL +
+            "/auth/v1/token?grant_type=password",
 
-method:"POST",
+            {
 
-headers:{
+                method:"POST",
 
-"apikey":SUPABASE_ANON_KEY,
+                headers:{
 
-"Content-Type":"application/json"
+                    "apikey":SUPABASE_ANON_KEY,
 
-},
+                    "Content-Type":"application/json"
 
-body:JSON.stringify({
+                },
 
-email:email,
+                body:JSON.stringify({
 
-password:password
+                    email:email,
 
-})
+                    password:password
+
+                })
+
+            }
+
+        );
+
+
+        const result = await response.json();
+
+
+        if(!response.ok){
+
+            message.innerHTML =
+            "❌ " + (result.message || "Login failed.");
+
+            return;
+
+        }
+
+
+        /* Save authentication token */
+
+        localStorage.setItem(
+            "access_token",
+            result.access_token
+        );
+
+
+        /*
+        Connect the business profile to
+        the authenticated Supabase user.
+        */
+
+        const pendingProfile =
+        localStorage.getItem("pending_business_profile");
+
+
+        if(pendingProfile){
+
+            const profile =
+            JSON.parse(pendingProfile);
+
+
+            const businessResponse = await fetch(
+
+                SUPABASE_URL +
+                "/rest/v1/business_accounts",
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "apikey":SUPABASE_ANON_KEY,
+
+                        "Authorization":
+                        "Bearer " + result.access_token,
+
+                        "Content-Type":
+                        "application/json",
+
+                        "Prefer":
+                        "return=minimal"
+
+                    },
+
+                    body:JSON.stringify({
+
+                        user_id:result.user.id,
+
+                        business_name:
+                        profile.business_name,
+
+                        owner_name:
+                        profile.owner_name,
+
+                        phone:
+                        profile.phone
+
+                    })
+
+                }
+
+            );
+
+
+            if(businessResponse.ok){
+
+                localStorage.removeItem(
+                    "pending_business_profile"
+                );
+
+            }else{
+
+                const businessError =
+                await businessResponse.text();
+
+                console.error(
+                    "Business profile error:",
+                    businessError
+                );
+
+            }
+
+        }
+
+
+        message.innerHTML =
+        "✅ Login successful";
+
+
+        setTimeout(function(){
+
+            window.location.href =
+            "dashboard.html";
+
+        },1000);
+
+
+    }catch(error){
+
+        console.error(error);
+
+        message.innerHTML =
+        "❌ Connection error.";
+
+    }
 
 }
 
-);
-
-
-
-let result = await response.json();
-
-
-
-if(response.ok){
-
-
-localStorage.setItem(
-"access_token",
-result.access_token
-);
-
-
-message.innerHTML =
-"✅ Login successful";
-
-
-setTimeout(function(){
-
-window.location.href="dashboard.html";
-
-},1000);
-
-
-
-}else{
-
-
-message.innerHTML =
-"❌ " + result.message;
-
-
-}
-
-
-
-}catch(error){
-
-
-message.innerHTML =
-"❌ Connection error";
-
-
-}
-
-
-}
-
-
-</script>
-
+  </script>
 
 </body>
 
