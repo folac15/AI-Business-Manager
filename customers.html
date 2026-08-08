@@ -4,14 +4,9 @@
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>NexaFlow AI - Customers</title>
-
+<title>Customers</title>
 
 <style>
 
@@ -22,15 +17,11 @@ box-sizing:border-box;
 font-family:Arial,sans-serif;
 }
 
-
 body{
 display:flex;
 background:#f4f7fb;
 min-height:100vh;
 }
-
-
-/* SIDEBAR */
 
 .sidebar{
 width:250px;
@@ -39,13 +30,11 @@ color:white;
 padding:25px;
 }
 
-
 .logo{
 font-size:22px;
 font-weight:bold;
 margin-bottom:30px;
 }
-
 
 .business-logo{
 width:70px;
@@ -60,7 +49,6 @@ color:#0b1f3a;
 margin-bottom:15px;
 }
 
-
 .sidebar a{
 display:block;
 color:white;
@@ -70,24 +58,14 @@ margin-bottom:8px;
 border-radius:8px;
 }
 
-
 .sidebar a:hover{
 background:#0066ff;
 }
-
-
-#businessName{
-font-size:16px;
-}
-
-
-/* MAIN */
 
 .main{
 flex:1;
 padding:30px;
 }
-
 
 .header{
 background:white;
@@ -96,14 +74,12 @@ border-radius:12px;
 margin-bottom:25px;
 }
 
-
 .customer-box{
 background:white;
 padding:25px;
 border-radius:12px;
 margin-bottom:25px;
 }
-
 
 input,
 textarea{
@@ -115,12 +91,10 @@ border-radius:8px;
 font-size:15px;
 }
 
-
 textarea{
 height:100px;
 resize:none;
 }
-
 
 button{
 margin-top:15px;
@@ -132,18 +106,15 @@ border-radius:8px;
 cursor:pointer;
 }
 
-
 button:hover{
 background:#004ccc;
 }
-
 
 .customer-list{
 background:white;
 padding:25px;
 border-radius:12px;
 }
-
 
 .customer-card{
 background:#f4f7fb;
@@ -152,14 +123,6 @@ margin-top:15px;
 border-radius:8px;
 border-left:5px solid #0066ff;
 }
-
-
-.customer-card b{
-color:#0b1f3a;
-}
-
-
-/* MOBILE */
 
 @media(max-width:800px){
 
@@ -206,162 +169,89 @@ padding:15px;
 
 <body>
 
-
 <script src="auth_guard.js"></script>
 
 
-<!-- SIDEBAR -->
-
 <div class="sidebar">
-
 
 <div class="logo">
 NexaFlow AI
 </div>
 
-
 <div class="business-logo">
 🏢
 </div>
 
-
-<h3 id="businessName">
-Loading...
-</h3>
-
+<h3>Your Business</h3>
 
 <br>
 
-
-<a href="dashboard.html">
-Dashboard
-</a>
-
-
-<a href="ai-assistant.html">
-AI Assistant
-</a>
-
-
-<a href="customers.html">
-Customers
-</a>
-
-
-<a href="analytics.html">
-Analytics
-</a>
-
-
-<a href="automation.html">
-Automation
-</a>
-
-
-<a href="reports.html">
-Reports
-</a>
-
-
-<a href="settings.html">
-Settings
-</a>
-
+<a href="dashboard.html">Dashboard</a>
+<a href="ai-assistant.html">AI Assistant</a>
+<a href="customers.html">Customers</a>
+<a href="analytics.html">Analytics</a>
+<a href="automation.html">Automation</a>
+<a href="reports.html">Reports</a>
+<a href="settings.html">Settings</a>
 
 </div>
 
-
-<!-- MAIN -->
 
 <div class="main">
 
-
 <div class="header">
 
-<h2>
-👥 Customers Management
-</h2>
+<h2>👥 Customers Management</h2>
 
-<p>
-Manage customer information and AI replies.
-</p>
+<p>Manage customer information and AI replies.</p>
 
 </div>
 
 
-<!-- ADD CUSTOMER -->
-
 <div class="customer-box">
 
-
-<h3>
-Add Customer
-</h3>
-
+<h3>Add Customer</h3>
 
 <input
 type="text"
 id="customerName"
-placeholder="Customer Name"
->
-
+placeholder="Customer Name">
 
 <input
 type="text"
 id="customerPhone"
-placeholder="Phone Number"
->
-
+placeholder="Phone Number">
 
 <input
 type="text"
 id="customerLocation"
-placeholder="Location"
->
-
+placeholder="Location">
 
 <textarea
 id="customerMessage"
-placeholder="Customer Message"
-></textarea>
+placeholder="Customer Message"></textarea>
 
-
-<button
-onclick="saveCustomer()"
->
+<button onclick="saveCustomer()">
 Save Customer
 </button>
 
-
 <div
 id="saveStatus"
-style="margin-top:20px;font-weight:bold;"
->
+style="margin-top:20px;font-weight:bold;">
 </div>
 
-
 </div>
 
-
-<!-- CUSTOMER HISTORY -->
 
 <div class="customer-list">
 
-
-<h3>
-Customer History
-</h3>
-
+<h3>Customer History</h3>
 
 <div id="customerHistory">
-
 Loading...
-
 </div>
 
-
 </div>
-
 
 </div>
 
@@ -378,135 +268,42 @@ const SUPABASE_URL =
 
 
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmxlIiwicmVmIjoieGZqcm95c2luaWZ3bmNmanZyc2ciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDI1NTc0MCwiZXhwIjoyMDk5ODMxNzQwfQ.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
 
 
 /* ============================================================
-   LOAD BUSINESS
+   GET LOGIN TOKEN
 ============================================================ */
 
-async function loadBusiness(){
+function getAccessToken(){
 
 const token =
-localStorage.getItem(
-"access_token"
-);
+localStorage.getItem("access_token");
 
+return token;
+
+}
+
+
+/* ============================================================
+   CHECK LOGIN
+============================================================ */
+
+function checkLogin(){
+
+const token =
+getAccessToken();
 
 if(!token){
 
 window.location.href =
 "login.html";
 
-return;
+return false;
 
 }
 
-
-try{
-
-const response =
-await fetch(
-
-SUPABASE_URL +
-"/auth/v1/user",
-
-{
-
-method:"GET",
-
-headers:{
-
-"apikey":
-SUPABASE_ANON_KEY,
-
-"Authorization":
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-const user =
-await response.json();
-
-
-if(
-!response.ok ||
-!user.id
-){
-
-localStorage.removeItem(
-"access_token"
-);
-
-window.location.href =
-"login.html";
-
-return;
-
-}
-
-
-/* Get business account */
-
-const businessResponse =
-await fetch(
-
-SUPABASE_URL +
-"/rest/v1/business_accounts" +
-"?user_id=eq." +
-encodeURIComponent(user.id) +
-"&select=business_name",
-
-{
-
-method:"GET",
-
-headers:{
-
-"apikey":
-SUPABASE_ANON_KEY,
-
-"Authorization":
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-const businesses =
-await businessResponse.json();
-
-
-if(
-businessResponse.ok &&
-businesses.length > 0
-){
-
-document.getElementById(
-"businessName"
-).textContent =
-businesses[0].business_name ||
-"Your Business";
-
-}
-
-
-}catch(error){
-
-console.error(
-"Business loading error:",
-error
-);
-
-}
+return true;
 
 }
 
@@ -517,28 +314,40 @@ error
 
 async function saveCustomer(){
 
+
+if(!checkLogin()){
+
+return;
+
+}
+
+
 const name =
-document.getElementById(
-"customerName"
-).value.trim();
+document
+.getElementById("customerName")
+.value
+.trim();
 
 
 const phone =
-document.getElementById(
-"customerPhone"
-).value.trim();
+document
+.getElementById("customerPhone")
+.value
+.trim();
 
 
 const location =
-document.getElementById(
-"customerLocation"
-).value.trim();
+document
+.getElementById("customerLocation")
+.value
+.trim();
 
 
 const message =
-document.getElementById(
-"customerMessage"
-).value.trim();
+document
+.getElementById("customerMessage")
+.value
+.trim();
 
 
 const status =
@@ -547,13 +356,10 @@ document.getElementById(
 );
 
 
-if(
-name === "" ||
-message === ""
-){
+if(name === "" || message === ""){
 
 status.innerHTML =
-"❌ Please enter customer name and message.";
+"Please enter customer name and message.";
 
 return;
 
@@ -565,22 +371,11 @@ status.innerHTML =
 
 
 const token =
-localStorage.getItem(
-"access_token"
-);
-
-
-if(!token){
-
-window.location.href =
-"login.html";
-
-return;
-
-}
+getAccessToken();
 
 
 try{
+
 
 const response =
 await fetch(
@@ -624,6 +419,7 @@ await response.json();
 
 if(response.ok){
 
+
 status.innerHTML =
 "✅ Customer saved successfully.";
 
@@ -653,6 +449,30 @@ loadCustomers();
 
 }else{
 
+
+if(
+response.status === 401
+){
+
+status.innerHTML =
+"❌ Login session expired. Please log in again.";
+
+localStorage.removeItem(
+"access_token"
+);
+
+setTimeout(function(){
+
+window.location.href =
+"login.html";
+
+},1500);
+
+return;
+
+}
+
+
 status.innerHTML =
 "❌ " +
 (
@@ -662,9 +482,15 @@ result.error ||
 
 }
 
+
 }catch(error){
 
-console.error(error);
+
+console.error(
+"Customer save error:",
+error
+);
+
 
 status.innerHTML =
 "❌ Connection error.";
@@ -680,20 +506,16 @@ status.innerHTML =
 
 async function loadCustomers(){
 
-const token =
-localStorage.getItem(
-"access_token"
-);
 
-
-if(!token){
-
-window.location.href =
-"login.html";
+if(!checkLogin()){
 
 return;
 
 }
+
+
+const token =
+getAccessToken();
 
 
 const history =
@@ -703,10 +525,11 @@ document.getElementById(
 
 
 history.innerHTML =
-"Loading...";
+"Loading customers...";
 
 
 try{
+
 
 const response =
 await fetch(
@@ -733,6 +556,29 @@ const customers =
 await response.json();
 
 
+if(
+response.status === 401
+){
+
+history.innerHTML =
+"❌ Login session expired. Please log in again.";
+
+localStorage.removeItem(
+"access_token"
+);
+
+setTimeout(function(){
+
+window.location.href =
+"login.html";
+
+},1500);
+
+return;
+
+}
+
+
 if(!response.ok){
 
 history.innerHTML =
@@ -752,13 +598,14 @@ let html="";
 
 if(
 !Array.isArray(customers) ||
-customers.length===0
+customers.length === 0
 ){
 
 html =
 "<p>No customers found.</p>";
 
 }else{
+
 
 customers.forEach(
 function(customer){
@@ -768,56 +615,42 @@ html += `
 <div class="customer-card">
 
 <b>Name:</b>
-${escapeHTML(
-customer.name || ""
-)}
-
+${escapeHTML(customer.name || "")}
 <br>
 
 <b>Phone:</b>
-${escapeHTML(
-customer.phone || ""
-)}
-
+${escapeHTML(customer.phone || "")}
 <br>
 
 <b>Location:</b>
-${escapeHTML(
-customer.location || ""
-)}
+${escapeHTML(customer.location || "")}
 
 <br><br>
 
 <b>Message:</b>
 <br>
 
-${escapeHTML(
-customer.message || ""
-)}
+${escapeHTML(customer.message || "")}
 
 <br><br>
 
 <b>AI Reply:</b>
 <br>
 
-${escapeHTML(
-customer.ai_reply || ""
-)}
+${escapeHTML(customer.ai_reply || "")}
 
 <br><br>
 
 <small>
-${escapeHTML(
-customer.created_at || ""
-)}
+${escapeHTML(customer.created_at || "")}
 </small>
 
 </div>
 
 `;
 
-}
-);
+});
+
 
 }
 
@@ -828,7 +661,12 @@ html;
 
 }catch(error){
 
-console.error(error);
+
+console.error(
+"Customer loading error:",
+error
+);
+
 
 history.innerHTML =
 "❌ Unable to load customers.";
@@ -839,63 +677,47 @@ history.innerHTML =
 
 
 /* ============================================================
-   HTML SECURITY
+   SECURITY
+   PREVENT CUSTOMER TEXT FROM BEING
+   INTERPRETED AS HTML
 ============================================================ */
 
 function escapeHTML(value){
 
 return String(value)
 
-.replace(
-/&/g,
-"&amp;"
-)
+.replace(/&/g,"&amp;")
 
-.replace(
-/</g,
-"&lt;"
-)
+.replace(/</g,"&lt;")
 
-.replace(
-/>/g,
-"&gt;"
-)
+.replace(/>/g,"&gt;")
 
-.replace(
-/"/g,
-"&quot;"
-)
+.replace(/"/g,"&quot;")
 
-.replace(
-/'/g,
-"&#039;"
-);
+.replace(/'/g,"&#039;");
 
 }
 
 
 /* ============================================================
-   START
+   PAGE LOAD
 ============================================================ */
 
-window.onload =
+window.addEventListener(
+"load",
 function(){
 
-window.scrollTo(
-0,
-0
-);
-
-loadBusiness();
+if(checkLogin()){
 
 loadCustomers();
 
-};
+}
+
+});
 
 
 </script>
 
-
 </body>
 
-  </html>
+    </html>
