@@ -227,6 +227,78 @@ body{
 
 <body>
     <script src="auth_guard.js"></script>
+    <script>
+
+async function loadCurrentUser(){
+
+    const token =
+        localStorage.getItem("access_token");
+
+    if(!token){
+        window.location.href = "login.html";
+        return;
+    }
+
+    try{
+
+        const response = await fetch(
+            "https://xfjroysinifwncfjvrsg.supabase.co/auth/v1/user",
+            {
+                method:"GET",
+
+                headers:{
+                    "apikey":
+                    "YOUR_SUPABASE_ANON_KEY",
+
+                    "Authorization":
+                    "Bearer " + token
+                }
+            }
+        );
+
+
+        const user = await response.json();
+
+
+        if(!response.ok || !user.id){
+
+            localStorage.removeItem("access_token");
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+
+        /* Save the authenticated user's ID */
+
+        localStorage.setItem(
+            "user_id",
+            user.id
+        );
+
+
+        console.log(
+            "Logged-in user ID:",
+            user.id
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Unable to load current user:",
+            error
+        );
+
+    }
+
+}
+
+
+loadCurrentUser();
+
+    </script>
 
 
 <!-- SIDEBAR -->
