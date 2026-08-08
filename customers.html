@@ -4,9 +4,14 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Customers</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>NexaFlow AI - Customers</title>
+
 
 <style>
 
@@ -17,11 +22,13 @@ box-sizing:border-box;
 font-family:Arial,sans-serif;
 }
 
+
 body{
 display:flex;
 background:#f4f7fb;
 min-height:100vh;
 }
+
 
 /* SIDEBAR */
 
@@ -32,11 +39,13 @@ color:white;
 padding:25px;
 }
 
+
 .logo{
 font-size:22px;
 font-weight:bold;
 margin-bottom:30px;
 }
+
 
 .business-logo{
 width:70px;
@@ -51,6 +60,7 @@ color:#0b1f3a;
 margin-bottom:15px;
 }
 
+
 .sidebar a{
 display:block;
 color:white;
@@ -60,9 +70,16 @@ margin-bottom:8px;
 border-radius:8px;
 }
 
+
 .sidebar a:hover{
 background:#0066ff;
 }
+
+
+#businessName{
+font-size:16px;
+}
+
 
 /* MAIN */
 
@@ -71,6 +88,7 @@ flex:1;
 padding:30px;
 }
 
+
 .header{
 background:white;
 padding:20px;
@@ -78,12 +96,14 @@ border-radius:12px;
 margin-bottom:25px;
 }
 
+
 .customer-box{
 background:white;
 padding:25px;
 border-radius:12px;
 margin-bottom:25px;
 }
+
 
 input,
 textarea{
@@ -95,10 +115,12 @@ border-radius:8px;
 font-size:15px;
 }
 
+
 textarea{
 height:100px;
 resize:none;
 }
+
 
 button{
 margin-top:15px;
@@ -110,15 +132,18 @@ border-radius:8px;
 cursor:pointer;
 }
 
+
 button:hover{
 background:#004ccc;
 }
+
 
 .customer-list{
 background:white;
 padding:25px;
 border-radius:12px;
 }
+
 
 .customer-card{
 background:#f4f7fb;
@@ -127,6 +152,12 @@ margin-top:15px;
 border-radius:8px;
 border-left:5px solid #0066ff;
 }
+
+
+.customer-card b{
+color:#0b1f3a;
+}
+
 
 /* MOBILE */
 
@@ -172,81 +203,155 @@ padding:15px;
 
 </head>
 
+
 <body>
-  <script src="auth_guard.js"></script>
+
+
+<script src="auth_guard.js"></script>
+
+
+<!-- SIDEBAR -->
 
 <div class="sidebar">
+
 
 <div class="logo">
 NexaFlow AI
 </div>
 
+
 <div class="business-logo">
 🏢
 </div>
 
-<h3>Your Business</h3>
+
+<h3 id="businessName">
+Loading...
+</h3>
+
 
 <br>
 
-<a href="dashboard.html">Dashboard</a>
-<a href="ai-assistant.html">AI Assistant</a>
-<a href="customers.html">Customers</a>
-<a href="analytics.html">Analytics</a>
-<a href="automation.html">Automation</a>
-<a href="reports.html">Reports</a>
-<a href="settings.html">Settings</a>
+
+<a href="dashboard.html">
+Dashboard
+</a>
+
+
+<a href="ai-assistant.html">
+AI Assistant
+</a>
+
+
+<a href="customers.html">
+Customers
+</a>
+
+
+<a href="analytics.html">
+Analytics
+</a>
+
+
+<a href="automation.html">
+Automation
+</a>
+
+
+<a href="reports.html">
+Reports
+</a>
+
+
+<a href="settings.html">
+Settings
+</a>
+
 
 </div>
+
+
+<!-- MAIN -->
 
 <div class="main">
 
+
 <div class="header">
 
-<h2>👥 Customers Management</h2>
+<h2>
+👥 Customers Management
+</h2>
 
-<p>Manage customer information and AI replies.</p>
+<p>
+Manage customer information and AI replies.
+</p>
 
 </div>
 
+
+<!-- ADD CUSTOMER -->
+
 <div class="customer-box">
 
-<h3>Add Customer</h3>
+
+<h3>
+Add Customer
+</h3>
+
 
 <input
 type="text"
 id="customerName"
-placeholder="Customer Name">
+placeholder="Customer Name"
+>
+
 
 <input
 type="text"
 id="customerPhone"
-placeholder="Phone Number">
+placeholder="Phone Number"
+>
+
 
 <input
 type="text"
 id="customerLocation"
-placeholder="Location">
+placeholder="Location"
+>
+
 
 <textarea
 id="customerMessage"
-placeholder="Customer Message">
-</textarea>
+placeholder="Customer Message"
+></textarea>
 
-<button onclick="saveCustomer()">
+
+<button
+onclick="saveCustomer()"
+>
 Save Customer
 </button>
 
+
 <div
 id="saveStatus"
-style="margin-top:20px;font-weight:bold;">
+style="margin-top:20px;font-weight:bold;"
+>
 </div>
 
+
 </div>
+
+
+<!-- CUSTOMER HISTORY -->
 
 <div class="customer-list">
 
-<h3>Customer History</h3>
+
+<h3>
+Customer History
+</h3>
+
 
 <div id="customerHistory">
 
@@ -254,72 +359,314 @@ Loading...
 
 </div>
 
+
 </div>
 
-  </div>
-  <script>
 
-async function saveCustomer(){
+</div>
 
-const name=document.getElementById("customerName").value.trim();
-const phone=document.getElementById("customerPhone").value.trim();
-const location=document.getElementById("customerLocation").value.trim();
-const message=document.getElementById("customerMessage").value.trim();
 
-if(name=="" || message==""){
+<script>
 
-document.getElementById("saveStatus").innerHTML="Please enter customer name and message.";
+
+/* ============================================================
+   SUPABASE CONFIGURATION
+============================================================ */
+
+const SUPABASE_URL =
+"https://xfjroysinifwncfjvrsg.supabase.co";
+
+
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
+
+
+/* ============================================================
+   LOAD BUSINESS
+============================================================ */
+
+async function loadBusiness(){
+
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+
+if(!token){
+
+window.location.href =
+"login.html";
+
 return;
 
 }
 
-document.getElementById("saveStatus").innerHTML="Saving customer...";
 
 try{
 
-const response=await fetch("/api/customers",{
+const response =
+await fetch(
+
+SUPABASE_URL +
+"/auth/v1/user",
+
+{
+
+method:"GET",
+
+headers:{
+
+"apikey":
+SUPABASE_ANON_KEY,
+
+"Authorization":
+"Bearer " + token
+
+}
+
+}
+
+);
+
+
+const user =
+await response.json();
+
+
+if(
+!response.ok ||
+!user.id
+){
+
+localStorage.removeItem(
+"access_token"
+);
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+/* Get business account */
+
+const businessResponse =
+await fetch(
+
+SUPABASE_URL +
+"/rest/v1/business_accounts" +
+"?user_id=eq." +
+encodeURIComponent(user.id) +
+"&select=business_name",
+
+{
+
+method:"GET",
+
+headers:{
+
+"apikey":
+SUPABASE_ANON_KEY,
+
+"Authorization":
+"Bearer " + token
+
+}
+
+}
+
+);
+
+
+const businesses =
+await businessResponse.json();
+
+
+if(
+businessResponse.ok &&
+businesses.length > 0
+){
+
+document.getElementById(
+"businessName"
+).textContent =
+businesses[0].business_name ||
+"Your Business";
+
+}
+
+
+}catch(error){
+
+console.error(
+"Business loading error:",
+error
+);
+
+}
+
+}
+
+
+/* ============================================================
+   SAVE CUSTOMER
+============================================================ */
+
+async function saveCustomer(){
+
+const name =
+document.getElementById(
+"customerName"
+).value.trim();
+
+
+const phone =
+document.getElementById(
+"customerPhone"
+).value.trim();
+
+
+const location =
+document.getElementById(
+"customerLocation"
+).value.trim();
+
+
+const message =
+document.getElementById(
+"customerMessage"
+).value.trim();
+
+
+const status =
+document.getElementById(
+"saveStatus"
+);
+
+
+if(
+name === "" ||
+message === ""
+){
+
+status.innerHTML =
+"❌ Please enter customer name and message.";
+
+return;
+
+}
+
+
+status.innerHTML =
+"Saving customer...";
+
+
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+
+if(!token){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+try{
+
+const response =
+await fetch(
+
+"/api/customers",
+
+{
 
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " + token
+
 },
 
 body:JSON.stringify({
 
 name:name,
+
 phone:phone,
+
 location:location,
+
 message:message
 
 })
 
-});
+}
 
-const result=await response.json();
+);
+
+
+const result =
+await response.json();
+
 
 if(response.ok){
 
-document.getElementById("saveStatus").innerHTML=
+status.innerHTML =
 "✅ Customer saved successfully.";
 
-document.getElementById("customerName").value="";
-document.getElementById("customerPhone").value="";
-document.getElementById("customerLocation").value="";
-document.getElementById("customerMessage").value="";
+
+document.getElementById(
+"customerName"
+).value="";
+
+
+document.getElementById(
+"customerPhone"
+).value="";
+
+
+document.getElementById(
+"customerLocation"
+).value="";
+
+
+document.getElementById(
+"customerMessage"
+).value="";
+
 
 loadCustomers();
 
+
 }else{
 
-document.getElementById("saveStatus").innerHTML=
-"❌ "+(result.error || "Unable to save customer.");
+status.innerHTML =
+"❌ " +
+(
+result.error ||
+"Unable to save customer."
+);
 
 }
 
 }catch(error){
 
-document.getElementById("saveStatus").innerHTML=
+console.error(error);
+
+status.innerHTML =
 "❌ Connection error.";
 
 }
@@ -327,84 +674,228 @@ document.getElementById("saveStatus").innerHTML=
 }
 
 
+/* ============================================================
+   LOAD CUSTOMERS
+============================================================ */
 
 async function loadCustomers(){
 
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+
+if(!token){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+const history =
+document.getElementById(
+"customerHistory"
+);
+
+
+history.innerHTML =
+"Loading...";
+
+
 try{
 
-const response=await fetch("/api/customers");
+const response =
+await fetch(
 
-const customers=await response.json();
+"/api/customers",
+
+{
+
+method:"GET",
+
+headers:{
+
+"Authorization":
+"Bearer " + token
+
+}
+
+}
+
+);
+
+
+const customers =
+await response.json();
+
+
+if(!response.ok){
+
+history.innerHTML =
+"❌ " +
+(
+customers.error ||
+"Unable to load customers."
+);
+
+return;
+
+}
+
 
 let html="";
 
-if(!Array.isArray(customers) || customers.length===0){
 
-html="<p>No customers found.</p>";
+if(
+!Array.isArray(customers) ||
+customers.length===0
+){
+
+html =
+"<p>No customers found.</p>";
 
 }else{
 
-customers.forEach(customer=>{
+customers.forEach(
+function(customer){
 
-html+=`
+html += `
 
 <div class="customer-card">
 
-<b>Name:</b> ${customer.name || ""}<br>
+<b>Name:</b>
+${escapeHTML(
+customer.name || ""
+)}
 
-<b>Phone:</b> ${customer.phone || ""}<br>
+<br>
 
-<b>Location:</b> ${customer.location || ""}<br><br>
+<b>Phone:</b>
+${escapeHTML(
+customer.phone || ""
+)}
 
-<b>Message:</b><br>
+<br>
 
-${customer.message || ""}
+<b>Location:</b>
+${escapeHTML(
+customer.location || ""
+)}
 
 <br><br>
 
-<b>AI Reply:</b><br>
+<b>Message:</b>
+<br>
 
-${customer.ai_reply || ""}
+${escapeHTML(
+customer.message || ""
+)}
+
+<br><br>
+
+<b>AI Reply:</b>
+<br>
+
+${escapeHTML(
+customer.ai_reply || ""
+)}
 
 <br><br>
 
 <small>
-
-${customer.created_at || ""}
-
+${escapeHTML(
+customer.created_at || ""
+)}
 </small>
 
 </div>
 
 `;
 
-});
+}
+);
 
 }
 
-document.getElementById("customerHistory").innerHTML=html;
+
+history.innerHTML =
+html;
+
 
 }catch(error){
 
-document.getElementById("customerHistory").innerHTML=
-"Unable to load customers.";
+console.error(error);
+
+history.innerHTML =
+"❌ Unable to load customers.";
 
 }
 
 }
 
 
+/* ============================================================
+   HTML SECURITY
+============================================================ */
 
-window.onload=function(){
+function escapeHTML(value){
 
-window.scrollTo(0,0);
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+/* ============================================================
+   START
+============================================================ */
+
+window.onload =
+function(){
+
+window.scrollTo(
+0,
+0
+);
+
+loadBusiness();
 
 loadCustomers();
 
 };
 
+
 </script>
+
 
 </body>
 
-</html>
+  </html>
