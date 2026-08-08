@@ -4,9 +4,11 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Customers</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>NexaFlow AI - Customers</title>
 
 <style>
 
@@ -28,6 +30,7 @@ width:250px;
 background:#0b1f3a;
 color:white;
 padding:25px;
+min-height:100vh;
 }
 
 .logo{
@@ -124,15 +127,15 @@ border-radius:8px;
 border-left:5px solid #0066ff;
 }
 
-@media(max-width:800px){
-
-body{
-display:flex;
+.status{
+margin-top:15px;
+font-weight:bold;
 }
+
+@media(max-width:800px){
 
 .sidebar{
 width:85px;
-min-height:100vh;
 padding:12px;
 }
 
@@ -156,7 +159,6 @@ padding:8px;
 }
 
 .main{
-flex:1;
 padding:15px;
 }
 
@@ -165,7 +167,6 @@ padding:15px;
 </style>
 
 </head>
-
 
 <body>
 
@@ -186,13 +187,49 @@ NexaFlow AI
 
 <br>
 
-<a href="dashboard.html">Dashboard</a>
-<a href="ai-assistant.html">AI Assistant</a>
-<a href="customers.html">Customers</a>
-<a href="analytics.html">Analytics</a>
-<a href="automation.html">Automation</a>
-<a href="reports.html">Reports</a>
-<a href="settings.html">Settings</a>
+<a href="dashboard.html">
+Dashboard
+</a>
+
+<a href="ai-assistant.html">
+AI Assistant
+</a>
+
+<a href="customers.html">
+Customers
+</a>
+
+<a href="analytics.html">
+Analytics
+</a>
+
+<a href="automation.html">
+Automation
+</a>
+
+<a href="reports.html">
+Reports
+</a>
+
+<a href="settings.html">
+Settings
+</a>
+
+<button
+onclick="logout()"
+style="
+width:100%;
+background:#e53935;
+color:white;
+border:none;
+padding:12px;
+border-radius:8px;
+cursor:pointer;
+">
+
+🚪 Logout
+
+</button>
 
 </div>
 
@@ -201,43 +238,58 @@ NexaFlow AI
 
 <div class="header">
 
-<h2>👥 Customers Management</h2>
+<h2>
+👥 Customers Management
+</h2>
 
-<p>Manage customer information and AI replies.</p>
+<p>
+Manage customer information and AI replies.
+</p>
 
 </div>
 
 
 <div class="customer-box">
 
-<h3>Add Customer</h3>
+<h3>
+Add Customer
+</h3>
+
 
 <input
 type="text"
 id="customerName"
 placeholder="Customer Name">
 
+
 <input
 type="text"
 id="customerPhone"
 placeholder="Phone Number">
+
 
 <input
 type="text"
 id="customerLocation"
 placeholder="Location">
 
+
 <textarea
 id="customerMessage"
-placeholder="Customer Message"></textarea>
+placeholder="Customer Message">
+</textarea>
+
 
 <button onclick="saveCustomer()">
+
 Save Customer
+
 </button>
+
 
 <div
 id="saveStatus"
-style="margin-top:20px;font-weight:bold;">
+class="status">
 </div>
 
 </div>
@@ -245,10 +297,15 @@ style="margin-top:20px;font-weight:bold;">
 
 <div class="customer-list">
 
-<h3>Customer History</h3>
+<h3>
+Customer History
+</h3>
+
 
 <div id="customerHistory">
-Loading...
+
+Loading customers...
+
 </div>
 
 </div>
@@ -258,11 +315,6 @@ Loading...
 
 <script>
 
-
-/* ============================================================
-   SUPABASE CONFIGURATION
-============================================================ */
-
 const SUPABASE_URL =
 "https://xfjroysinifwncfjvrsg.supabase.co";
 
@@ -271,51 +323,118 @@ const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmxlIiwicmVmIjoieGZqcm95c2luaWZ3bmNmanZyc2ciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDI1NTc0MCwiZXhwIjoyMDk5ODMxNzQwfQ.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
 
 
-/* ============================================================
-   GET LOGIN TOKEN
-============================================================ */
+/* ==================================================
+   GET CURRENT USER
+================================================== */
 
-function getAccessToken(){
+async function getCurrentUser(){
 
 const token =
 localStorage.getItem("access_token");
 
-return token;
-
-}
-
-
-/* ============================================================
-   CHECK LOGIN
-============================================================ */
-
-function checkLogin(){
-
-const token =
-getAccessToken();
 
 if(!token){
 
-window.location.href =
+window.location.href="login.html";
+
+return null;
+
+}
+
+
+try{
+
+const response =
+await fetch(
+
+SUPABASE_URL +
+"/auth/v1/user",
+
+{
+
+method:"GET",
+
+headers:{
+
+"apikey":
+SUPABASE_ANON_KEY,
+
+"Authorization":
+"Bearer " + token
+
+}
+
+}
+
+);
+
+
+const user =
+await response.json();
+
+
+if(!response.ok || !user.id){
+
+document.getElementById(
+"customerHistory"
+).innerHTML=
+"Login session expired. Please log in again.";
+
+localStorage.removeItem(
+"access_token"
+);
+
+setTimeout(function(){
+
+window.location.href=
 "login.html";
 
-return false;
+},1500);
+
+return null;
 
 }
 
-return true;
+
+localStorage.setItem(
+"user_id",
+user.id
+);
+
+
+return user;
+
+
+}catch(error){
+
+console.error(
+"Authentication error:",
+error
+);
+
+document.getElementById(
+"customerHistory"
+).innerHTML=
+"Unable to verify your login session.";
+
+return null;
+
+}
 
 }
 
 
-/* ============================================================
+/* ==================================================
    SAVE CUSTOMER
-============================================================ */
+================================================== */
 
 async function saveCustomer(){
 
+const user =
+await getCurrentUser();
 
-if(!checkLogin()){
+
+if(!user){
 
 return;
 
@@ -323,42 +442,34 @@ return;
 
 
 const name =
-document
-.getElementById("customerName")
-.value
-.trim();
+document.getElementById(
+"customerName"
+).value.trim();
 
 
 const phone =
-document
-.getElementById("customerPhone")
-.value
-.trim();
+document.getElementById(
+"customerPhone"
+).value.trim();
 
 
 const location =
-document
-.getElementById("customerLocation")
-.value
-.trim();
+document.getElementById(
+"customerLocation"
+).value.trim();
 
 
 const message =
-document
-.getElementById("customerMessage")
-.value
-.trim();
+document.getElementById(
+"customerMessage"
+).value.trim();
 
 
-const status =
+if(name==="" || message===""){
+
 document.getElementById(
 "saveStatus"
-);
-
-
-if(name === "" || message === ""){
-
-status.innerHTML =
+).innerHTML=
 "Please enter customer name and message.";
 
 return;
@@ -366,16 +477,13 @@ return;
 }
 
 
-status.innerHTML =
+document.getElementById(
+"saveStatus"
+).innerHTML=
 "Saving customer...";
 
 
-const token =
-getAccessToken();
-
-
 try{
-
 
 const response =
 await fetch(
@@ -392,7 +500,10 @@ headers:{
 "application/json",
 
 "Authorization":
-"Bearer " + token
+"Bearer " +
+localStorage.getItem(
+"access_token"
+)
 
 },
 
@@ -419,8 +530,9 @@ await response.json();
 
 if(response.ok){
 
-
-status.innerHTML =
+document.getElementById(
+"saveStatus"
+).innerHTML=
 "✅ Customer saved successfully.";
 
 
@@ -449,50 +561,22 @@ loadCustomers();
 
 }else{
 
-
-if(
-response.status === 401
-){
-
-status.innerHTML =
-"❌ Login session expired. Please log in again.";
-
-localStorage.removeItem(
-"access_token"
-);
-
-setTimeout(function(){
-
-window.location.href =
-"login.html";
-
-},1500);
-
-return;
-
-}
-
-
-status.innerHTML =
+document.getElementById(
+"saveStatus"
+).innerHTML=
 "❌ " +
-(
-result.error ||
-"Unable to save customer."
-);
+(result.error ||
+"Unable to save customer.");
 
 }
-
 
 }catch(error){
 
+console.error(error);
 
-console.error(
-"Customer save error:",
-error
-);
-
-
-status.innerHTML =
+document.getElementById(
+"saveStatus"
+).innerHTML=
 "❌ Connection error.";
 
 }
@@ -500,36 +584,24 @@ status.innerHTML =
 }
 
 
-/* ============================================================
+/* ==================================================
    LOAD CUSTOMERS
-============================================================ */
+================================================== */
 
 async function loadCustomers(){
 
+const user =
+await getCurrentUser();
 
-if(!checkLogin()){
+
+if(!user){
 
 return;
 
 }
 
 
-const token =
-getAccessToken();
-
-
-const history =
-document.getElementById(
-"customerHistory"
-);
-
-
-history.innerHTML =
-"Loading customers...";
-
-
 try{
-
 
 const response =
 await fetch(
@@ -543,7 +615,10 @@ method:"GET",
 headers:{
 
 "Authorization":
-"Bearer " + token
+"Bearer " +
+localStorage.getItem(
+"access_token"
+)
 
 }
 
@@ -556,32 +631,11 @@ const customers =
 await response.json();
 
 
-if(
-response.status === 401
-){
-
-history.innerHTML =
-"❌ Login session expired. Please log in again.";
-
-localStorage.removeItem(
-"access_token"
-);
-
-setTimeout(function(){
-
-window.location.href =
-"login.html";
-
-},1500);
-
-return;
-
-}
-
-
 if(!response.ok){
 
-history.innerHTML =
+document.getElementById(
+"customerHistory"
+).innerHTML=
 "❌ " +
 (
 customers.error ||
@@ -598,10 +652,10 @@ let html="";
 
 if(
 !Array.isArray(customers) ||
-customers.length === 0
+customers.length===0
 ){
 
-html =
+html=
 "<p>No customers found.</p>";
 
 }else{
@@ -610,39 +664,43 @@ html =
 customers.forEach(
 function(customer){
 
-html += `
+html+=`
 
 <div class="customer-card">
 
 <b>Name:</b>
-${escapeHTML(customer.name || "")}
+${customer.name || ""}
+
 <br>
 
 <b>Phone:</b>
-${escapeHTML(customer.phone || "")}
+${customer.phone || ""}
+
 <br>
 
 <b>Location:</b>
-${escapeHTML(customer.location || "")}
+${customer.location || ""}
 
 <br><br>
 
 <b>Message:</b>
+
 <br>
 
-${escapeHTML(customer.message || "")}
+${customer.message || ""}
 
 <br><br>
 
 <b>AI Reply:</b>
+
 <br>
 
-${escapeHTML(customer.ai_reply || "")}
+${customer.ai_reply || ""}
 
 <br><br>
 
 <small>
-${escapeHTML(customer.created_at || "")}
+${customer.created_at || ""}
 </small>
 
 </div>
@@ -651,73 +709,43 @@ ${escapeHTML(customer.created_at || "")}
 
 });
 
-
 }
 
 
-history.innerHTML =
+document.getElementById(
+"customerHistory"
+).innerHTML=
 html;
 
 
 }catch(error){
 
+console.error(error);
 
-console.error(
-"Customer loading error:",
-error
-);
-
-
-history.innerHTML =
-"❌ Unable to load customers.";
+document.getElementById(
+"customerHistory"
+).innerHTML=
+"Unable to load customers.";
 
 }
 
 }
 
 
-/* ============================================================
-   SECURITY
-   PREVENT CUSTOMER TEXT FROM BEING
-   INTERPRETED AS HTML
-============================================================ */
-
-function escapeHTML(value){
-
-return String(value)
-
-.replace(/&/g,"&amp;")
-
-.replace(/</g,"&lt;")
-
-.replace(/>/g,"&gt;")
-
-.replace(/"/g,"&quot;")
-
-.replace(/'/g,"&#039;");
-
-}
-
-
-/* ============================================================
-   PAGE LOAD
-============================================================ */
+/* ==================================================
+   PAGE START
+================================================== */
 
 window.addEventListener(
 "load",
 function(){
 
-if(checkLogin()){
-
 loadCustomers();
 
-}
-
 });
-
 
 </script>
 
 </body>
 
-    </html>
+   </html>
