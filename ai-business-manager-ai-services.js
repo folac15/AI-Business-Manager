@@ -1,96 +1,274 @@
 // ==========================================
-// AI BUSINESS MANAGER AI SERVICES
-// PART 1
+// NEXAFLOW AI BUSINESS MANAGER
+// AI SERVICES
+// VERSION 1.1
 // ==========================================
 
 
-// AI Service Configuration
+// ==========================================
+// AI SERVICE CONFIGURATION
+// ==========================================
 
 const AIServiceConfig = {
 
-    platform: "AI Business Manager",
+    platform: "NexaFlow AI",
 
-    version: "1.0",
+    version: "1.1",
 
-    provider: "OpenAI Ready",
+    provider: "OpenRouter",
 
     status: "Initialized"
 
 };
 
 
-// AI Assistant Engine
+// ==========================================
+// AI ASSISTANT ENGINE
+// ==========================================
 
 const AIAssistant = {
 
     conversationHistory: [],
 
-    async ask(question){
 
-    const response = await fetch("/api/ai", {
+    // --------------------------------------
+    // ASK AI
+    // --------------------------------------
 
-        method: "POST",
+    async ask(question) {
 
-        headers: {
+        const cleanQuestion =
+            String(question || "").trim();
 
-            "Content-Type": "application/json"
 
-        },
+        if (!cleanQuestion) {
 
-        body: JSON.stringify({
+            return {
 
-            question: question
+                success: false,
 
-        })
+                answer: "Please enter a question."
 
-    });
+            };
 
-    const result = await response.json();
+        }
 
-    this.conversationHistory.push({
 
-        question: question,
+        try {
 
-        answer: result.answer,
+            const response = await fetch(
+                "/api/ai",
+                {
 
-        time: new Date().toISOString()
+                    method: "POST",
 
-    });
+                    headers: {
 
-    return {
+                        "Content-Type":
+                        "application/json"
 
-        question: question,
+                    },
 
-        answer: result.answer,
+                    body: JSON.stringify({
 
-        time: new Date().toISOString()
+                        question:
+                        cleanQuestion,
 
-    };
+                        conversation:
+                        this.conversationHistory
 
-    }
+                    })
 
-    history(){
+                }
+            );
 
-        return this.conversationHistory;
+
+            let result;
+
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch (error) {
+
+                result = {
+
+                    answer:
+                    "The server returned an invalid response."
+
+                };
+
+            }
+
+
+            if (!response.ok) {
+
+                return {
+
+                    success: false,
+
+                    answer:
+                        result.answer ||
+                        result.error ||
+                        "AI request failed."
+
+                };
+
+            }
+
+
+            const answer =
+                String(
+                    result.answer || ""
+                ).trim();
+
+
+            if (!answer) {
+
+                return {
+
+                    success: false,
+
+                    answer:
+                        "The AI returned an empty answer."
+
+                };
+
+            }
+
+
+            // ----------------------------------
+            // SAVE USER MESSAGE
+            // ----------------------------------
+
+            this.conversationHistory.push({
+
+                role: "user",
+
+                content:
+                    cleanQuestion
+
+            });
+
+
+            // ----------------------------------
+            // SAVE AI MESSAGE
+            // ----------------------------------
+
+            this.conversationHistory.push({
+
+                role: "assistant",
+
+                content:
+                    answer
+
+            });
+
+
+            // ----------------------------------
+            // LIMIT LOCAL HISTORY
+            // ----------------------------------
+
+            if (
+                this.conversationHistory.length >
+                20
+            ) {
+
+                this.conversationHistory =
+                    this.conversationHistory.slice(
+                        -20
+                    );
+
+            }
+
+
+            return {
+
+                success: true,
+
+                question:
+                    cleanQuestion,
+
+                answer:
+                    answer,
+
+                time:
+                    new Date().toISOString()
+
+            };
+
+
+        } catch (error) {
+
+            console.error(
+                "AI service error:",
+                error
+            );
+
+
+            return {
+
+                success: false,
+
+                answer:
+                    "Sorry, I could not connect to the AI service."
+
+            };
+
+        }
+
+    },
+
+
+    // --------------------------------------
+    // GET HISTORY
+    // --------------------------------------
+
+    history() {
+
+        return [
+            ...this.conversationHistory
+        ];
+
+    },
+
+
+    // --------------------------------------
+    // CLEAR HISTORY
+    // --------------------------------------
+
+    clearHistory() {
+
+        this.conversationHistory = [];
 
     }
 
 };
 
 
-// AI Reasoning Engine
+// ==========================================
+// AI REASONING ENGINE
+// ==========================================
 
 const AIReasoning = {
 
-    analyze(data){
+    analyze(data) {
 
         return {
 
-            status: "Analysis Complete",
+            status:
+                "Analysis Complete",
 
-            recommendation: "Business optimization recommended.",
+            recommendation:
+                "Business optimization recommended.",
 
-            score: 95
+            score:
+                95,
+
+            analyzedAt:
+                new Date().toISOString()
 
         };
 
@@ -99,202 +277,168 @@ const AIReasoning = {
 };
 
 
-// Business Analysis AI
+// ==========================================
+// BUSINESS ANALYSIS AI
+// ==========================================
 
 const BusinessAI = {
 
-    generateInsight(businessData){
+    generateInsight(businessData) {
 
         return {
 
-            insight: "Revenue and customer engagement can be improved through automation.",
+            insight:
+                "Revenue and customer engagement can be improved through automation.",
 
-            priority: "High",
+            priority:
+                "High",
 
-            generatedAt: new Date().toISOString()
+            generatedAt:
+                new Date().toISOString(),
+
+            businessData:
+                businessData
 
         };
 
     }
 
 };
-// ==========================================
-// PART 2
-// CUSTOMER AI + RECOMMENDATION + LANGUAGE
-// ==========================================
 
 
+// ==========================================
 // CUSTOMER REPLY AI
-
+// ==========================================
 
 const CustomerReplyAI = {
 
-
-    generateReply(message){
-
+    generateReply(message) {
 
         return {
 
-
-            customerMessage: message,
-
+            customerMessage:
+                message,
 
             reply:
-
-            "Thank you for your message. Our AI assistant has received your request and will help you shortly.",
-
+                "Thank you for your message. Our AI assistant has received your request and will help you shortly.",
 
             generatedAt:
-
-            new Date().toISOString()
-
+                new Date().toISOString()
 
         };
 
-
     }
-
 
 };
 
 
-
-
+// ==========================================
 // RECOMMENDATION AI
-
+// ==========================================
 
 const RecommendationAI = {
 
-
-    recommend(data){
-
+    recommend(data) {
 
         return {
 
-
             recommendation:
-
-            "Improve automation, customer follow-up, and business analysis.",
-
+                "Improve automation, customer follow-up, and business analysis.",
 
             basedOn:
-
-            data,
-
+                data,
 
             date:
-
-            new Date().toISOString()
-
+                new Date().toISOString()
 
         };
 
-
     }
-
 
 };
 
 
-
-
+// ==========================================
 // LEARNING AI
-
+// ==========================================
 
 const LearningAI = {
 
-
-    explain(topic){
-
+    explain(topic) {
 
         return {
 
-
-            topic: topic,
-
+            topic:
+                topic,
 
             explanation:
-
-            "AI learning assistant is ready to explain this topic with examples.",
-
+                "AI learning assistant is ready to explain this topic with examples.",
 
             language:
-
-            "English"
-
+                "English"
 
         };
 
-
     }
-
 
 };
 
 
-
-
+// ==========================================
 // MULTILINGUAL AI
-
+// ==========================================
 
 const LanguageAI = {
 
-
-    currentLanguage:"English",
-
-
-
-    changeLanguage(language){
+    currentLanguage:
+        "English",
 
 
-        this.currentLanguage = language;
+    changeLanguage(language) {
+
+        this.currentLanguage =
+            language;
 
 
         return {
 
+            language:
+                this.currentLanguage,
 
-            language: this.currentLanguage,
-
-
-            status:"Changed"
-
+            status:
+                "Changed"
 
         };
 
-
     }
-
-
 
 };
 
 
-
-
+// ==========================================
 // AI TASK MANAGER
-
+// ==========================================
 
 const AITaskManager = {
-
 
     tasks: [],
 
 
+    createTask(name) {
 
-    createTask(name){
+        const task = {
 
+            id:
+                Date.now(),
 
-        let task = {
+            name:
+                name,
 
+            status:
+                "Created",
 
-            id: Date.now(),
-
-
-            name:name,
-
-
-            status:"Created"
-
+            createdAt:
+                new Date().toISOString()
 
         };
 
@@ -304,45 +448,48 @@ const AITaskManager = {
 
         return task;
 
+    },
+
+
+    getTasks() {
+
+        return [
+            ...this.tasks
+        ];
 
     },
 
 
+    clearTasks() {
 
-    getTasks(){
-
-
-        return this.tasks;
-
+        this.tasks = [];
 
     }
 
-
-
 };
-// ==========================================
-// PART 3
-// AI SERVICES EXPORT + STATUS
-// ==========================================
 
 
+// ==========================================
 // AI SYSTEM STATUS
+// ==========================================
 
-
-function getAIServiceStatus(){
+function getAIServiceStatus() {
 
     return {
 
         platform:
-        AIServiceConfig.platform,
+            AIServiceConfig.platform,
+
+        version:
+            AIServiceConfig.version,
 
         provider:
-        AIServiceConfig.provider,
+            AIServiceConfig.provider,
 
         status:
-        AIServiceConfig.status,
+            AIServiceConfig.status,
 
-        modules:[
+        modules: [
 
             "AI Assistant",
 
@@ -367,73 +514,58 @@ function getAIServiceStatus(){
 }
 
 
-
-
+// ==========================================
 // MASTER AI OBJECT
-
+// ==========================================
 
 const AIBusinessManagerAI = {
 
-
     config:
-    AIServiceConfig,
-
+        AIServiceConfig,
 
     assistant:
-    AIAssistant,
-
+        AIAssistant,
 
     reasoning:
-    AIReasoning,
-
+        AIReasoning,
 
     business:
-    BusinessAI,
-
+        BusinessAI,
 
     customerReply:
-    CustomerReplyAI,
-
+        CustomerReplyAI,
 
     recommendation:
-    RecommendationAI,
-
+        RecommendationAI,
 
     learning:
-    LearningAI,
-
+        LearningAI,
 
     language:
-    LanguageAI,
-
+        LanguageAI,
 
     tasks:
-    AITaskManager,
-
+        AITaskManager,
 
     status:
-    getAIServiceStatus
-
+        getAIServiceStatus
 
 };
 
 
-
-
+// ==========================================
 // MAKE AVAILABLE GLOBALLY
-
+// ==========================================
 
 window.AIBusinessManagerAI =
-AIBusinessManagerAI;
+    AIBusinessManagerAI;
 
+
+window.AIAssistant =
+    AIAssistant;
 
 
 console.log(
-
-"AI Business Manager AI Services Loaded",
-
-AIBusinessManagerAI
-
+    "NexaFlow AI Services Loaded",
+    AIBusinessManagerAI
 );
-
-
