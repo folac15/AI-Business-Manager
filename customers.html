@@ -132,10 +132,33 @@ margin-top:15px;
 font-weight:bold;
 }
 
+.loading{
+padding:15px 0;
+color:#666;
+}
+
+.error{
+padding:15px;
+background:#fff0f0;
+color:#c62828;
+border-radius:8px;
+margin-top:15px;
+}
+
+.empty{
+padding:15px 0;
+color:#666;
+}
+
 @media(max-width:800px){
+
+body{
+display:flex;
+}
 
 .sidebar{
 width:85px;
+min-height:100vh;
 padding:12px;
 }
 
@@ -159,6 +182,7 @@ padding:8px;
 }
 
 .main{
+flex:1;
 padding:15px;
 }
 
@@ -173,6 +197,10 @@ padding:15px;
 <script src="auth_guard.js"></script>
 
 
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
 <div class="sidebar">
 
 <div class="logo">
@@ -183,7 +211,9 @@ NexaFlow AI
 🏢
 </div>
 
-<h3>Your Business</h3>
+<h3 id="businessName">
+Your Business
+</h3>
 
 <br>
 
@@ -215,26 +245,15 @@ Reports
 Settings
 </a>
 
-<button
-onclick="logout()"
-style="
-width:100%;
-background:#e53935;
-color:white;
-border:none;
-padding:12px;
-border-radius:8px;
-cursor:pointer;
-">
-
-🚪 Logout
-
-</button>
-
 </div>
 
 
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
 <div class="main">
+
 
 <div class="header">
 
@@ -248,6 +267,10 @@ Manage customer information and AI replies.
 
 </div>
 
+
+<!-- =====================================================
+     ADD CUSTOMER
+===================================================== -->
 
 <div class="customer-box">
 
@@ -276,11 +299,11 @@ placeholder="Location">
 
 <textarea
 id="customerMessage"
-placeholder="Customer Message">
-</textarea>
+placeholder="Customer Message"></textarea>
 
 
-<button onclick="saveCustomer()">
+<button
+onclick="saveCustomer()">
 
 Save Customer
 
@@ -295,6 +318,10 @@ class="status">
 </div>
 
 
+<!-- =====================================================
+     CUSTOMER HISTORY
+===================================================== -->
+
 <div class="customer-list">
 
 <h3>
@@ -302,7 +329,9 @@ Customer History
 </h3>
 
 
-<div id="customerHistory">
+<div
+id="customerHistory"
+class="loading">
 
 Loading customers...
 
@@ -310,34 +339,27 @@ Loading customers...
 
 </div>
 
+
 </div>
 
 
 <script>
 
-const SUPABASE_URL =
-"https://xfjroysinifwncfjvrsg.supabase.co";
+/* =====================================================
+   LOAD BUSINESS NAME
+===================================================== */
 
-
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmxlIiwicmVmIjoieGZqcm95c2luaWZ3bmNmanZyc2ciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDI1NTc0MCwiZXhwIjoyMDk5ODMxNzQwfQ.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
-
-
-/* ==================================================
-   GET CURRENT USER
-================================================== */
-
-async function getCurrentUser(){
+async function loadBusiness(){
 
 const token =
-localStorage.getItem("access_token");
+localStorage.getItem(
+"access_token"
+);
 
 
 if(!token){
 
-window.location.href="login.html";
-
-return null;
+return;
 
 }
 
@@ -347,17 +369,13 @@ try{
 const response =
 await fetch(
 
-SUPABASE_URL +
-"/auth/v1/user",
+"/api/business",
 
 {
 
 method:"GET",
 
 headers:{
-
-"apikey":
-SUPABASE_ANON_KEY,
 
 "Authorization":
 "Bearer " + token
@@ -369,77 +387,48 @@ SUPABASE_ANON_KEY,
 );
 
 
-const user =
+const result =
 await response.json();
 
 
-if(!response.ok || !user.id){
-
-document.getElementById(
-"customerHistory"
-).innerHTML=
-"Login session expired. Please log in again.";
-
-localStorage.removeItem(
-"access_token"
-);
-
-setTimeout(function(){
-
-window.location.href=
-"login.html";
-
-},1500);
-
-return null;
-
-}
-
-
-localStorage.setItem(
-"user_id",
-user.id
-);
-
-
-return user;
-
-
-}catch(error){
-
-console.error(
-"Authentication error:",
-error
-);
-
-document.getElementById(
-"customerHistory"
-).innerHTML=
-"Unable to verify your login session.";
-
-return null;
-
-}
-
-}
-
-
-/* ==================================================
-   SAVE CUSTOMER
-================================================== */
-
-async function saveCustomer(){
-
-const user =
-await getCurrentUser();
-
-
-if(!user){
+if(
+response.status === 401
+){
 
 return;
 
 }
 
+
+if(
+result.business &&
+result.business.business_name
+){
+
+document.getElementById(
+"businessName"
+).textContent =
+result.business.business_name;
+
+}
+
+}catch(error){
+
+console.error(
+"Business loading error:",
+error
+);
+
+}
+
+}
+
+
+/* =====================================================
+   SAVE CUSTOMER
+===================================================== */
+
+async function saveCustomer(){
 
 const name =
 document.getElementById(
@@ -465,21 +454,43 @@ document.getElementById(
 ).value.trim();
 
 
-if(name==="" || message===""){
-
+const status =
 document.getElementById(
 "saveStatus"
-).innerHTML=
-"Please enter customer name and message.";
+);
+
+
+if(
+name === ""
+||
+message === ""
+){
+
+status.innerHTML =
+"❌ Please enter customer name and message.";
 
 return;
 
 }
 
 
-document.getElementById(
-"saveStatus"
-).innerHTML=
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+
+if(!token){
+
+status.innerHTML =
+"❌ Login session unavailable. Please log in again.";
+
+return;
+
+}
+
+
+status.innerHTML =
 "Saving customer...";
 
 
@@ -500,10 +511,7 @@ headers:{
 "application/json",
 
 "Authorization":
-"Bearer " +
-localStorage.getItem(
-"access_token"
-)
+"Bearer " + token
 
 },
 
@@ -528,55 +536,73 @@ const result =
 await response.json();
 
 
-if(response.ok){
+console.log(
+"Save customer response:",
+result
+);
 
-document.getElementById(
-"saveStatus"
-).innerHTML=
+
+if(
+response.status === 401
+){
+
+status.innerHTML =
+"❌ Login session expired. Please log in again.";
+
+return;
+
+}
+
+
+if(!response.ok){
+
+status.innerHTML =
+"❌ " +
+(
+result.error ||
+"Unable to save customer."
+);
+
+return;
+
+}
+
+
+status.innerHTML =
 "✅ Customer saved successfully.";
 
 
 document.getElementById(
 "customerName"
-).value="";
+).value = "";
 
 
 document.getElementById(
 "customerPhone"
-).value="";
+).value = "";
 
 
 document.getElementById(
 "customerLocation"
-).value="";
+).value = "";
 
 
 document.getElementById(
 "customerMessage"
-).value="";
+).value = "";
 
 
-loadCustomers();
+await loadCustomers();
 
-
-}else{
-
-document.getElementById(
-"saveStatus"
-).innerHTML=
-"❌ " +
-(result.error ||
-"Unable to save customer.");
-
-}
 
 }catch(error){
 
-console.error(error);
+console.error(
+"Customer save error:",
+error
+);
 
-document.getElementById(
-"saveStatus"
-).innerHTML=
+status.innerHTML =
 "❌ Connection error.";
 
 }
@@ -584,21 +610,36 @@ document.getElementById(
 }
 
 
-/* ==================================================
+/* =====================================================
    LOAD CUSTOMERS
-================================================== */
+===================================================== */
 
 async function loadCustomers(){
 
-const user =
-await getCurrentUser();
+const history =
+document.getElementById(
+"customerHistory"
+);
 
 
-if(!user){
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+
+if(!token){
+
+history.innerHTML =
+'<div class="error">Login session unavailable.</div>';
 
 return;
 
 }
+
+
+history.innerHTML =
+'<div class="loading">Loading customers...</div>';
 
 
 try{
@@ -615,10 +656,7 @@ method:"GET",
 headers:{
 
 "Authorization":
-"Bearer " +
-localStorage.getItem(
-"access_token"
-)
+"Bearer " + token
 
 }
 
@@ -627,59 +665,87 @@ localStorage.getItem(
 );
 
 
-const customers =
+const result =
 await response.json();
 
 
-if(!response.ok){
-
-document.getElementById(
-"customerHistory"
-).innerHTML=
-"❌ " +
-(
-customers.error ||
-"Unable to load customers."
+console.log(
+"Customers response:",
+result
 );
+
+
+if(
+response.status === 401
+){
+
+history.innerHTML =
+'<div class="error">Login session expired. Please log in again.</div>';
 
 return;
 
 }
 
 
-let html="";
+if(!response.ok){
+
+history.innerHTML =
+'<div class="error">' +
+(
+result.error ||
+"Unable to load customers."
+) +
+'</div>';
+
+return;
+
+}
 
 
 if(
-!Array.isArray(customers) ||
-customers.length===0
+!Array.isArray(result)
 ){
 
-html=
-"<p>No customers found.</p>";
+history.innerHTML =
+'<div class="error">The server returned an unexpected response.</div>';
 
-}else{
+return;
+
+}
 
 
-customers.forEach(
+if(result.length === 0){
+
+history.innerHTML =
+'<div class="empty">No customers found yet.</div>';
+
+return;
+
+}
+
+
+let html = "";
+
+
+result.forEach(
 function(customer){
 
-html+=`
+html += `
 
 <div class="customer-card">
 
 <b>Name:</b>
-${customer.name || ""}
+${escapeHtml(customer.name || "")}
 
 <br>
 
 <b>Phone:</b>
-${customer.phone || ""}
+${escapeHtml(customer.phone || "")}
 
 <br>
 
 <b>Location:</b>
-${customer.location || ""}
+${escapeHtml(customer.location || "")}
 
 <br><br>
 
@@ -687,7 +753,7 @@ ${customer.location || ""}
 
 <br>
 
-${customer.message || ""}
+${escapeHtml(customer.message || "")}
 
 <br><br>
 
@@ -695,12 +761,14 @@ ${customer.message || ""}
 
 <br>
 
-${customer.ai_reply || ""}
+${escapeHtml(customer.ai_reply || "")}
 
 <br><br>
 
 <small>
-${customer.created_at || ""}
+
+${escapeHtml(customer.created_at || "")}
+
 </small>
 
 </div>
@@ -709,42 +777,80 @@ ${customer.created_at || ""}
 
 });
 
-}
 
-
-document.getElementById(
-"customerHistory"
-).innerHTML=
+history.innerHTML =
 html;
 
 
 }catch(error){
 
-console.error(error);
+console.error(
+"Customer loading error:",
+error
+);
 
-document.getElementById(
-"customerHistory"
-).innerHTML=
-"Unable to load customers.";
+
+history.innerHTML =
+'<div class="error">Unable to load customers. Check the browser console and Render logs.</div>';
 
 }
 
 }
 
 
-/* ==================================================
+/* =====================================================
+   HTML SAFETY
+===================================================== */
+
+function escapeHtml(value){
+
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+/* =====================================================
    PAGE START
-================================================== */
+===================================================== */
 
 window.addEventListener(
 "load",
 function(){
 
+loadBusiness();
+
 loadCustomers();
 
-});
+}
+);
 
 </script>
+
 
 </body>
 
