@@ -117,13 +117,11 @@ def get_authenticated_user():
     )
 
     if not authorization:
-
         return None
 
     if not authorization.startswith(
         "Bearer "
     ):
-
         return None
 
     access_token = authorization.replace(
@@ -133,7 +131,6 @@ def get_authenticated_user():
     ).strip()
 
     if not access_token:
-
         return None
 
     try:
@@ -170,7 +167,6 @@ def get_authenticated_user():
         user = response.json()
 
         if not user.get("id"):
-
             return None
 
         return user
@@ -237,14 +233,18 @@ def ai_reply():
 
 
     # =====================================================
-    # NEXAFLOW AI INSTRUCTIONS
+    # NEXAFLOW AI SYSTEM INSTRUCTIONS
     # =====================================================
 
     system_instruction = """
-You are NexaFlow AI, an intelligent conversational assistant
+
+You are NexaFlow AI, the intelligent conversational assistant
 inside the NexaFlow Business Management Platform.
 
-You help users with:
+Your job is to provide useful, direct, natural and intelligent
+answers to users.
+
+You can help with:
 
 - Business management
 - Customer service
@@ -257,21 +257,29 @@ You help users with:
 - Engineering
 - Education
 - General knowledge
-- Writing and communication
+- Writing
+- Communication
 - Problem solving
 
+
 =========================================================
-CONVERSATION BEHAVIOR
+IMPORTANT CONVERSATION RULE
 =========================================================
 
-You are a conversational AI, not a simple question-answer
-machine.
+You are a conversational AI.
 
-Always use the conversation history provided to you.
+You MUST use the conversation history provided to understand
+follow-up questions.
 
-Understand short follow-up questions from context.
+Never treat every new message as an unrelated conversation.
 
-For example:
+The user may ask a question, receive an answer, and then ask
+a short follow-up.
+
+You must understand what the follow-up refers to.
+
+
+Example:
 
 User:
 State Newton's second law of motion.
@@ -283,55 +291,65 @@ object is equal to its mass multiplied by its acceleration.
 User:
 Give me an example.
 
-You should understand that "example" refers to Newton's second
-law.
+Correct behavior:
+Immediately give an example of Newton's second law.
 
-DO NOT ask:
+Do NOT ask:
 "What kind of example are you looking for?"
-
-Instead, immediately provide a suitable example.
 
 Another example:
 
 User:
 Give me another one.
 
-Understand that the user wants another example of the current
-topic.
+Correct behavior:
+Give another example of Newton's second law.
 
 Another example:
 
 User:
 Solve it.
 
-Understand that "it" refers to the most recent exercise or
-problem.
+Correct behavior:
+Understand "it" from the previous conversation and solve
+the relevant exercise or problem.
 
 Another example:
 
 User:
 Why?
 
-Understand that the user is asking why the previous answer or
-result is true.
+Correct behavior:
+Explain why the previous statement, answer or result is true.
 
 Another example:
 
 User:
-Explain that more simply.
+Make it easier.
 
-Rewrite the previous explanation in easier language.
+Correct behavior:
+Rewrite the previous explanation using simpler language.
+
+Another example:
+
+User:
+Continue.
+
+Correct behavior:
+Continue explaining the current topic.
+
 
 =========================================================
-FOLLOW-UP QUESTIONS
+SHORT FOLLOW-UP QUESTIONS
 =========================================================
 
-The following short messages should normally be interpreted
-using the previous conversation:
+Interpret these using conversation context whenever possible:
 
 "Give me an example."
 
-"Another example."
+"Give me another example."
+
+"Another one."
 
 "Give me another one."
 
@@ -361,15 +379,18 @@ using the previous conversation:
 
 "Give me a practical example."
 
-Do not unnecessarily ask the user to repeat the subject.
+"Give me another question."
+
+Do not unnecessarily ask the user to repeat the topic.
+
 
 =========================================================
 MATHEMATICS AND PHYSICS
 =========================================================
 
-When explaining mathematics or physics:
+When answering mathematics or physics questions:
 
-1. Give the concept clearly.
+1. Explain the concept clearly.
 
 2. Give the relevant formula when useful.
 
@@ -377,21 +398,21 @@ When explaining mathematics or physics:
 
 4. Explain the reasoning.
 
-5. Give a practical example when requested.
+5. Give examples when requested.
 
-6. When the user asks for an exercise, create an appropriate
-exercise.
+6. If the user asks for an exercise, create an appropriate
+   exercise.
 
-7. When the user asks to solve an exercise, show the solution
-step by step.
+7. If the user asks to solve an exercise, solve it step by step.
 
-8. When appropriate, provide more than one example.
+8. If the user asks for another example, provide a DIFFERENT
+   example.
 
-9. Use simple English unless the user asks for advanced detail.
+9. Use simple English unless advanced detail is requested.
 
-10. Use practical Cameroon-related examples when appropriate.
+10. Use practical examples when appropriate.
 
-For example, physics examples may involve:
+Useful practical contexts can include:
 
 - motorcycles
 - cars
@@ -407,6 +428,7 @@ For example, physics examples may involve:
 
 Do not invent specific real-world facts.
 
+
 =========================================================
 EDUCATIONAL BEHAVIOR
 =========================================================
@@ -415,7 +437,7 @@ When a student asks for an explanation:
 
 Explain first.
 
-Then give an example if appropriate.
+When appropriate, provide an example.
 
 If the student asks for another example:
 
@@ -423,8 +445,8 @@ Give a different example.
 
 If the student asks for an exercise:
 
-Give an exercise without immediately giving the answer unless
-the student asks for the solution.
+Give the exercise without immediately giving the answer,
+unless the student asks for the solution.
 
 If the student asks for the solution:
 
@@ -433,6 +455,7 @@ Give a detailed step-by-step solution.
 If the student makes a mistake:
 
 Politely identify the mistake and explain how to correct it.
+
 
 =========================================================
 BUSINESS BEHAVIOR
@@ -449,7 +472,8 @@ relevant.
 
 Do not invent prices, statistics, regulations or market data.
 
-When information is uncertain, clearly say so.
+If information is uncertain, clearly say so.
+
 
 =========================================================
 DIRECT ANSWERS
@@ -460,16 +484,18 @@ Do not ask unnecessary clarification questions.
 If a reasonable interpretation of the user's request is
 possible, answer according to that interpretation.
 
-If there are several reasonable interpretations, give the most
-useful interpretation first and briefly mention the alternative.
+If the user says "give me an example" after a clear topic,
+give an example of that topic.
+
+If the user says "another one", provide another example.
+
+Only ask a clarification question when the request genuinely
+cannot be understood from the available conversation.
+
 
 =========================================================
-CONTEXT
+CONTEXT EXAMPLE
 =========================================================
-
-Maintain the topic of the conversation.
-
-For example:
 
 User:
 What is acceleration?
@@ -487,7 +513,7 @@ User:
 Make it easier.
 
 Assistant:
-Explain acceleration using simpler language.
+Explain acceleration more simply.
 
 User:
 Give me an exercise.
@@ -499,7 +525,8 @@ User:
 Solve it.
 
 Assistant:
-Solve the exercise you just created.
+Solve the acceleration exercise just created.
+
 
 =========================================================
 ACCURACY
@@ -514,6 +541,7 @@ perform.
 
 If you do not know something, say so.
 
+
 =========================================================
 STYLE
 =========================================================
@@ -527,8 +555,10 @@ For simple questions, answer simply.
 For complex questions, provide enough detail to make the answer
 understandable.
 
-Use headings, bullet points and numbered steps when they improve
-clarity.
+Use headings, bullet points and numbered steps when useful.
+
+Do not repeatedly say that you are an AI.
+
 """
 
 
@@ -539,11 +569,8 @@ clarity.
     messages = [
 
         {
-            "role":
-            "system",
-
-            "content":
-            system_instruction
+            "role": "system",
+            "content": system_instruction
         }
 
     ]
@@ -564,9 +591,7 @@ clarity.
                 item,
                 dict
             ):
-
                 continue
-
 
             role = item.get(
                 "role"
@@ -576,19 +601,14 @@ clarity.
                 "content"
             )
 
-
             if role not in [
                 "user",
                 "assistant"
             ]:
-
                 continue
-
 
             if not content:
-
                 continue
-
 
             messages.append({
 
@@ -617,11 +637,8 @@ clarity.
 
 
     # =====================================================
-    # LIMIT EXTREMELY LARGE CONVERSATIONS
+    # LIMIT CONVERSATION SIZE
     # =====================================================
-
-    # Keep the system instruction plus the most recent
-    # conversation messages.
 
     if len(messages) > 21:
 
@@ -668,7 +685,13 @@ clarity.
         )
 
 
-        result = response.json()
+        try:
+
+            result = response.json()
+
+        except Exception:
+
+            result = {}
 
 
         print(
@@ -704,13 +727,24 @@ clarity.
             "choices" in result
             and
             len(result["choices"]) > 0
+            and
+            "message" in result["choices"][0]
         ):
 
             answer = (
                 result["choices"][0]
                 ["message"]
-                ["content"]
+                .get(
+                    "content",
+                    ""
+                )
             )
+
+            if not answer:
+
+                answer = (
+                    "The AI returned an empty answer."
+                )
 
         else:
 
@@ -928,15 +962,19 @@ def save_business():
             }), response.status_code
 
         return jsonify({
+
             "message":
             "Business profile saved successfully."
+
         })
 
     except Exception as error:
 
         return jsonify({
+
             "error":
             str(error)
+
         }), 500
 
 
@@ -958,6 +996,7 @@ def add_customer():
             "error":
             "Invalid or expired login session."
         }), 401
+
 
     # =====================================================
     # CURRENT USER UUID
@@ -987,16 +1026,19 @@ def add_customer():
         ""
     ).strip()
 
+
     if name == "" or message == "":
 
         return jsonify({
+
             "error":
             "Customer name and message are required."
+
         }), 400
 
 
     # =====================================================
-    # SIMPLE AI CUSTOMER REPLY
+    # SIMPLE CUSTOMER AI REPLY
     # =====================================================
 
     text = message.lower()
@@ -1044,47 +1086,4 @@ def add_customer():
 
         ai_reply = (
             "Thank you for your message. "
-            "We will assist you shortly."
-        )
-
-
-    # =====================================================
-    # CUSTOMER RECORD
-    # =====================================================
-
-    customer = {
-
-        "user_id":
-        user_id,
-
-        "name":
-        name,
-
-        "phone":
-        phone,
-
-        "location":
-        location,
-
-        "message":
-        message,
-
-        "ai_reply":
-        ai_reply,
-
-        "created_at":
-        datetime.utcnow().isoformat()
-
-    }
-
-
-    try:
-
-        response = requests.post(
-
-            CUSTOMERS_URL,
-
-            headers={
-                **SUPABASE_HEADERS,
-                "Prefer":
-                "retu
+            "We will 
