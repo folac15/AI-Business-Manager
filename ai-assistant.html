@@ -23,464 +23,283 @@ body{
     background:#f4f7fb;
 }
 
-
 /* =========================
    SIDEBAR
 ========================= */
 
 .sidebar{
-
     width:250px;
     background:#0b1f3a;
     color:white;
     padding:25px;
     min-height:100vh;
-
 }
 
 .logo{
-
     font-size:22px;
     font-weight:bold;
     margin-bottom:30px;
-
 }
 
 .business-logo{
-
     width:70px;
     height:70px;
     background:white;
     color:#0b1f3a;
     border-radius:50%;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     font-size:30px;
     margin-bottom:15px;
-
 }
 
 .sidebar h3{
-
     margin-bottom:20px;
-
 }
 
 .sidebar a{
-
     display:block;
     color:white;
     text-decoration:none;
-
     padding:12px;
     margin-bottom:8px;
-
     border-radius:8px;
-
 }
 
 .sidebar a:hover{
-
     background:#0066ff;
-
 }
-
 
 /* =========================
    MAIN
 ========================= */
 
 .main{
-
     flex:1;
     display:flex;
     flex-direction:column;
     min-width:0;
-
 }
-
 
 /* =========================
    HEADER
 ========================= */
 
 .header{
-
     background:white;
-
     padding:18px 25px;
-
     border-bottom:1px solid #e5e7eb;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
 }
 
 .header h2{
-
     font-size:20px;
-
 }
 
 .header p{
-
     color:#777;
     font-size:13px;
     margin-top:4px;
-
 }
 
 .new-chat{
-
     background:#0066ff;
     color:white;
-
     border:none;
     border-radius:8px;
-
     padding:10px 15px;
-
     cursor:pointer;
-
 }
 
 .new-chat:hover{
-
     background:#004ccc;
-
 }
-
 
 /* =========================
    CHAT AREA
 ========================= */
 
 .chat-container{
-
     flex:1;
-
     display:flex;
     flex-direction:column;
-
     min-height:0;
-
 }
-
 
 /* =========================
    MESSAGES
 ========================= */
 
 .messages{
-
     flex:1;
-
     overflow-y:auto;
-
     padding:25px;
-
     max-width:1000px;
-
     width:100%;
-
     margin:auto;
-
 }
-
-
-/* MESSAGE ROW */
 
 .message-row{
-
     display:flex;
-
     margin-bottom:22px;
-
     width:100%;
-
 }
-
-
-/* USER */
 
 .message-row.user{
-
     justify-content:flex-end;
-
 }
-
-
-/* AI */
 
 .message-row.ai{
-
     justify-content:flex-start;
-
 }
-
-
-/* BUBBLE */
 
 .message{
-
     max-width:75%;
-
     padding:14px 17px;
-
     border-radius:16px;
-
     line-height:1.5;
-
     font-size:15px;
-
     white-space:pre-wrap;
-
     word-wrap:break-word;
-
 }
-
-
-/* USER BUBBLE */
 
 .user .message{
-
     background:#0066ff;
-
     color:white;
-
     border-bottom-right-radius:4px;
-
 }
-
-
-/* AI BUBBLE */
 
 .ai .message{
-
     background:white;
-
     color:#222;
-
     border:1px solid #e5e7eb;
-
     border-bottom-left-radius:4px;
-
 }
-
-
-/* LABEL */
 
 .message-label{
-
     font-size:11px;
-
     font-weight:bold;
-
     margin-bottom:5px;
-
     opacity:.65;
-
 }
-
 
 /* =========================
    WELCOME
 ========================= */
 
 .welcome{
-
     text-align:center;
-
     padding:60px 20px;
-
     color:#555;
-
 }
 
 .welcome-icon{
-
     font-size:45px;
-
     margin-bottom:15px;
-
 }
 
 .welcome h2{
-
     color:#0b1f3a;
-
     margin-bottom:10px;
-
 }
 
 .welcome p{
-
     max-width:500px;
-
     margin:auto;
-
 }
-
 
 /* =========================
    INPUT AREA
 ========================= */
 
 .input-area{
-
     background:white;
-
     border-top:1px solid #e5e7eb;
-
     padding:15px 20px;
-
 }
-
 
 .input-wrapper{
-
     max-width:900px;
-
     margin:auto;
-
     display:flex;
-
     align-items:flex-end;
-
     gap:10px;
-
     background:#f4f7fb;
-
     border:1px solid #ddd;
-
     border-radius:15px;
-
     padding:8px;
-
 }
-
 
 textarea{
-
     flex:1;
-
     resize:none;
-
     border:none;
-
     outline:none;
-
     background:transparent;
-
     padding:10px;
-
     font-size:15px;
-
     max-height:150px;
-
     min-height:42px;
-
 }
 
-
 .send-button{
-
     width:42px;
     height:42px;
-
     border:none;
-
     border-radius:50%;
-
     background:#0066ff;
-
     color:white;
-
     font-size:20px;
-
     cursor:pointer;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
 }
 
 .send-button:hover{
-
     background:#004ccc;
-
 }
-
 
 .send-button:disabled{
-
     background:#aaa;
-
     cursor:not-allowed;
-
 }
-
 
 .input-hint{
-
     max-width:900px;
-
     margin:7px auto 0;
-
     text-align:center;
-
     font-size:11px;
-
     color:#888;
-
 }
-
 
 /* =========================
    TYPING
 ========================= */
 
 .typing{
-
     display:flex;
-
     gap:4px;
-
     padding:5px 0;
-
 }
 
 .typing span{
-
     width:7px;
     height:7px;
-
     background:#888;
-
     border-radius:50%;
-
     animation:blink 1.2s infinite;
-
 }
 
 .typing span:nth-child(2){
-
     animation-delay:.2s;
-
 }
 
 .typing span:nth-child(3){
-
     animation-delay:.4s;
-
 }
 
 @keyframes blink{
@@ -495,7 +314,6 @@ textarea{
 
 }
 
-
 /* =========================
    MOBILE
 ========================= */
@@ -503,99 +321,70 @@ textarea{
 @media(max-width:800px){
 
     .sidebar{
-
         width:85px;
         padding:12px;
-
     }
 
     .logo{
-
         font-size:15px;
-
     }
 
     .business-logo{
-
         width:45px;
         height:45px;
         font-size:20px;
-
     }
 
     .sidebar h3{
-
         display:none;
-
     }
 
     .sidebar a{
-
         font-size:11px;
         padding:8px;
-
     }
 
     .header{
-
         padding:15px;
-
     }
 
     .header p{
-
         display:none;
-
     }
 
     .messages{
-
         padding:15px;
-
     }
 
     .message{
-
         max-width:88%;
-
         font-size:14px;
-
     }
 
     .input-area{
-
         padding:10px;
-
     }
 
 }
-
 
 /* =========================
    SCROLLBAR
 ========================= */
 
 .messages::-webkit-scrollbar{
-
     width:6px;
-
 }
 
 .messages::-webkit-scrollbar-thumb{
-
     background:#ccc;
-
     border-radius:10px;
-
 }
 
 </style>
 
 </head>
 
-
 <body>
-
 
 <!-- =========================
      SIDEBAR
@@ -603,65 +392,47 @@ textarea{
 
 <div class="sidebar">
 
-<div class="logo">
+    <div class="logo">
+        NexaFlow AI
+    </div>
 
-NexaFlow AI
+    <div class="business-logo">
+        🤖
+    </div>
 
-</div>
+    <h3 id="businessName">
+        Your Business
+    </h3>
 
+    <a href="dashboard.html">
+        Dashboard
+    </a>
 
-<div class="business-logo">
+    <a href="ai-assistant.html">
+        AI Assistant
+    </a>
 
-🤖
+    <a href="customers.html">
+        Customers
+    </a>
 
-</div>
+    <a href="analytics.html">
+        Analytics
+    </a>
 
+    <a href="automation.html">
+        Automation
+    </a>
 
-<h3 id="businessName">
+    <a href="reports.html">
+        Reports
+    </a>
 
-Your Business
-
-</h3>
-
-
-<a href="dashboard.html">
-Dashboard
-</a>
-
-
-<a href="ai-assistant.html">
-AI Assistant
-</a>
-
-
-<a href="customers.html">
-Customers
-</a>
-
-
-<a href="analytics.html">
-Analytics
-</a>
-
-
-<a href="automation.html">
-Automation
-</a>
-
-
-<a href="reports.html">
-Reports
-</a>
-
-
-<a href="settings.html">
-Settings
-</a>
-
+    <a href="settings.html">
+        Settings
+    </a>
 
 </div>
-
-
 
 <!-- =========================
      MAIN
@@ -669,125 +440,105 @@ Settings
 
 <div class="main">
 
+    <div class="header">
 
-<!-- HEADER -->
+        <div>
 
-<div class="header">
+            <h2>
+                🤖 AI Business Assistant
+            </h2>
 
-<div>
+            <p>
+                Your intelligent business copilot
+            </p>
 
-<h2>
-🤖 AI Business Assistant
-</h2>
+        </div>
 
-<p>
-Your intelligent business copilot
-</p>
+        <button
+            class="new-chat"
+            onclick="newChat()">
 
-</div>
+            ＋ New Chat
 
+        </button>
 
-<button
-class="new-chat"
-onclick="newChat()">
+    </div>
 
-＋ New Chat
+    <div class="chat-container">
 
-</button>
+        <div
+            id="messages"
+            class="messages">
 
-</div>
+            <div
+                id="welcome"
+                class="welcome">
 
+                <div class="welcome-icon">
+                    🤖
+                </div>
 
+                <h2>
+                    How can I help you today?
+                </h2>
 
-<!-- CHAT -->
+                <p>
+                    Ask me about your business,
+                    customers, sales, marketing,
+                    mathematics, physics, or anything else.
+                </p>
 
-<div class="chat-container">
+            </div>
 
+        </div>
 
-<div
-id="messages"
-class="messages">
+        <div class="input-area">
 
+            <div class="input-wrapper">
 
-<!-- WELCOME -->
+                <textarea
+                    id="question"
+                    placeholder="Message NexaFlow AI..."
+                    rows="1"
+                    onkeydown="handleKey(event)"
+                    oninput="autoResize(this)">
+                </textarea>
 
-<div
-id="welcome"
-class="welcome">
+                <button
+                    id="sendButton"
+                    class="send-button"
+                    onclick="askAI()"
+                    title="Send">
 
-<div class="welcome-icon">
-🤖
-</div>
+                    ➤
 
-<h2>
-How can I help you today?
-</h2>
+                </button>
 
-<p>
+            </div>
 
-Ask me about your business, customers,
-sales, marketing, or any other question.
+            <div class="input-hint">
+                Press Enter to send • Shift + Enter for a new line
+            </div>
 
-You can also ask general questions.
+        </div>
 
-</p>
-
-</div>
-
-
-</div>
-
-
-
-<!-- INPUT -->
-
-<div class="input-area">
-
-
-<div class="input-wrapper">
-
-
-<textarea
-id="question"
-placeholder="Message NexaFlow AI..."
-rows="1"
-onkeydown="handleKey(event)"
-oninput="autoResize(this)">
-</textarea>
-
-
-<button
-id="sendButton"
-class="send-button"
-onclick="askAI()"
-title="Send">
-
-➤
-
-</button>
-
+    </div>
 
 </div>
 
+<!-- DO NOT ADD ANYTHING ELSE HERE YET. -->
+<!-- PART 2 CONTINUES DIRECTLY BELOW THIS LINE. -->
+    <!-- =========================
+     AI SERVICES
+========================= -->
 
-<div class="input-hint">
-
-Press Enter to send • Shift + Enter for a new line
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
+<script src="ai-services.js"></script>
 
 <script>
+
+/* =====================================================
+   NEXAFLOW AI ASSISTANT
+===================================================== */
 
 
 /* =====================================================
@@ -796,68 +547,51 @@ Press Enter to send • Shift + Enter for a new line
 
 async function loadBusiness(){
 
-const token =
-localStorage.getItem(
-"access_token"
-);
+    const token =
+        localStorage.getItem("access_token");
 
+    if(!token){
+        return;
+    }
 
-if(!token){
+    try{
 
-return;
+        const response =
+            await fetch(
+                "/api/business",
+                {
+                    method:"GET",
 
-}
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
 
+        const result =
+            await response.json();
 
-try{
+        if(
+            result.business &&
+            result.business.business_name
+        ){
 
-const response =
-await fetch(
+            document.getElementById(
+                "businessName"
+            ).textContent =
+                result.business.business_name;
 
-"/api/business",
+        }
 
-{
+    }catch(error){
 
-method:"GET",
+        console.error(
+            "Business loading error:",
+            error
+        );
 
-headers:{
-
-"Authorization":
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-const result =
-await response.json();
-
-
-if(
-
-result.business &&
-result.business.business_name
-
-){
-
-document.getElementById(
-"businessName"
-).textContent =
-result.business.business_name;
-
-}
-
-}catch(error){
-
-console.error(
-"Business loading error:",
-error
-);
-
-}
+    }
 
 }
 
@@ -868,16 +602,16 @@ error
 
 function handleKey(event){
 
-if(
-event.key === "Enter" &&
-!event.shiftKey
-){
+    if(
+        event.key === "Enter" &&
+        !event.shiftKey
+    ){
 
-event.preventDefault();
+        event.preventDefault();
 
-askAI();
+        askAI();
 
-}
+    }
 
 }
 
@@ -888,13 +622,13 @@ askAI();
 
 function autoResize(textarea){
 
-textarea.style.height = "auto";
+    textarea.style.height = "auto";
 
-textarea.style.height =
-Math.min(
-textarea.scrollHeight,
-150
-) + "px";
+    textarea.style.height =
+        Math.min(
+            textarea.scrollHeight,
+            150
+        ) + "px";
 
 }
 
@@ -905,85 +639,52 @@ textarea.scrollHeight,
 
 function addUserMessage(text){
 
-const messages =
-document.getElementById(
-"messages"
-);
+    const messages =
+        document.getElementById("messages");
 
+    const welcome =
+        document.getElementById("welcome");
 
-const welcome =
-document.getElementById(
-"welcome"
-);
+    if(welcome){
+        welcome.remove();
+    }
 
+    const row =
+        document.createElement("div");
 
-if(welcome){
+    row.className =
+        "message-row user";
 
-welcome.remove();
+    const bubble =
+        document.createElement("div");
 
-}
+    bubble.className =
+        "message";
 
+    const label =
+        document.createElement("div");
 
-const row =
-document.createElement(
-"div"
-);
+    label.className =
+        "message-label";
 
-row.className =
-"message-row user";
+    label.textContent =
+        "You";
 
+    bubble.appendChild(label);
 
-const bubble =
-document.createElement(
-"div"
-);
+    const content =
+        document.createElement("div");
 
-bubble.className =
-"message";
+    content.textContent =
+        text;
 
+    bubble.appendChild(content);
 
-const label =
-document.createElement(
-"div"
-);
+    row.appendChild(bubble);
 
-label.className =
-"message-label";
+    messages.appendChild(row);
 
-label.textContent =
-"You";
-
-
-bubble.appendChild(
-label
-);
-
-
-const content =
-document.createElement(
-"div"
-);
-
-content.textContent =
-text;
-
-
-bubble.appendChild(
-content
-);
-
-
-row.appendChild(
-bubble
-);
-
-
-messages.appendChild(
-row
-);
-
-
-scrollToBottom();
+    scrollToBottom();
 
 }
 
@@ -994,72 +695,45 @@ scrollToBottom();
 
 function addAIMessage(text){
 
-const messages =
-document.getElementById(
-"messages"
-);
+    const messages =
+        document.getElementById("messages");
 
+    const row =
+        document.createElement("div");
 
-const row =
-document.createElement(
-"div"
-);
+    row.className =
+        "message-row ai";
 
-row.className =
-"message-row ai";
+    const bubble =
+        document.createElement("div");
 
+    bubble.className =
+        "message";
 
-const bubble =
-document.createElement(
-"div"
-);
+    const label =
+        document.createElement("div");
 
-bubble.className =
-"message";
+    label.className =
+        "message-label";
 
+    label.textContent =
+        "NexaFlow AI";
 
-const label =
-document.createElement(
-"div"
-);
+    bubble.appendChild(label);
 
-label.className =
-"message-label";
+    const content =
+        document.createElement("div");
 
-label.textContent =
-"NexaFlow AI";
+    content.textContent =
+        text;
 
+    bubble.appendChild(content);
 
-bubble.appendChild(
-label
-);
+    row.appendChild(bubble);
 
+    messages.appendChild(row);
 
-const content =
-document.createElement(
-"div"
-);
-
-content.textContent =
-text;
-
-
-bubble.appendChild(
-content
-);
-
-
-row.appendChild(
-bubble
-);
-
-
-messages.appendChild(
-row
-);
-
-
-scrollToBottom();
+    scrollToBottom();
 
 }
 
@@ -1070,82 +744,53 @@ scrollToBottom();
 
 function addTyping(){
 
-const messages =
-document.getElementById(
-"messages"
-);
+    const messages =
+        document.getElementById("messages");
 
+    const row =
+        document.createElement("div");
 
-const row =
-document.createElement(
-"div"
-);
+    row.id =
+        "typingRow";
 
-row.id =
-"typingRow";
+    row.className =
+        "message-row ai";
 
-row.className =
-"message-row ai";
+    const bubble =
+        document.createElement("div");
 
+    bubble.className =
+        "message";
 
-const bubble =
-document.createElement(
-"div"
-);
+    const label =
+        document.createElement("div");
 
-bubble.className =
-"message";
+    label.className =
+        "message-label";
 
+    label.textContent =
+        "NexaFlow AI";
 
-const label =
-document.createElement(
-"div"
-);
+    bubble.appendChild(label);
 
-label.className =
-"message-label";
+    const typing =
+        document.createElement("div");
 
-label.textContent =
-"NexaFlow AI";
+    typing.className =
+        "typing";
 
+    typing.innerHTML =
+        "<span></span>" +
+        "<span></span>" +
+        "<span></span>";
 
-bubble.appendChild(
-label
-);
+    bubble.appendChild(typing);
 
+    row.appendChild(bubble);
 
-const typing =
-document.createElement(
-"div"
-);
+    messages.appendChild(row);
 
-typing.className =
-"typing";
-
-
-typing.innerHTML =
-
-"<span></span>" +
-"<span></span>" +
-"<span></span>";
-
-
-bubble.appendChild(
-typing
-);
-
-
-row.appendChild(
-bubble
-);
-
-
-messages.appendChild(
-row
-);
-
-
-scrollToBottom();
+    scrollToBottom();
 
 }
 
@@ -1156,166 +801,229 @@ scrollToBottom();
 
 function removeTyping(){
 
-const typing =
-document.getElementById(
-"typingRow"
-);
+    const typing =
+        document.getElementById("typingRow");
 
-
-if(typing){
-
-typing.remove();
-
-}
+    if(typing){
+        typing.remove();
+    }
 
 }
 
 
 /* =====================================================
-   ASK AI
+   CHECK AI SERVICE
+===================================================== */
+
+function checkAIService(){
+
+    if(
+        typeof AIAssistant === "undefined"
+    ){
+
+        console.error(
+            "AIAssistant service is not loaded."
+        );
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+/* =====================================================
+   ASK NEXAFLOW AI
 ===================================================== */
 
 async function askAI(){
 
-const textarea =
-document.getElementById(
-"question"
-);
+    const textarea =
+        document.getElementById("question");
 
+    const button =
+        document.getElementById("sendButton");
 
-const button =
-document.getElementById(
-"sendButton"
-);
+    const question =
+        textarea.value.trim();
 
+    if(question === ""){
+        return;
+    }
 
-const question =
-textarea.value.trim();
+    if(!checkAIService()){
 
+        addAIMessage(
+            "AI Assistant service is not loaded. Please refresh the page."
+        );
 
-if(question === ""){
+        return;
 
-return;
+    }
 
-}
 
+    /*
+       Add the user's message to the
+       conversation history.
+    */
 
-textarea.value = "";
+    AIAssistant.conversationHistory.push({
 
-textarea.style.height =
-"42px";
+        role:"user",
 
+        content:question,
 
-button.disabled = true;
+        time:new Date().toISOString()
 
+    });
 
-addUserMessage(
-question
-);
 
+    textarea.value = "";
 
-addTyping();
+    textarea.style.height =
+        "42px";
 
+    button.disabled =
+        true;
 
-try{
+    addUserMessage(question);
 
-const response =
-await fetch(
+    addTyping();
 
-"/api/ai",
 
-{
+    try{
 
-method:"POST",
+        const response =
+            await fetch(
+                "/api/ai",
+                {
+                    method:"POST",
 
-headers:{
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
 
-"Content-Type":
-"application/json"
+                    body:JSON.stringify({
 
-},
+                        question:question,
 
-body:JSON.stringify({
+                        conversation:
+                            AIAssistant
+                                .conversationHistory
 
-question:
-question
+                    })
 
-})
+                }
+            );
 
-}
 
-);
+        let data;
 
 
-let data;
+        try{
 
+            data =
+                await response.json();
 
-try{
+        }catch(error){
 
-data =
-await response.json();
+            data = {
+                answer:
+                    "The server returned an invalid response."
+            };
 
-}catch(error){
+        }
 
-data = {
 
-answer:
-"Server returned an invalid response."
+        removeTyping();
 
-};
 
-}
+        if(!response.ok){
 
+            const errorMessage =
+                data.answer ||
+                data.error ||
+                "AI request failed.";
 
-removeTyping();
+            addAIMessage(
+                errorMessage
+            );
 
 
-if(!response.ok){
+            /*
+               Remove unanswered user message
+               from local conversation history.
+            */
 
-addAIMessage(
+            AIAssistant
+                .conversationHistory
+                .pop();
 
-data.answer ||
-data.error ||
-"AI request failed."
+            return;
 
-);
+        }
 
-return;
 
-}
+        const answer =
+            String(
+                data.answer ||
+                "No answer was returned."
+            ).trim();
 
 
-addAIMessage(
+        addAIMessage(answer);
 
-data.answer ||
-"No answer was returned."
 
-);
+        /*
+           Save AI response to the conversation.
+        */
 
+        AIAssistant
+            .conversationHistory
+            .push({
 
-}catch(error){
+                role:"assistant",
 
-console.error(
-"AI connection error:",
-error
-);
+                content:answer,
 
+                time:new Date().toISOString()
 
-removeTyping();
+            });
 
 
-addAIMessage(
-"Sorry, I could not connect to the AI service."
-);
+    }catch(error){
 
+        console.error(
+            "AI connection error:",
+            error
+        );
 
-}finally{
+        removeTyping();
 
-button.disabled = false;
+        addAIMessage(
+            "Sorry, I could not connect to the AI service."
+        );
 
-textarea.focus();
 
-}
+        /*
+           Remove unanswered user message.
+        */
+
+        AIAssistant
+            .conversationHistory
+            .pop();
+
+    }finally{
+
+        button.disabled =
+            false;
+
+        textarea.focus();
+
+    }
 
 }
 
@@ -1326,60 +1034,80 @@ textarea.focus();
 
 function newChat(){
 
-const messages =
-document.getElementById(
-"messages"
-);
+    if(
+        typeof AIAssistant !== "undefined"
+    ){
+
+        AIAssistant
+            .conversationHistory = [];
+
+    }
 
 
-messages.innerHTML = `
+    const messages =
+        document.getElementById("messages");
 
-<div
-id="welcome"
-class="welcome">
 
-<div class="welcome-icon">
-🤖
-</div>
+    messages.innerHTML = `
 
-<h2>
-How can I help you today?
-</h2>
+        <div
+            id="welcome"
+            class="welcome">
 
-<p>
-Ask me about your business, customers,
-sales, marketing, or anything else.
-</p>
+            <div class="welcome-icon">
+                🤖
+            </div>
 
-</div>
+            <h2>
+                How can I help you today?
+            </h2>
 
-`;
+            <p>
+                Ask me about your business,
+                customers, sales, marketing,
+                mathematics, physics, or anything else.
+            </p>
 
-document.getElementById(
-"question"
-).focus();
+        </div>
+
+    `;
+
+
+    const textarea =
+        document.getElementById("question");
+
+
+    textarea.value =
+        "";
+
+    textarea.style.height =
+        "42px";
+
+    textarea.focus();
+
+    scrollToBottom();
 
 }
 
 
 /* =====================================================
-   SCROLL
+   SCROLL TO BOTTOM
 ===================================================== */
 
 function scrollToBottom(){
 
-const messages =
-document.getElementById(
-"messages"
-);
+    const messages =
+        document.getElementById("messages");
 
+    setTimeout(
+        function(){
 
-setTimeout(function(){
+            messages.scrollTop =
+                messages.scrollHeight;
 
-messages.scrollTop =
-messages.scrollHeight;
-
-},50);
+        },
+        50
+    );
 
 }
 
@@ -1389,22 +1117,33 @@ messages.scrollHeight;
 ===================================================== */
 
 window.addEventListener(
-"load",
-function(){
+    "load",
+    function(){
 
-loadBusiness();
+        loadBusiness();
 
-document.getElementById(
-"question"
-).focus();
 
-}
+        if(!checkAIService()){
 
+            console.error(
+                "NexaFlow AI service is unavailable."
+            );
+
+        }
+
+
+        const textarea =
+            document.getElementById("question");
+
+        if(textarea){
+            textarea.focus();
+        }
+
+    }
 );
 
 </script>
 
-
 </body>
 
-   </html>
+    </html>
