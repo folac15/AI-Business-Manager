@@ -14,7 +14,6 @@ CORS(app)
 # =========================================================
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-
 SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
 
@@ -22,16 +21,12 @@ SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 # SUPABASE CONFIGURATION
 # =========================================================
 
-SUPABASE_PROJECT_URL = (
-    "https://xfjroysinifwncfjvrsg.supabase.co"
-)
-
+SUPABASE_PROJECT_URL = "https://xfjroysinifwncfjvrsg.supabase.co"
 
 CUSTOMERS_URL = (
     SUPABASE_PROJECT_URL +
     "/rest/v1/customers"
 )
-
 
 BUSINESS_ACCOUNTS_URL = (
     SUPABASE_PROJECT_URL +
@@ -44,16 +39,9 @@ BUSINESS_ACCOUNTS_URL = (
 # =========================================================
 
 SUPABASE_HEADERS = {
-
-    "apikey":
-    SUPABASE_SECRET_KEY,
-
-    "Authorization":
-    "Bearer " + str(SUPABASE_SECRET_KEY),
-
-    "Content-Type":
-    "application/json"
-
+    "apikey": SUPABASE_SECRET_KEY,
+    "Authorization": "Bearer " + str(SUPABASE_SECRET_KEY),
+    "Content-Type": "application/json"
 }
 
 
@@ -63,20 +51,12 @@ SUPABASE_HEADERS = {
 
 @app.route("/")
 def home():
-
-    return send_from_directory(
-        ".",
-        "index.html"
-    )
+    return send_from_directory(".", "index.html")
 
 
 @app.route("/index.html")
 def index_page():
-
-    return send_from_directory(
-        ".",
-        "index.html"
-    )
+    return send_from_directory(".", "index.html")
 
 
 @app.route("/<path:filename>")
@@ -84,16 +64,10 @@ def serve_files(filename):
 
     if (
         filename.endswith(".html")
-        or
-        filename.endswith(".css")
-        or
-        filename.endswith(".js")
+        or filename.endswith(".css")
+        or filename.endswith(".js")
     ):
-
-        return send_from_directory(
-            ".",
-            filename
-        )
+        return send_from_directory(".", filename)
 
     return "File not found", 404
 
@@ -106,13 +80,8 @@ def serve_files(filename):
 def status():
 
     return jsonify({
-
-        "status":
-        "online",
-
-        "message":
-        "NexaFlow AI API is working"
-
+        "status": "online",
+        "message": "NexaFlow AI API is working"
     })
 
 
@@ -122,57 +91,39 @@ def status():
 
 def get_authenticated_user():
 
-    authorization =
-    request.headers.get("Authorization")
-
+    authorization = request.headers.get("Authorization")
 
     if not authorization:
-
         return None
 
-
-    if not authorization.startswith(
-        "Bearer "
-    ):
-
+    if not authorization.startswith("Bearer "):
         return None
 
-
-    access_token =
-    authorization.replace(
+    access_token = authorization.replace(
         "Bearer ",
         "",
         1
     ).strip()
 
-
     if not access_token:
-
         return None
 
+    if not SUPABASE_SECRET_KEY:
+        print("SUPABASE_SECRET_KEY is not configured.")
+        return None
 
     try:
 
         response = requests.get(
-
-            SUPABASE_PROJECT_URL +
-            "/auth/v1/user",
+            SUPABASE_PROJECT_URL + "/auth/v1/user",
 
             headers={
-
-                "apikey":
-                SUPABASE_SECRET_KEY,
-
-                "Authorization":
-                "Bearer " +
-                access_token
-
+                "apikey": SUPABASE_SECRET_KEY,
+                "Authorization": "Bearer " + access_token
             },
 
             timeout=15
-
         )
-
 
         if response.status_code != 200:
 
@@ -183,18 +134,12 @@ def get_authenticated_user():
 
             return None
 
-
-        user =
-        response.json()
-
+        user = response.json()
 
         if not user.get("id"):
-
             return None
 
-
         return user
-
 
     except Exception as error:
 
@@ -210,42 +155,27 @@ def get_authenticated_user():
 # AI ASSISTANT API
 # =========================================================
 
-@app.route(
-    "/api/ai",
-    methods=["POST"]
-)
+@app.route("/api/ai", methods=["POST"])
 def ai_reply():
 
-    data =
-    request.get_json() or {}
+    data = request.get_json() or {}
 
-
-    question =
-    data.get(
+    question = data.get(
         "question",
         ""
     ).strip()
 
-
     if question == "":
 
         return jsonify({
-
-            "answer":
-            "Please enter your question."
-
+            "answer": "Please enter your question."
         })
-
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
-
-            "answer":
-            "OpenRouter API key is not configured."
-
+            "answer": "OpenRouter API key is not configured."
         }), 500
-
 
     try:
 
@@ -254,68 +184,46 @@ def ai_reply():
             "https://openrouter.ai/api/v1/chat/completions",
 
             headers={
-
                 "Authorization":
-                "Bearer " +
-                OPENROUTER_API_KEY,
+                "Bearer " + OPENROUTER_API_KEY,
 
                 "Content-Type":
                 "application/json"
-
             },
 
             json={
-
                 "model":
                 "openai/gpt-oss-20b:free",
 
                 "messages": [
-
                     {
-
-                        "role":
-                        "user",
-
-                        "content":
-                        question
-
+                        "role": "user",
+                        "content": question
                     }
-
                 ]
-
             },
 
             timeout=30
-
         )
 
-
-        result =
-        response.json()
-
+        result = response.json()
 
         if "choices" in result:
 
-            answer =
-            result["choices"][0]["message"]["content"]
+            answer = (
+                result["choices"][0]["message"]["content"]
+            )
 
         else:
 
-            answer =
-            str(result)
-
+            answer = str(result)
 
     except Exception as error:
 
-        answer =
-        "AI service error: " + str(error)
-
+        answer = "AI service error: " + str(error)
 
     return jsonify({
-
-        "answer":
-        answer
-
+        "answer": answer
     })
 
 
@@ -323,29 +231,18 @@ def ai_reply():
 # GET BUSINESS ACCOUNT
 # =========================================================
 
-@app.route(
-    "/api/business",
-    methods=["GET"]
-)
+@app.route("/api/business", methods=["GET"])
 def get_business():
 
-    user =
-    get_authenticated_user()
-
+    user = get_authenticated_user()
 
     if not user:
 
         return jsonify({
-
-            "error":
-            "Invalid or expired login session."
-
+            "error": "Invalid or expired login session."
         }), 401
 
-
-    user_id =
-    user["id"]
-
+    user_id = user["id"]
 
     try:
 
@@ -356,22 +253,13 @@ def get_business():
             headers=SUPABASE_HEADERS,
 
             params={
-
-                "select":
-                "*",
-
-                "user_id":
-                "eq." + user_id,
-
-                "limit":
-                "1"
-
+                "select": "*",
+                "user_id": "eq." + user_id,
+                "limit": "1"
             },
 
             timeout=15
-
         )
-
 
         if response.status_code != 200:
 
@@ -381,34 +269,20 @@ def get_business():
             )
 
             return jsonify({
-
-                "error":
-                response.text
-
+                "error": response.text
             }), response.status_code
 
-
-        businesses =
-        response.json()
-
+        businesses = response.json()
 
         if not businesses:
 
             return jsonify({
-
-                "business":
-                None
-
+                "business": None
             })
 
-
         return jsonify({
-
-            "business":
-            businesses[0]
-
+            "business": businesses[0]
         })
-
 
     except Exception as error:
 
@@ -418,10 +292,7 @@ def get_business():
         )
 
         return jsonify({
-
-            "error":
-            str(error)
-
+            "error": str(error)
         }), 500
 
 
@@ -429,29 +300,18 @@ def get_business():
 # SAVE BUSINESS ACCOUNT
 # =========================================================
 
-@app.route(
-    "/api/business",
-    methods=["POST"]
-)
+@app.route("/api/business", methods=["POST"])
 def save_business():
 
-    user =
-    get_authenticated_user()
-
+    user = get_authenticated_user()
 
     if not user:
 
         return jsonify({
-
-            "error":
-            "Invalid or expired login session."
-
+            "error": "Invalid or expired login session."
         }), 401
 
-
-    data =
-    request.get_json() or {}
-
+    data = request.get_json() or {}
 
     business = {
 
@@ -499,9 +359,7 @@ def save_business():
             "logo",
             ""
         )
-
     }
-
 
     try:
 
@@ -511,45 +369,29 @@ def save_business():
 
             headers={
                 **SUPABASE_HEADERS,
-                "Prefer":
-                "return=representation"
+                "Prefer": "return=representation"
             },
 
             json=business,
 
             timeout=15
-
         )
 
-
-        if response.status_code not in [
-            200,
-            201
-        ]:
+        if response.status_code not in [200, 201]:
 
             return jsonify({
-
-                "error":
-                response.text
-
+                "error": response.text
             }), response.status_code
 
-
         return jsonify({
-
             "message":
             "Business profile saved successfully."
-
         })
-
 
     except Exception as error:
 
         return jsonify({
-
-            "error":
-            str(error)
-
+            "error": str(error)
         }), 500
 
 
@@ -557,65 +399,45 @@ def save_business():
 # ADD CUSTOMER
 # =========================================================
 
-@app.route(
-    "/api/customers",
-    methods=["POST"]
-)
+@app.route("/api/customers", methods=["POST"])
 def add_customer():
 
-    user =
-    get_authenticated_user()
-
+    user = get_authenticated_user()
 
     if not user:
 
         return jsonify({
-
             "error":
             "Invalid or expired login session."
-
         }), 401
 
+    data = request.get_json() or {}
 
-    data =
-    request.get_json() or {}
-
-
-    name =
-    data.get(
+    name = data.get(
         "name",
         ""
     ).strip()
 
-
-    phone =
-    data.get(
+    phone = data.get(
         "phone",
         ""
     ).strip()
 
-
-    location =
-    data.get(
+    location = data.get(
         "location",
         ""
     ).strip()
 
-
-    message =
-    data.get(
+    message = data.get(
         "message",
         ""
     ).strip()
 
-
     if name == "" or message == "":
 
         return jsonify({
-
             "error":
             "Customer name and message are required."
-
         }), 400
 
 
@@ -623,9 +445,7 @@ def add_customer():
     # SIMPLE AI REPLY
     # =====================================================
 
-    text =
-    message.lower()
-
+    text = message.lower()
 
     if "delivery" in text:
 
@@ -633,7 +453,6 @@ def add_customer():
             "Yes, we provide delivery services. "
             "Please send us your location."
         )
-
 
     elif (
         "price" in text
@@ -649,7 +468,6 @@ def add_customer():
             "prices and offers."
         )
 
-
     elif (
         "hello" in text
         or
@@ -661,14 +479,12 @@ def add_customer():
             "How can we help you today?"
         )
 
-
     elif "thank" in text:
 
         ai_reply = (
             "You're welcome. "
             "We are always happy to help."
         )
-
 
     else:
 
@@ -677,6 +493,10 @@ def add_customer():
             "We will assist you shortly."
         )
 
+
+    # =====================================================
+    # CUSTOMER DATA
+    # =====================================================
 
     customer = {
 
@@ -697,7 +517,6 @@ def add_customer():
 
         "created_at":
         datetime.utcnow().isoformat()
-
     }
 
 
@@ -709,21 +528,15 @@ def add_customer():
 
             headers={
                 **SUPABASE_HEADERS,
-                "Prefer":
-                "return=representation"
+                "Prefer": "return=representation"
             },
 
             json=customer,
 
             timeout=15
-
         )
 
-
-        if response.status_code not in [
-            200,
-            201
-        ]:
+        if response.status_code not in [200, 201]:
 
             print(
                 "Customer save error:",
@@ -731,12 +544,9 @@ def add_customer():
             )
 
             return jsonify({
-
                 "error":
                 response.text
-
             }), response.status_code
-
 
         return jsonify({
 
@@ -745,9 +555,7 @@ def add_customer():
 
             "ai_reply":
             ai_reply
-
         })
-
 
     except Exception as error:
 
@@ -757,10 +565,8 @@ def add_customer():
         )
 
         return jsonify({
-
             "error":
             str(error)
-
         }), 500
 
 
@@ -768,25 +574,17 @@ def add_customer():
 # GET CUSTOMERS
 # =========================================================
 
-@app.route(
-    "/api/customers",
-    methods=["GET"]
-)
+@app.route("/api/customers", methods=["GET"])
 def get_customers():
 
-    user =
-    get_authenticated_user()
-
+    user = get_authenticated_user()
 
     if not user:
 
         return jsonify({
-
             "error":
             "Invalid or expired login session."
-
         }), 401
-
 
     try:
 
@@ -797,25 +595,20 @@ def get_customers():
             headers=SUPABASE_HEADERS,
 
             params={
-
                 "select":
                 "id,name,phone,location,message,ai_reply,created_at",
 
                 "order":
                 "created_at.desc"
-
             },
 
             timeout=15
-
         )
-
 
         print(
             "Supabase customers status:",
             response.status_code
         )
-
 
         if response.status_code != 200:
 
@@ -825,17 +618,13 @@ def get_customers():
             )
 
             return jsonify({
-
                 "error":
                 response.text
-
             }), response.status_code
-
 
         return jsonify(
             response.json()
         )
-
 
     except Exception as error:
 
@@ -845,10 +634,8 @@ def get_customers():
         )
 
         return jsonify({
-
             "error":
             str(error)
-
         }), 500
 
 
@@ -859,14 +646,11 @@ def get_customers():
 if __name__ == "__main__":
 
     app.run(
-
         host="0.0.0.0",
-
         port=int(
             os.environ.get(
                 "PORT",
                 5000
             )
         )
-
 )
