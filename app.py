@@ -13,15 +13,22 @@ CORS(app)
 # ENVIRONMENT VARIABLES
 # =========================================================
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
+OPENROUTER_API_KEY = os.environ.get(
+    "OPENROUTER_API_KEY"
+)
+
+SUPABASE_SECRET_KEY = os.environ.get(
+    "SUPABASE_SECRET_KEY"
+)
 
 
 # =========================================================
 # SUPABASE CONFIGURATION
 # =========================================================
 
-SUPABASE_PROJECT_URL = "https://xfjroysinifwncfjvrsg.supabase.co"
+SUPABASE_PROJECT_URL = (
+    "https://xfjroysinifwncfjvrsg.supabase.co"
+)
 
 CUSTOMERS_URL = (
     SUPABASE_PROJECT_URL +
@@ -40,7 +47,9 @@ BUSINESS_ACCOUNTS_URL = (
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_SECRET_KEY,
-    "Authorization": "Bearer " + str(SUPABASE_SECRET_KEY),
+    "Authorization": "Bearer " + str(
+        SUPABASE_SECRET_KEY
+    ),
     "Content-Type": "application/json"
 }
 
@@ -51,12 +60,20 @@ SUPABASE_HEADERS = {
 
 @app.route("/")
 def home():
-    return send_from_directory(".", "index.html")
+
+    return send_from_directory(
+        ".",
+        "index.html"
+    )
 
 
 @app.route("/index.html")
 def index_page():
-    return send_from_directory(".", "index.html")
+
+    return send_from_directory(
+        ".",
+        "index.html"
+    )
 
 
 @app.route("/<path:filename>")
@@ -67,7 +84,11 @@ def serve_files(filename):
         or filename.endswith(".css")
         or filename.endswith(".js")
     ):
-        return send_from_directory(".", filename)
+
+        return send_from_directory(
+            ".",
+            filename
+        )
 
     return "File not found", 404
 
@@ -91,12 +112,18 @@ def status():
 
 def get_authenticated_user():
 
-    authorization = request.headers.get("Authorization")
+    authorization = request.headers.get(
+        "Authorization"
+    )
 
     if not authorization:
+
         return None
 
-    if not authorization.startswith("Bearer "):
+    if not authorization.startswith(
+        "Bearer "
+    ):
+
         return None
 
     access_token = authorization.replace(
@@ -106,23 +133,29 @@ def get_authenticated_user():
     ).strip()
 
     if not access_token:
-        return None
 
-    if not SUPABASE_SECRET_KEY:
-        print("SUPABASE_SECRET_KEY is not configured.")
         return None
 
     try:
 
         response = requests.get(
-            SUPABASE_PROJECT_URL + "/auth/v1/user",
+
+            SUPABASE_PROJECT_URL +
+            "/auth/v1/user",
 
             headers={
-                "apikey": SUPABASE_SECRET_KEY,
-                "Authorization": "Bearer " + access_token
+
+                "apikey":
+                SUPABASE_SECRET_KEY,
+
+                "Authorization":
+                "Bearer " +
+                access_token
+
             },
 
             timeout=15
+
         )
 
         if response.status_code != 200:
@@ -137,6 +170,7 @@ def get_authenticated_user():
         user = response.json()
 
         if not user.get("id"):
+
             return None
 
         return user
@@ -155,7 +189,10 @@ def get_authenticated_user():
 # AI ASSISTANT API
 # =========================================================
 
-@app.route("/api/ai", methods=["POST"])
+@app.route(
+    "/api/ai",
+    methods=["POST"]
+)
 def ai_reply():
 
     data = request.get_json() or {}
@@ -168,13 +205,15 @@ def ai_reply():
     if question == "":
 
         return jsonify({
-            "answer": "Please enter your question."
+            "answer":
+            "Please enter your question."
         })
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
-            "answer": "OpenRouter API key is not configured."
+            "answer":
+            "OpenRouter API key is not configured."
         }), 500
 
     try:
@@ -184,26 +223,37 @@ def ai_reply():
             "https://openrouter.ai/api/v1/chat/completions",
 
             headers={
+
                 "Authorization":
-                "Bearer " + OPENROUTER_API_KEY,
+                "Bearer " +
+                OPENROUTER_API_KEY,
 
                 "Content-Type":
                 "application/json"
+
             },
 
             json={
+
                 "model":
                 "openai/gpt-oss-20b:free",
 
                 "messages": [
+
                     {
-                        "role": "user",
-                        "content": question
+                        "role":
+                        "user",
+
+                        "content":
+                        question
                     }
+
                 ]
+
             },
 
             timeout=30
+
         )
 
         result = response.json()
@@ -211,7 +261,8 @@ def ai_reply():
         if "choices" in result:
 
             answer = (
-                result["choices"][0]["message"]["content"]
+                result["choices"][0]
+                ["message"]["content"]
             )
 
         else:
@@ -220,7 +271,10 @@ def ai_reply():
 
     except Exception as error:
 
-        answer = "AI service error: " + str(error)
+        answer = (
+            "AI service error: " +
+            str(error)
+        )
 
     return jsonify({
         "answer": answer
@@ -231,7 +285,10 @@ def ai_reply():
 # GET BUSINESS ACCOUNT
 # =========================================================
 
-@app.route("/api/business", methods=["GET"])
+@app.route(
+    "/api/business",
+    methods=["GET"]
+)
 def get_business():
 
     user = get_authenticated_user()
@@ -239,7 +296,8 @@ def get_business():
     if not user:
 
         return jsonify({
-            "error": "Invalid or expired login session."
+            "error":
+            "Invalid or expired login session."
         }), 401
 
     user_id = user["id"]
@@ -253,12 +311,18 @@ def get_business():
             headers=SUPABASE_HEADERS,
 
             params={
+
                 "select": "*",
-                "user_id": "eq." + user_id,
+
+                "user_id":
+                "eq." + user_id,
+
                 "limit": "1"
+
             },
 
             timeout=15
+
         )
 
         if response.status_code != 200:
@@ -269,7 +333,8 @@ def get_business():
             )
 
             return jsonify({
-                "error": response.text
+                "error":
+                response.text
             }), response.status_code
 
         businesses = response.json()
@@ -281,7 +346,8 @@ def get_business():
             })
 
         return jsonify({
-            "business": businesses[0]
+            "business":
+            businesses[0]
         })
 
     except Exception as error:
@@ -292,7 +358,8 @@ def get_business():
         )
 
         return jsonify({
-            "error": str(error)
+            "error":
+            str(error)
         }), 500
 
 
@@ -300,7 +367,10 @@ def get_business():
 # SAVE BUSINESS ACCOUNT
 # =========================================================
 
-@app.route("/api/business", methods=["POST"])
+@app.route(
+    "/api/business",
+    methods=["POST"]
+)
 def save_business():
 
     user = get_authenticated_user()
@@ -308,7 +378,8 @@ def save_business():
     if not user:
 
         return jsonify({
-            "error": "Invalid or expired login session."
+            "error":
+            "Invalid or expired login session."
         }), 401
 
     data = request.get_json() or {}
@@ -359,6 +430,7 @@ def save_business():
             "logo",
             ""
         )
+
     }
 
     try:
@@ -369,18 +441,24 @@ def save_business():
 
             headers={
                 **SUPABASE_HEADERS,
-                "Prefer": "return=representation"
+                "Prefer":
+                "return=representation"
             },
 
             json=business,
 
             timeout=15
+
         )
 
-        if response.status_code not in [200, 201]:
+        if response.status_code not in [
+            200,
+            201
+        ]:
 
             return jsonify({
-                "error": response.text
+                "error":
+                response.text
             }), response.status_code
 
         return jsonify({
@@ -391,7 +469,8 @@ def save_business():
     except Exception as error:
 
         return jsonify({
-            "error": str(error)
+            "error":
+            str(error)
         }), 500
 
 
@@ -399,7 +478,10 @@ def save_business():
 # ADD CUSTOMER
 # =========================================================
 
-@app.route("/api/customers", methods=["POST"])
+@app.route(
+    "/api/customers",
+    methods=["POST"]
+)
 def add_customer():
 
     user = get_authenticated_user()
@@ -410,6 +492,13 @@ def add_customer():
             "error":
             "Invalid or expired login session."
         }), 401
+
+    # =====================================================
+    # IMPORTANT:
+    # GET THE LOGGED-IN USER'S UUID
+    # =====================================================
+
+    user_id = user["id"]
 
     data = request.get_json() or {}
 
@@ -495,10 +584,13 @@ def add_customer():
 
 
     # =====================================================
-    # CUSTOMER DATA
+    # CUSTOMER RECORD
     # =====================================================
 
     customer = {
+
+        "user_id":
+        user_id,
 
         "name":
         name,
@@ -517,6 +609,7 @@ def add_customer():
 
         "created_at":
         datetime.utcnow().isoformat()
+
     }
 
 
@@ -528,15 +621,20 @@ def add_customer():
 
             headers={
                 **SUPABASE_HEADERS,
-                "Prefer": "return=representation"
+                "Prefer":
+                "return=representation"
             },
 
             json=customer,
 
             timeout=15
+
         )
 
-        if response.status_code not in [200, 201]:
+        if response.status_code not in [
+            200,
+            201
+        ]:
 
             print(
                 "Customer save error:",
@@ -548,6 +646,7 @@ def add_customer():
                 response.text
             }), response.status_code
 
+
         return jsonify({
 
             "message":
@@ -555,6 +654,7 @@ def add_customer():
 
             "ai_reply":
             ai_reply
+
         })
 
     except Exception as error:
@@ -574,7 +674,10 @@ def add_customer():
 # GET CUSTOMERS
 # =========================================================
 
-@app.route("/api/customers", methods=["GET"])
+@app.route(
+    "/api/customers",
+    methods=["GET"]
+)
 def get_customers():
 
     user = get_authenticated_user()
@@ -586,6 +689,13 @@ def get_customers():
             "Invalid or expired login session."
         }), 401
 
+    # =====================================================
+    # IMPORTANT:
+    # GET CURRENT USER UUID
+    # =====================================================
+
+    user_id = user["id"]
+
     try:
 
         response = requests.get(
@@ -595,20 +705,32 @@ def get_customers():
             headers=SUPABASE_HEADERS,
 
             params={
+
                 "select":
-                "id,name,phone,location,message,ai_reply,created_at",
+                "id,user_id,name,phone,location,message,ai_reply,created_at",
+
+                # =================================================
+                # THIS IS THE IMPORTANT FILTER
+                # =================================================
+
+                "user_id":
+                "eq." + user_id,
 
                 "order":
                 "created_at.desc"
+
             },
 
             timeout=15
+
         )
+
 
         print(
             "Supabase customers status:",
             response.status_code
         )
+
 
         if response.status_code != 200:
 
@@ -622,9 +744,22 @@ def get_customers():
                 response.text
             }), response.status_code
 
-        return jsonify(
-            response.json()
+
+        customers = response.json()
+
+
+        print(
+            "Customers returned for user:",
+            user_id,
+            "Count:",
+            len(customers)
         )
+
+
+        return jsonify(
+            customers
+        )
+
 
     except Exception as error:
 
@@ -646,11 +781,14 @@ def get_customers():
 if __name__ == "__main__":
 
     app.run(
+
         host="0.0.0.0",
+
         port=int(
             os.environ.get(
                 "PORT",
                 5000
             )
         )
+
 )
