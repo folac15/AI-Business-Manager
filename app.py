@@ -4,168 +4,62 @@ from datetime import datetime
 import requests
 import os
 
+
 app = Flask(__name__)
 CORS(app)
 
-# ============================================================
-# RENDER ENVIRONMENT VARIABLES
-# ============================================================
+
+# =========================================================
+# ENVIRONMENT VARIABLES
+# =========================================================
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+
 SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
-# ============================================================
-# SUPABASE
-# ============================================================
 
-SUPABASE_PROJECT_URL = "https://xfjroysinifwncfjvrsg.supabase.co"
+# =========================================================
+# SUPABASE CONFIGURATION
+# =========================================================
 
-SUPABASE_ANON_KEY = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-    "eyJpc3MiOiJzdXBhYmxlIiwicmVmIjoieGZqcm95c2luaWZ3bmNm"
-    "anZyc2ciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDI1NTc0MCwi"
-    "ZXhwIjoyMDk5ODMxNzQwfQ."
-    "wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs"
+SUPABASE_PROJECT_URL = (
+    "https://xfjroysinifwncfjvrsg.supabase.co"
 )
+
 
 CUSTOMERS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/customers"
+    SUPABASE_PROJECT_URL +
+    "/rest/v1/customers"
 )
 
-BUSINESS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/businesses"
-)
 
 BUSINESS_ACCOUNTS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
+    SUPABASE_PROJECT_URL +
+    "/rest/v1/business_accounts"
 )
 
-# ============================================================
-# SUPABASE DATABASE HEADERS
-# ============================================================
 
-def database_headers():
+# =========================================================
+# SUPABASE SERVER HEADERS
+# =========================================================
 
-    return {
-        "apikey": SUPABASE_SECRET_KEY,
-        "Authorization": "Bearer " + SUPABASE_SECRET_KEY,
-        "Content-Type": "application/json",
-        "Prefer": "return=representation"
-    }
+SUPABASE_HEADERS = {
 
+    "apikey":
+    SUPABASE_SECRET_KEY,
 
-# ============================================================
-# AUTHENTICATION
-# ============================================================
+    "Authorization":
+    "Bearer " + str(SUPABASE_SECRET_KEY),
 
-def get_current_user():
+    "Content-Type":
+    "application/json"
 
-    authorization = request.headers.get(
-        "Authorization"
-    )
-
-    if not authorization:
-
-        return None, (
-            jsonify({
-                "error": "No login session was provided."
-            }),
-            401
-        )
-
-    if not authorization.startswith("Bearer "):
-
-        return None, (
-            jsonify({
-                "error": "Invalid authorization format."
-            }),
-            401
-        )
-
-    access_token = authorization.replace(
-        "Bearer ",
-        "",
-        1
-    ).strip()
-
-    if not access_token:
-
-        return None, (
-            jsonify({
-                "error": "Login session is empty."
-            }),
-            401
-        )
-
-    try:
-
-        response = requests.get(
-
-            SUPABASE_PROJECT_URL + "/auth/v1/user",
-
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": "Bearer " + access_token
-            },
-
-            timeout=20
-        )
-
-        print(
-            "AUTH CHECK STATUS:",
-            response.status_code
-        )
-
-        print(
-            "AUTH CHECK RESPONSE:",
-            response.text
-        )
-
-        if response.status_code != 200:
-
-            return None, (
-                jsonify({
-                    "error":
-                        "Invalid or expired login session."
-                }),
-                401
-            )
-
-        user = response.json()
-
-        user_id = user.get("id")
-
-        if not user_id:
-
-            return None, (
-                jsonify({
-                    "error":
-                        "Authenticated user ID was not returned."
-                }),
-                401
-            )
-
-        return user, None
-
-    except Exception as error:
-
-        print(
-            "AUTH CONNECTION ERROR:",
-            str(error)
-        )
-
-        return None, (
-            jsonify({
-                "error":
-                    "Unable to verify login session."
-            }),
-            500
-        )
+}
 
 
-# ============================================================
-# WEBSITE
-# ============================================================
+# =========================================================
+# WEBSITE PAGES
+# =========================================================
 
 @app.route("/")
 def home():
@@ -190,8 +84,10 @@ def serve_files(filename):
 
     if (
         filename.endswith(".html")
-        or filename.endswith(".css")
-        or filename.endswith(".js")
+        or
+        filename.endswith(".css")
+        or
+        filename.endswith(".js")
     ):
 
         return send_from_directory(
@@ -202,65 +98,154 @@ def serve_files(filename):
     return "File not found", 404
 
 
-@app.route("/style.css")
-def style():
-
-    return send_from_directory(
-        ".",
-        "style.css"
-    )
-
-
-@app.route("/script.js")
-def script():
-
-    return send_from_directory(
-        ".",
-        "script.js"
-    )
-
-
-# ============================================================
-# STATUS
-# ============================================================
+# =========================================================
+# STATUS API
+# =========================================================
 
 @app.route("/api/status")
 def status():
 
     return jsonify({
-        "status": "online",
+
+        "status":
+        "online",
+
         "message":
-            "AI Business Manager API is working"
+        "NexaFlow AI API is working"
+
     })
 
 
-# ============================================================
-# AI ASSISTANT
-# ============================================================
+# =========================================================
+# HELPER — GET LOGGED-IN USER
+# =========================================================
 
-@app.route("/api/ai", methods=["POST"])
+def get_authenticated_user():
+
+    authorization =
+    request.headers.get("Authorization")
+
+
+    if not authorization:
+
+        return None
+
+
+    if not authorization.startswith(
+        "Bearer "
+    ):
+
+        return None
+
+
+    access_token =
+    authorization.replace(
+        "Bearer ",
+        "",
+        1
+    ).strip()
+
+
+    if not access_token:
+
+        return None
+
+
+    try:
+
+        response = requests.get(
+
+            SUPABASE_PROJECT_URL +
+            "/auth/v1/user",
+
+            headers={
+
+                "apikey":
+                SUPABASE_SECRET_KEY,
+
+                "Authorization":
+                "Bearer " +
+                access_token
+
+            },
+
+            timeout=15
+
+        )
+
+
+        if response.status_code != 200:
+
+            print(
+                "Supabase user verification failed:",
+                response.text
+            )
+
+            return None
+
+
+        user =
+        response.json()
+
+
+        if not user.get("id"):
+
+            return None
+
+
+        return user
+
+
+    except Exception as error:
+
+        print(
+            "User authentication error:",
+            error
+        )
+
+        return None
+
+
+# =========================================================
+# AI ASSISTANT API
+# =========================================================
+
+@app.route(
+    "/api/ai",
+    methods=["POST"]
+)
 def ai_reply():
 
-    data = request.get_json() or {}
+    data =
+    request.get_json() or {}
 
-    question = data.get(
+
+    question =
+    data.get(
         "question",
         ""
     ).strip()
 
+
     if question == "":
 
         return jsonify({
+
             "answer":
-                "Please enter your question."
+            "Please enter your question."
+
         })
+
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
+
             "answer":
-                "OpenRouter API key is not configured."
+            "OpenRouter API key is not configured."
+
         }), 500
+
 
     try:
 
@@ -269,74 +254,308 @@ def ai_reply():
             "https://openrouter.ai/api/v1/chat/completions",
 
             headers={
+
                 "Authorization":
-                    "Bearer " + OPENROUTER_API_KEY,
+                "Bearer " +
+                OPENROUTER_API_KEY,
 
                 "Content-Type":
-                    "application/json"
+                "application/json"
+
             },
 
             json={
+
                 "model":
-                    "openai/gpt-oss-20b:free",
+                "openai/gpt-oss-20b:free",
 
                 "messages": [
+
                     {
-                        "role": "user",
-                        "content": question
+
+                        "role":
+                        "user",
+
+                        "content":
+                        question
+
                     }
+
                 ]
+
             },
 
             timeout=30
+
         )
 
-        result = response.json()
 
-        print(
-            "OPENROUTER STATUS:",
-            response.status_code
-        )
+        result =
+        response.json()
+
 
         if "choices" in result:
 
-            answer = (
-                result["choices"][0]
-                ["message"]
-                ["content"]
-            )
-
-        elif "error" in result:
-
-            answer = (
-                "OpenRouter error: "
-                + str(result["error"])
-            )
+            answer =
+            result["choices"][0]["message"]["content"]
 
         else:
 
-            answer = str(result)
+            answer =
+            str(result)
+
+
+    except Exception as error:
+
+        answer =
+        "AI service error: " + str(error)
+
+
+    return jsonify({
+
+        "answer":
+        answer
+
+    })
+
+
+# =========================================================
+# GET BUSINESS ACCOUNT
+# =========================================================
+
+@app.route(
+    "/api/business",
+    methods=["GET"]
+)
+def get_business():
+
+    user =
+    get_authenticated_user()
+
+
+    if not user:
+
+        return jsonify({
+
+            "error":
+            "Invalid or expired login session."
+
+        }), 401
+
+
+    user_id =
+    user["id"]
+
+
+    try:
+
+        response = requests.get(
+
+            BUSINESS_ACCOUNTS_URL,
+
+            headers=SUPABASE_HEADERS,
+
+            params={
+
+                "select":
+                "*",
+
+                "user_id":
+                "eq." + user_id,
+
+                "limit":
+                "1"
+
+            },
+
+            timeout=15
+
+        )
+
+
+        if response.status_code != 200:
+
+            print(
+                "Business account error:",
+                response.text
+            )
+
+            return jsonify({
+
+                "error":
+                response.text
+
+            }), response.status_code
+
+
+        businesses =
+        response.json()
+
+
+        if not businesses:
+
+            return jsonify({
+
+                "business":
+                None
+
+            })
+
+
+        return jsonify({
+
+            "business":
+            businesses[0]
+
+        })
+
 
     except Exception as error:
 
         print(
-            "OPENROUTER ERROR:",
+            "Business API error:",
+            error
+        )
+
+        return jsonify({
+
+            "error":
             str(error)
+
+        }), 500
+
+
+# =========================================================
+# SAVE BUSINESS ACCOUNT
+# =========================================================
+
+@app.route(
+    "/api/business",
+    methods=["POST"]
+)
+def save_business():
+
+    user =
+    get_authenticated_user()
+
+
+    if not user:
+
+        return jsonify({
+
+            "error":
+            "Invalid or expired login session."
+
+        }), 401
+
+
+    data =
+    request.get_json() or {}
+
+
+    business = {
+
+        "user_id":
+        user["id"],
+
+        "business_name":
+        data.get(
+            "business_name",
+            ""
+        ),
+
+        "owner_name":
+        data.get(
+            "owner_name",
+            ""
+        ),
+
+        "phone":
+        data.get(
+            "phone",
+            ""
+        ),
+
+        "email":
+        data.get(
+            "email",
+            ""
+        ),
+
+        "address":
+        data.get(
+            "address",
+            ""
+        ),
+
+        "description":
+        data.get(
+            "description",
+            ""
+        ),
+
+        "logo":
+        data.get(
+            "logo",
+            ""
         )
 
-        answer = (
-            "AI service error: "
-            + str(error)
+    }
+
+
+    try:
+
+        response = requests.post(
+
+            BUSINESS_ACCOUNTS_URL,
+
+            headers={
+                **SUPABASE_HEADERS,
+                "Prefer":
+                "return=representation"
+            },
+
+            json=business,
+
+            timeout=15
+
         )
 
-    return jsonify({
-        "answer": answer
-    })
+
+        if response.status_code not in [
+            200,
+            201
+        ]:
+
+            return jsonify({
+
+                "error":
+                response.text
+
+            }), response.status_code
 
 
-# ============================================================
+        return jsonify({
+
+            "message":
+            "Business profile saved successfully."
+
+        })
+
+
+    except Exception as error:
+
+        return jsonify({
+
+            "error":
+            str(error)
+
+        }), 500
+
+
+# =========================================================
 # ADD CUSTOMER
-# ============================================================
+# =========================================================
 
 @app.route(
     "/api/customers",
@@ -344,44 +563,69 @@ def ai_reply():
 )
 def add_customer():
 
-    user, error = get_current_user()
+    user =
+    get_authenticated_user()
 
-    if error:
 
-        return error
+    if not user:
 
-    user_id = user["id"]
+        return jsonify({
 
-    data = request.get_json() or {}
+            "error":
+            "Invalid or expired login session."
 
-    name = data.get(
+        }), 401
+
+
+    data =
+    request.get_json() or {}
+
+
+    name =
+    data.get(
         "name",
         ""
     ).strip()
 
-    phone = data.get(
+
+    phone =
+    data.get(
         "phone",
         ""
     ).strip()
 
-    location = data.get(
+
+    location =
+    data.get(
         "location",
         ""
     ).strip()
 
-    message = data.get(
+
+    message =
+    data.get(
         "message",
         ""
     ).strip()
 
+
     if name == "" or message == "":
 
         return jsonify({
+
             "error":
-                "Customer name and message are required."
+            "Customer name and message are required."
+
         }), 400
 
-    text = message.lower()
+
+    # =====================================================
+    # SIMPLE AI REPLY
+    # =====================================================
+
+    text =
+    message.lower()
+
 
     if "delivery" in text:
 
@@ -390,10 +634,13 @@ def add_customer():
             "Please send us your location."
         )
 
+
     elif (
         "price" in text
-        or "prices" in text
-        or "cost" in text
+        or
+        "prices" in text
+        or
+        "cost" in text
     ):
 
         ai_reply = (
@@ -402,15 +649,18 @@ def add_customer():
             "prices and offers."
         )
 
+
     elif (
         "hello" in text
-        or "hi" in text
+        or
+        "hi" in text
     ):
 
         ai_reply = (
             "Hello! Welcome to our business. "
             "How can we help you today?"
         )
+
 
     elif "thank" in text:
 
@@ -419,6 +669,7 @@ def add_customer():
             "We are always happy to help."
         )
 
+
     else:
 
         ai_reply = (
@@ -426,23 +677,29 @@ def add_customer():
             "We will assist you shortly."
         )
 
+
     customer = {
 
-        "user_id": user_id,
+        "name":
+        name,
 
-        "name": name,
+        "phone":
+        phone,
 
-        "phone": phone,
+        "location":
+        location,
 
-        "location": location,
+        "message":
+        message,
 
-        "message": message,
-
-        "ai_reply": ai_reply,
+        "ai_reply":
+        ai_reply,
 
         "created_at":
-            datetime.utcnow().isoformat()
+        datetime.utcnow().isoformat()
+
     }
+
 
     try:
 
@@ -450,12 +707,18 @@ def add_customer():
 
             CUSTOMERS_URL,
 
-            headers=database_headers(),
+            headers={
+                **SUPABASE_HEADERS,
+                "Prefer":
+                "return=representation"
+            },
 
             json=customer,
 
-            timeout=20
+            timeout=15
+
         )
+
 
         if response.status_code not in [
             200,
@@ -463,46 +726,47 @@ def add_customer():
         ]:
 
             print(
-                "CUSTOMER SAVE ERROR:",
+                "Customer save error:",
                 response.text
             )
 
             return jsonify({
-                "status":
-                    response.status_code,
 
                 "error":
-                    response.text
+                response.text
+
             }), response.status_code
+
 
         return jsonify({
 
             "message":
-                "Customer saved successfully.",
+            "Customer saved successfully.",
 
             "ai_reply":
-                ai_reply,
+            ai_reply
 
-            "user_id":
-                user_id
         })
+
 
     except Exception as error:
 
         print(
-            "CUSTOMER SAVE CONNECTION ERROR:",
-            str(error)
+            "Customer save exception:",
+            error
         )
 
         return jsonify({
+
             "error":
-                "Unable to connect to Supabase."
+            str(error)
+
         }), 500
 
 
-# ============================================================
+# =========================================================
 # GET CUSTOMERS
-# ============================================================
+# =========================================================
 
 @app.route(
     "/api/customers",
@@ -510,13 +774,19 @@ def add_customer():
 )
 def get_customers():
 
-    user, error = get_current_user()
+    user =
+    get_authenticated_user()
 
-    if error:
 
-        return error
+    if not user:
 
-    user_id = user["id"]
+        return jsonify({
+
+            "error":
+            "Invalid or expired login session."
+
+        }), 401
+
 
     try:
 
@@ -524,208 +794,79 @@ def get_customers():
 
             CUSTOMERS_URL,
 
-            headers=database_headers(),
+            headers=SUPABASE_HEADERS,
 
             params={
 
                 "select":
-                    "id,user_id,name,phone,location,message,ai_reply,created_at",
-
-                "user_id":
-                    "eq." + user_id,
+                "id,name,phone,location,message,ai_reply,created_at",
 
                 "order":
-                    "created_at.desc"
+                "created_at.desc"
+
             },
 
-            timeout=20
+            timeout=15
+
         )
+
+
+        print(
+            "Supabase customers status:",
+            response.status_code
+        )
+
 
         if response.status_code != 200:
 
             print(
-                "CUSTOMER LOAD ERROR:",
+                "Supabase customers error:",
                 response.text
             )
 
             return jsonify({
 
-                "status":
-                    response.status_code,
-
                 "error":
-                    response.text
+                response.text
 
             }), response.status_code
+
 
         return jsonify(
             response.json()
         )
+
 
     except Exception as error:
 
         print(
-            "CUSTOMER LOAD CONNECTION ERROR:",
+            "Get customers exception:",
+            error
+        )
+
+        return jsonify({
+
+            "error":
             str(error)
-        )
 
-        return jsonify({
-            "error":
-                "Unable to load customers."
         }), 500
 
 
-# ============================================================
-# BUSINESS PROFILE - GET
-# ============================================================
-
-@app.route(
-    "/api/business",
-    methods=["GET"]
-)
-def get_business():
-
-    try:
-
-        response = requests.get(
-
-            BUSINESS_URL,
-
-            headers=database_headers(),
-
-            params={
-                "select": "*",
-                "order": "id.desc",
-                "limit": 1
-            },
-
-            timeout=20
-        )
-
-        if response.status_code != 200:
-
-            return jsonify({
-
-                "status":
-                    response.status_code,
-
-                "error":
-                    response.text
-
-            }), response.status_code
-
-        return jsonify(
-            response.json()
-        )
-
-    except Exception as error:
-
-        return jsonify({
-            "error":
-                str(error)
-        }), 500
-
-
-# ============================================================
-# BUSINESS PROFILE - SAVE
-# ============================================================
-
-@app.route(
-    "/api/business",
-    methods=["POST"]
-)
-def save_business():
-
-    data = request.get_json() or {}
-
-    business = {
-
-        "business_name":
-            data.get(
-                "business_name",
-                ""
-            ),
-
-        "phone":
-            data.get(
-                "phone",
-                ""
-            ),
-
-        "email":
-            data.get(
-                "email",
-                ""
-            ),
-
-        "address":
-            data.get(
-                "address",
-                ""
-            ),
-
-        "description":
-            data.get(
-                "description",
-                ""
-            ),
-
-        "logo":
-            data.get(
-                "logo",
-                ""
-            )
-    }
-
-    try:
-
-        response = requests.post(
-
-            BUSINESS_URL,
-
-            headers=database_headers(),
-
-            json=business,
-
-            timeout=20
-        )
-
-        if response.status_code not in [
-            200,
-            201
-        ]:
-
-            return jsonify({
-
-                "status":
-                    response.status_code,
-
-                "error":
-                    response.text
-
-            }), response.status_code
-
-        return jsonify({
-
-            "message":
-                "Business profile saved successfully."
-        })
-
-    except Exception as error:
-
-        return jsonify({
-            "error":
-                str(error)
-        }), 500
-
-
-# ============================================================
+# =========================================================
 # START SERVER
-# ============================================================
+# =========================================================
 
 if __name__ == "__main__":
 
     app.run(
+
         host="0.0.0.0",
-        port=5000
+
+        port=int(
+            os.environ.get(
+                "PORT",
+                5000
+            )
+        )
+
 )
