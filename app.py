@@ -202,19 +202,439 @@ def ai_reply():
         ""
     ).strip()
 
+    conversation = data.get(
+        "conversation",
+        []
+    )
+
+
+    # =====================================================
+    # CHECK QUESTION
+    # =====================================================
+
     if question == "":
 
         return jsonify({
+
             "answer":
             "Please enter your question."
-        })
+
+        }), 400
+
+
+    # =====================================================
+    # CHECK OPENROUTER KEY
+    # =====================================================
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
+
             "answer":
             "OpenRouter API key is not configured."
+
         }), 500
+
+
+    # =====================================================
+    # NEXAFLOW AI INSTRUCTIONS
+    # =====================================================
+
+    system_instruction = """
+You are NexaFlow AI, an intelligent conversational assistant
+inside the NexaFlow Business Management Platform.
+
+You help users with:
+
+- Business management
+- Customer service
+- Marketing
+- Sales
+- Business ideas
+- Business planning
+- Mathematics
+- Physics
+- Engineering
+- Education
+- General knowledge
+- Writing and communication
+- Problem solving
+
+=========================================================
+CONVERSATION BEHAVIOR
+=========================================================
+
+You are a conversational AI, not a simple question-answer
+machine.
+
+Always use the conversation history provided to you.
+
+Understand short follow-up questions from context.
+
+For example:
+
+User:
+State Newton's second law of motion.
+
+Assistant:
+Newton's second law states that the net force acting on an
+object is equal to its mass multiplied by its acceleration.
+
+User:
+Give me an example.
+
+You should understand that "example" refers to Newton's second
+law.
+
+DO NOT ask:
+"What kind of example are you looking for?"
+
+Instead, immediately provide a suitable example.
+
+Another example:
+
+User:
+Give me another one.
+
+Understand that the user wants another example of the current
+topic.
+
+Another example:
+
+User:
+Solve it.
+
+Understand that "it" refers to the most recent exercise or
+problem.
+
+Another example:
+
+User:
+Why?
+
+Understand that the user is asking why the previous answer or
+result is true.
+
+Another example:
+
+User:
+Explain that more simply.
+
+Rewrite the previous explanation in easier language.
+
+=========================================================
+FOLLOW-UP QUESTIONS
+=========================================================
+
+The following short messages should normally be interpreted
+using the previous conversation:
+
+"Give me an example."
+
+"Another example."
+
+"Give me another one."
+
+"Explain."
+
+"Explain that."
+
+"Why?"
+
+"How?"
+
+"Continue."
+
+"Go on."
+
+"Solve it."
+
+"Make it easier."
+
+"Give me an exercise."
+
+"Give me the answer."
+
+"Give me the solution."
+
+"Give me a Cameroon example."
+
+"Give me a practical example."
+
+Do not unnecessarily ask the user to repeat the subject.
+
+=========================================================
+MATHEMATICS AND PHYSICS
+=========================================================
+
+When explaining mathematics or physics:
+
+1. Give the concept clearly.
+
+2. Give the relevant formula when useful.
+
+3. Define the variables.
+
+4. Explain the reasoning.
+
+5. Give a practical example when requested.
+
+6. When the user asks for an exercise, create an appropriate
+exercise.
+
+7. When the user asks to solve an exercise, show the solution
+step by step.
+
+8. When appropriate, provide more than one example.
+
+9. Use simple English unless the user asks for advanced detail.
+
+10. Use practical Cameroon-related examples when appropriate.
+
+For example, physics examples may involve:
+
+- motorcycles
+- cars
+- trucks
+- construction
+- pumps
+- water tanks
+- electricity
+- generators
+- agricultural machines
+- solar systems
+- lifting equipment
+
+Do not invent specific real-world facts.
+
+=========================================================
+EDUCATIONAL BEHAVIOR
+=========================================================
+
+When a student asks for an explanation:
+
+Explain first.
+
+Then give an example if appropriate.
+
+If the student asks for another example:
+
+Give a different example.
+
+If the student asks for an exercise:
+
+Give an exercise without immediately giving the answer unless
+the student asks for the solution.
+
+If the student asks for the solution:
+
+Give a detailed step-by-step solution.
+
+If the student makes a mistake:
+
+Politely identify the mistake and explain how to correct it.
+
+=========================================================
+BUSINESS BEHAVIOR
+=========================================================
+
+For business questions:
+
+Give practical recommendations.
+
+Consider small and medium-sized businesses.
+
+Consider African and Cameroonian business realities when
+relevant.
+
+Do not invent prices, statistics, regulations or market data.
+
+When information is uncertain, clearly say so.
+
+=========================================================
+DIRECT ANSWERS
+=========================================================
+
+Do not ask unnecessary clarification questions.
+
+If a reasonable interpretation of the user's request is
+possible, answer according to that interpretation.
+
+If there are several reasonable interpretations, give the most
+useful interpretation first and briefly mention the alternative.
+
+=========================================================
+CONTEXT
+=========================================================
+
+Maintain the topic of the conversation.
+
+For example:
+
+User:
+What is acceleration?
+
+Assistant:
+Acceleration is the rate at which velocity changes with time.
+
+User:
+Give me an example.
+
+Assistant:
+Give an example of acceleration.
+
+User:
+Make it easier.
+
+Assistant:
+Explain acceleration using simpler language.
+
+User:
+Give me an exercise.
+
+Assistant:
+Create an acceleration exercise.
+
+User:
+Solve it.
+
+Assistant:
+Solve the exercise you just created.
+
+=========================================================
+ACCURACY
+=========================================================
+
+Be accurate.
+
+Do not fabricate information.
+
+Do not claim to have performed an action that you did not
+perform.
+
+If you do not know something, say so.
+
+=========================================================
+STYLE
+=========================================================
+
+Be helpful, natural and conversational.
+
+Do not make every answer unnecessarily long.
+
+For simple questions, answer simply.
+
+For complex questions, provide enough detail to make the answer
+understandable.
+
+Use headings, bullet points and numbered steps when they improve
+clarity.
+"""
+
+
+    # =====================================================
+    # BUILD MESSAGE LIST
+    # =====================================================
+
+    messages = [
+
+        {
+            "role":
+            "system",
+
+            "content":
+            system_instruction
+        }
+
+    ]
+
+
+    # =====================================================
+    # ADD CONVERSATION HISTORY
+    # =====================================================
+
+    if isinstance(
+        conversation,
+        list
+    ):
+
+        for item in conversation:
+
+            if not isinstance(
+                item,
+                dict
+            ):
+
+                continue
+
+
+            role = item.get(
+                "role"
+            )
+
+            content = item.get(
+                "content"
+            )
+
+
+            if role not in [
+                "user",
+                "assistant"
+            ]:
+
+                continue
+
+
+            if not content:
+
+                continue
+
+
+            messages.append({
+
+                "role":
+                role,
+
+                "content":
+                str(content)
+
+            })
+
+
+    # =====================================================
+    # ADD CURRENT QUESTION
+    # =====================================================
+
+    messages.append({
+
+        "role":
+        "user",
+
+        "content":
+        question
+
+    })
+
+
+    # =====================================================
+    # LIMIT EXTREMELY LARGE CONVERSATIONS
+    # =====================================================
+
+    # Keep the system instruction plus the most recent
+    # conversation messages.
+
+    if len(messages) > 21:
+
+        messages = (
+            [messages[0]]
+            +
+            messages[-20:]
+        )
+
+
+    # =====================================================
+    # SEND TO OPENROUTER
+    # =====================================================
 
     try:
 
@@ -238,46 +658,92 @@ def ai_reply():
                 "model":
                 "openai/gpt-oss-20b:free",
 
-                "messages": [
-
-                    {
-                        "role":
-                        "user",
-
-                        "content":
-                        question
-                    }
-
-                ]
+                "messages":
+                messages
 
             },
 
-            timeout=30
+            timeout=60
 
         )
 
+
         result = response.json()
 
-        if "choices" in result:
+
+        print(
+            "OpenRouter status:",
+            response.status_code
+        )
+
+
+        if response.status_code != 200:
+
+            print(
+                "OpenRouter error:",
+                result
+            )
+
+            error_information = result.get(
+                "error",
+                result
+            )
+
+            return jsonify({
+
+                "answer":
+                "AI service error: " +
+                str(
+                    error_information
+                )
+
+            }), 500
+
+
+        if (
+            "choices" in result
+            and
+            len(result["choices"]) > 0
+        ):
 
             answer = (
                 result["choices"][0]
-                ["message"]["content"]
+                ["message"]
+                ["content"]
             )
 
         else:
 
-            answer = str(result)
+            answer = (
+                "The AI did not return an answer."
+            )
+
 
     except Exception as error:
 
-        answer = (
-            "AI service error: " +
-            str(error)
+        print(
+            "AI service exception:",
+            error
         )
 
+        return jsonify({
+
+            "answer":
+            "AI service connection error: " +
+            str(error)
+
+        }), 500
+
+
+    # =====================================================
+    # RETURN AI ANSWER
+    # =====================================================
+
     return jsonify({
-        "answer": answer
+
+        "answer":
+        answer
+
     })
 
 
@@ -494,8 +960,7 @@ def add_customer():
         }), 401
 
     # =====================================================
-    # IMPORTANT:
-    # GET THE LOGGED-IN USER'S UUID
+    # CURRENT USER UUID
     # =====================================================
 
     user_id = user["id"]
@@ -531,7 +996,7 @@ def add_customer():
 
 
     # =====================================================
-    # SIMPLE AI REPLY
+    # SIMPLE AI CUSTOMER REPLY
     # =====================================================
 
     text = message.lower()
@@ -622,173 +1087,4 @@ def add_customer():
             headers={
                 **SUPABASE_HEADERS,
                 "Prefer":
-                "return=representation"
-            },
-
-            json=customer,
-
-            timeout=15
-
-        )
-
-        if response.status_code not in [
-            200,
-            201
-        ]:
-
-            print(
-                "Customer save error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
-
-
-        return jsonify({
-
-            "message":
-            "Customer saved successfully.",
-
-            "ai_reply":
-            ai_reply
-
-        })
-
-    except Exception as error:
-
-        print(
-            "Customer save exception:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
-
-
-# =========================================================
-# GET CUSTOMERS
-# =========================================================
-
-@app.route(
-    "/api/customers",
-    methods=["GET"]
-)
-def get_customers():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-            "error":
-            "Invalid or expired login session."
-        }), 401
-
-    # =====================================================
-    # IMPORTANT:
-    # GET CURRENT USER UUID
-    # =====================================================
-
-    user_id = user["id"]
-
-    try:
-
-        response = requests.get(
-
-            CUSTOMERS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select":
-                "id,user_id,name,phone,location,message,ai_reply,created_at",
-
-                # =================================================
-                # THIS IS THE IMPORTANT FILTER
-                # =================================================
-
-                "user_id":
-                "eq." + user_id,
-
-                "order":
-                "created_at.desc"
-
-            },
-
-            timeout=15
-
-        )
-
-
-        print(
-            "Supabase customers status:",
-            response.status_code
-        )
-
-
-        if response.status_code != 200:
-
-            print(
-                "Supabase customers error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
-
-
-        customers = response.json()
-
-
-        print(
-            "Customers returned for user:",
-            user_id,
-            "Count:",
-            len(customers)
-        )
-
-
-        return jsonify(
-            customers
-        )
-
-
-    except Exception as error:
-
-        print(
-            "Get customers exception:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
-
-
-# =========================================================
-# START SERVER
-# =========================================================
-
-if __name__ == "__main__":
-
-    app.run(
-
-        host="0.0.0.0",
-
-        port=int(
-            os.environ.get(
-                "PORT",
-                5000
-            )
-        )
-
-)
+                "retu
