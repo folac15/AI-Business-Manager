@@ -4,9 +4,11 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI Assistant</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>NexaFlow AI - AI Assistant</title>
 
 
 <style>
@@ -28,7 +30,9 @@ min-height:100vh;
 }
 
 
-/* SIDEBAR */
+/* =====================================================
+   SIDEBAR
+===================================================== */
 
 .sidebar{
 
@@ -36,6 +40,7 @@ width:250px;
 background:#0b1f3a;
 color:white;
 padding:25px;
+min-height:100vh;
 
 }
 
@@ -84,8 +89,16 @@ background:#0066ff;
 }
 
 
+.sidebar h3{
 
-/* MAIN */
+margin-bottom:5px;
+
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
 
 .main{
 
@@ -95,6 +108,9 @@ padding:30px;
 }
 
 
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
 
@@ -106,31 +122,91 @@ margin-bottom:30px;
 }
 
 
+.header h2{
 
-/* AI BOX */
+margin-bottom:8px;
+
+}
+
+
+.header p{
+
+color:#666;
+
+}
+
+
+/* =====================================================
+   AI BOX
+===================================================== */
 
 .ai-box{
 
 background:white;
 padding:30px;
 border-radius:12px;
-max-width:800px;
+max-width:900px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
 
 }
 
 
+.ai-title{
+
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:15px;
+
+}
+
+
+.ai-status{
+
+font-size:13px;
+color:#2e7d32;
+font-weight:bold;
+
+}
+
+
+/* =====================================================
+   TEXTAREA
+===================================================== */
+
 textarea{
 
 width:100%;
-height:120px;
+height:130px;
 padding:15px;
 margin-top:15px;
 border-radius:8px;
 border:1px solid #ddd;
 font-size:16px;
+resize:vertical;
 
 }
 
+
+textarea:focus{
+
+outline:none;
+border-color:#0066ff;
+
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.button-row{
+
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+
+}
 
 
 button{
@@ -142,6 +218,7 @@ color:white;
 border:none;
 border-radius:8px;
 cursor:pointer;
+font-size:15px;
 
 }
 
@@ -153,6 +230,31 @@ background:#004ccc;
 }
 
 
+.clear-button{
+
+background:#777;
+
+}
+
+
+.clear-button:hover{
+
+background:#555;
+
+}
+
+
+button:disabled{
+
+background:#aaa;
+cursor:not-allowed;
+
+}
+
+
+/* =====================================================
+   RESPONSE
+===================================================== */
 
 .response{
 
@@ -161,64 +263,175 @@ background:#f4f7fb;
 padding:20px;
 border-radius:10px;
 min-height:100px;
+line-height:1.6;
+white-space:normal;
 
 }
 
 
+.response-title{
+
+font-weight:bold;
+margin-bottom:12px;
+
+}
+
+
+.thinking{
+
+color:#666;
+font-style:italic;
+
+}
+
+
+.error{
+
+background:#fff0f0;
+color:#c62828;
+border-left:4px solid #c62828;
+
+}
+
+
+/* =====================================================
+   EXAMPLE QUESTIONS
+===================================================== */
+
+.examples{
+
+margin-top:25px;
+padding:20px;
+background:#f8faff;
+border-radius:10px;
+
+}
+
+
+.examples h4{
+
+margin-bottom:12px;
+
+}
+
+
+.example-question{
+
+display:inline-block;
+background:white;
+border:1px solid #ddd;
+border-radius:20px;
+padding:8px 14px;
+margin:5px;
+cursor:pointer;
+font-size:14px;
+
+}
+
+
+.example-question:hover{
+
+border-color:#0066ff;
+color:#0066ff;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:800px){
 
 body{
-    display:flex;
+
+display:flex;
+
 }
+
 
 .sidebar{
-    width:85px;
-    min-height:100vh;
-    padding:12px;
+
+width:85px;
+min-height:100vh;
+padding:12px;
+
 }
+
 
 .logo{
-    font-size:16px;
+
+font-size:16px;
+
 }
+
 
 .business-logo{
-    width:45px;
-    height:45px;
-    font-size:20px;
+
+width:45px;
+height:45px;
+font-size:20px;
+
 }
+
 
 .sidebar h3{
-    display:none;
+
+display:none;
+
 }
+
 
 .sidebar a{
-    font-size:12px;
-    padding:8px;
+
+font-size:12px;
+padding:8px;
+
 }
+
 
 .main{
-    flex:1;
-    padding:15px;
+
+flex:1;
+padding:15px;
+
 }
+
 
 .ai-box{
-    max-width:100%;
+
+max-width:100%;
+padding:20px;
+
 }
 
-    }
 
+.header{
+
+padding:15px;
+
+}
+
+
+textarea{
+
+height:120px;
+
+}
+
+}
 
 </style>
 
-
 </head>
-
 
 
 <body>
 
 
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
 <div class="sidebar">
 
@@ -237,8 +450,10 @@ NexaFlow AI
 </div>
 
 
-<h3>
+<h3 id="businessName">
+
 Your Business
+
 </h3>
 
 
@@ -283,11 +498,11 @@ Settings
 </div>
 
 
-
-
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
 <div class="main">
-
 
 
 <div class="header">
@@ -296,6 +511,7 @@ Settings
 🤖 AI Business Assistant
 </h2>
 
+
 <p>
 Ask questions and get intelligent business support.
 </p>
@@ -303,87 +519,324 @@ Ask questions and get intelligent business support.
 </div>
 
 
-
-
-
 <div class="ai-box">
 
+
+<div class="ai-title">
 
 <h3>
 Chat with AI
 </h3>
 
 
-<textarea 
+<span class="ai-status">
+● Online
+</span>
+
+</div>
+
+
+<p style="color:#666;">
+
+Your AI assistant is ready to help with questions,
+business ideas, customer support and general information.
+
+</p>
+
+
+<textarea
 id="question"
-placeholder="Example: How can I increase my sales?">
+placeholder="Example: How can I increase my sales?"
+onkeydown="handleEnter(event)">
 </textarea>
 
 
+<div class="button-row">
 
-<button onclick="askAI()">
 
-Ask AI
+<button
+id="askButton"
+onclick="askAI()">
+
+🤖 Ask AI
 
 </button>
 
 
+<button
+class="clear-button"
+onclick="clearChat()">
 
-<div class="response" id="answer">
+Clear
 
-AI answer will appear here.
-
-</div>
-
-
-
-</div>
-
+</button>
 
 
 </div>
 
 
+<div
+class="response"
+id="answer">
+
+<div class="response-title">
+AI Answer
+</div>
+
+Your AI answer will appear here.
+
+</div>
 
 
+<!-- =====================================================
+     EXAMPLE QUESTIONS
+===================================================== -->
+
+<div class="examples">
+
+<h4>
+Try asking:
+</h4>
+
+
+<span
+class="example-question"
+onclick="useExample('State Newton\\'s second law of motion.')">
+
+Newton's second law
+
+</span>
+
+
+<span
+class="example-question"
+onclick="useExample('How can I increase my sales?')">
+
+Increase sales
+
+</span>
+
+
+<span
+class="example-question"
+onclick="useExample('How can I improve my customer service?')">
+
+Customer service
+
+</span>
+
+
+<span
+class="example-question"
+onclick="useExample('Give me five business marketing ideas.')">
+
+Marketing ideas
+
+</span>
+
+
+</div>
+
+
+</div>
+
+
+</div>
 
 
 <script>
 
 
-async function askAI(){
+/* =====================================================
+   LOAD BUSINESS NAME
+===================================================== */
+
+async function loadBusinessName(){
+
+const token =
+localStorage.getItem(
+"access_token"
+);
 
 
-let question =
-document.getElementById("question").value;
-
-
-
-if(question.trim()==""){
-
-alert("Please enter a question");
+if(!token){
 
 return;
 
 }
 
 
+try{
 
-document.getElementById("answer").innerHTML =
-"AI is thinking...";
+const response =
+await fetch(
 
+"/api/business",
+
+{
+
+method:"GET",
+
+headers:{
+
+"Authorization":
+"Bearer " + token
+
+}
+
+}
+
+);
+
+
+if(!response.ok){
+
+console.log(
+"Business information could not be loaded."
+);
+
+return;
+
+}
+
+
+const result =
+await response.json();
+
+
+if(
+result.business &&
+result.business.business_name
+){
+
+document.getElementById(
+"businessName"
+).textContent =
+result.business.business_name;
+
+}
+
+}catch(error){
+
+console.error(
+"Business name loading error:",
+error
+);
+
+}
+
+}
+
+
+/* =====================================================
+   ASK AI
+===================================================== */
+
+async function askAI(){
+
+const questionElement =
+document.getElementById(
+"question"
+);
+
+
+const answerElement =
+document.getElementById(
+"answer"
+);
+
+
+const askButton =
+document.getElementById(
+"askButton"
+);
+
+
+const question =
+questionElement.value.trim();
+
+
+if(question === ""){
+
+answerElement.className =
+"response error";
+
+answerElement.innerHTML =
+"Please enter a question.";
+
+return;
+
+}
+
+
+/* =====================================================
+   CHECK LOGIN SESSION
+===================================================== */
+
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+
+if(!token){
+
+answerElement.className =
+"response error";
+
+answerElement.innerHTML =
+"Your login session is unavailable. Please log in again.";
+
+return;
+
+}
+
+
+/* =====================================================
+   LOADING STATE
+===================================================== */
+
+askButton.disabled = true;
+
+askButton.textContent =
+"Thinking...";
+
+
+answerElement.className =
+"response";
+
+answerElement.innerHTML =
+
+'<div class="response-title">AI Answer</div>' +
+
+'<div class="thinking">' +
+'🤖 AI is thinking... Please wait.' +
+'</div>';
 
 
 try{
 
 
-let response = await fetch("/api/ai",{
+/* =====================================================
+   SEND QUESTION TO EXISTING API
+===================================================== */
+
+const response =
+await fetch(
+
+"/api/ai",
+
+{
 
 method:"POST",
 
 headers:{
 
-"Content-Type":"application/json"
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " + token
 
 },
 
@@ -393,48 +846,252 @@ question:question
 
 })
 
-});
+}
+
+);
 
 
-
-let data = await response.json();
-
-
-
-document.getElementById("answer").innerHTML =
-
-"<b>AI Answer:</b><br><br>" +
-
-data.answer;
+const data =
+await response.json();
 
 
+console.log(
+"AI response:",
+data
+);
+
+
+/* =====================================================
+   HANDLE LOGIN ERROR
+===================================================== */
+
+if(response.status === 401){
+
+answerElement.className =
+"response error";
+
+answerElement.innerHTML =
+"Your login session has expired. Please log in again.";
+
+return;
 
 }
 
 
+/* =====================================================
+   HANDLE SERVER ERROR
+===================================================== */
 
-catch(error){
+if(!response.ok){
 
+answerElement.className =
+"response error";
 
-document.getElementById("answer").innerHTML =
+answerElement.innerHTML =
 
-"AI connection error: " + error;
+"AI service error: " +
 
+(
+data.answer ||
+data.error ||
+"Unable to get an AI response."
+);
+
+return;
 
 }
 
 
+/* =====================================================
+   DISPLAY AI ANSWER
+===================================================== */
+
+let answer =
+data.answer ||
+"No answer was returned by the AI.";
+
+
+/*
+Convert simple line breaks
+to HTML breaks for readability.
+*/
+
+answer =
+escapeHtml(answer)
+.replace(
+/\n/g,
+"<br>"
+);
+
+
+answerElement.className =
+"response";
+
+
+answerElement.innerHTML =
+
+'<div class="response-title">' +
+'🤖 AI Answer' +
+'</div>' +
+
+answer;
+
+
+}catch(error){
+
+console.error(
+"AI connection error:",
+error
+);
+
+
+answerElement.className =
+"response error";
+
+
+answerElement.innerHTML =
+
+"❌ Unable to connect to the AI service.";
+
+
+}finally{
+
+askButton.disabled = false;
+
+askButton.textContent =
+"🤖 Ask AI";
 
 }
 
-window.onload = function(){
-    window.scrollTo(0,0);
-};
+}
+
+
+/* =====================================================
+   EXAMPLE QUESTION
+===================================================== */
+
+function useExample(question){
+
+document.getElementById(
+"question"
+).value =
+question;
+
+
+document.getElementById(
+"question"
+).focus();
+
+}
+
+
+/* =====================================================
+   ENTER KEY
+===================================================== */
+
+function handleEnter(event){
+
+if(
+event.key === "Enter"
+&&
+!event.shiftKey
+){
+
+event.preventDefault();
+
+askAI();
+
+}
+
+}
+
+
+/* =====================================================
+   CLEAR CHAT
+===================================================== */
+
+function clearChat(){
+
+document.getElementById(
+"question"
+).value =
+"";
+
+
+const answerElement =
+document.getElementById(
+"answer"
+);
+
+
+answerElement.className =
+"response";
+
+
+answerElement.innerHTML =
+
+'<div class="response-title">' +
+'AI Answer' +
+'</div>' +
+
+'Your AI answer will appear here.';
+
+}
+
+
+/* =====================================================
+   HTML SAFETY
+===================================================== */
+
+function escapeHtml(value){
+
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+/* =====================================================
+   PAGE START
+===================================================== */
+
+window.addEventListener(
+"load",
+function(){
+
+loadBusinessName();
+
+}
+
+);
 
 </script>
 
 
-
 </body>
 
-  </html>
+    </html>
