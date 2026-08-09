@@ -4,1086 +4,448 @@ from datetime import datetime
 import requests
 import os
 
-
 app = Flask(__name__)
 CORS(app)
 
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
-# =========================================================
-# ENVIRONMENT VARIABLES
-# =========================================================
-
-OPENROUTER_API_KEY = os.environ.get(
-    "OPENROUTER_API_KEY"
-)
-
-SUPABASE_SECRET_KEY = os.environ.get(
-    "SUPABASE_SECRET_KEY"
-)
-
-
-# =========================================================
-# SUPABASE CONFIGURATION
-# =========================================================
-
-SUPABASE_PROJECT_URL = (
-    "https://xfjroysinifwncfjvrsg.supabase.co"
-)
-
-CUSTOMERS_URL = (
-    SUPABASE_PROJECT_URL +
-    "/rest/v1/customers"
-)
-
-BUSINESS_ACCOUNTS_URL = (
-    SUPABASE_PROJECT_URL +
-    "/rest/v1/business_accounts"
-)
-
-
-# =========================================================
-# SUPABASE SERVER HEADERS
-# =========================================================
+SUPABASE_PROJECT_URL = "https://xfjroysinifwncfjvrsg.supabase.co"
+CUSTOMERS_URL = SUPABASE_PROJECT_URL + "/rest/v1/customers"
+BUSINESS_ACCOUNTS_URL = SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_SECRET_KEY,
-    "Authorization": "Bearer " + str(
-        SUPABASE_SECRET_KEY
-    ),
+    "Authorization": "Bearer " + str(SUPABASE_SECRET_KEY),
     "Content-Type": "application/json"
 }
 
 
-# =========================================================
-# WEBSITE PAGES
-# =========================================================
-
 @app.route("/")
 def home():
-
-    return send_from_directory(
-        ".",
-        "index.html"
-    )
+    return send_from_directory(".", "index.html")
 
 
 @app.route("/index.html")
 def index_page():
-
-    return send_from_directory(
-        ".",
-        "index.html"
-    )
+    return send_from_directory(".", "index.html")
 
 
 @app.route("/<path:filename>")
 def serve_files(filename):
-
-    if (
-        filename.endswith(".html")
-        or filename.endswith(".css")
-        or filename.endswith(".js")
-    ):
-
-        return send_from_directory(
-            ".",
-            filename
-        )
-
+    if filename.endswith((".html", ".css", ".js")):
+        return send_from_directory(".", filename)
     return "File not found", 404
 
 
-# =========================================================
-# STATUS API
-# =========================================================
-
 @app.route("/api/status")
 def status():
-
     return jsonify({
         "status": "online",
         "message": "NexaFlow AI API is working"
     })
 
 
-# =========================================================
-# HELPER — GET LOGGED-IN USER
-# =========================================================
-
 def get_authenticated_user():
+    authorization = request.headers.get("Authorization")
 
-    authorization = request.headers.get(
-        "Authorization"
-    )
-
-    if not authorization:
+    if not authorization or not authorization.startswith("Bearer "):
         return None
 
-    if not authorization.startswith(
-        "Bearer "
-    ):
-        return None
-
-    access_token = authorization.replace(
-        "Bearer ",
-        "",
-        1
-    ).strip()
+    access_token = authorization.replace("Bearer ", "", 1).strip()
 
     if not access_token:
         return None
 
     try:
-
         response = requests.get(
-
-            SUPABASE_PROJECT_URL +
-            "/auth/v1/user",
-
+            SUPABASE_PROJECT_URL + "/auth/v1/user",
             headers={
-
-                "apikey":
-                SUPABASE_SECRET_KEY,
-
-                "Authorization":
-                "Bearer " +
-                access_token
-
+                "apikey": SUPABASE_SECRET_KEY,
+                "Authorization": "Bearer " + access_token
             },
-
             timeout=15
-
         )
 
         if response.status_code != 200:
-
-            print(
-                "Supabase user verification failed:",
-                response.text
-            )
-
+            print("Supabase user verification failed:", response.text)
             return None
 
         user = response.json()
 
-        if not user.get("id"):
-            return None
-
-        return user
+        return user if user.get("id") else None
 
     except Exception as error:
-
-        print(
-            "User authentication error:",
-            error
-        )
-
+        print("User authentication error:", error)
         return None
 
 
-# =========================================================
-# AI ASSISTANT API
-# =========================================================
-
-@app.route(
-    "/api/ai",
-    methods=["POST"]
-)
-def ai_reply():
-
-    data = request.get_json() or {}
-
-    question = data.get(
-        "question",
-        ""
-    ).strip()
-
-    conversation = data.get(
-        "conversation",
-        []
-    )
-
-
-    # =====================================================
-    # CHECK QUESTION
-    # =====================================================
-
-    if question == "":
-
-        return jsonify({
-
-            "answer":
-            "Please enter your question."
-
-        }), 400
-
-
-    # =====================================================
-    # CHECK OPENROUTER KEY
-    # =====================================================
-
-    if not OPENROUTER_API_KEY:
-
-        return jsonify({
-
-            "answer":
-            "OpenRouter API key is not configured."
-
-        }), 500
-
-
-    # =====================================================
-    # NEXAFLOW AI SYSTEM INSTRUCTIONS
-    # =====================================================
-
-    system_instruction = """
-
+NEXAFLOW_SYSTEM_PROMPT = """
 You are NexaFlow AI, the intelligent conversational assistant
 inside the NexaFlow Business Management Platform.
 
-Your job is to provide useful, direct, natural and intelligent
-answers to users.
-
-You can help with:
-
-- Business management
-- Customer service
-- Marketing
-- Sales
-- Business ideas
-- Business planning
-- Mathematics
-- Physics
-- Engineering
-- Education
-- General knowledge
-- Writing
-- Communication
-- Problem solving
-
-
-=========================================================
-IMPORTANT CONVERSATION RULE
-=========================================================
-
-You are a conversational AI.
-
-You MUST use the conversation history provided to understand
-follow-up questions.
-
-Never treat every new message as an unrelated conversation.
-
-The user may ask a question, receive an answer, and then ask
-a short follow-up.
-
-You must understand what the follow-up refers to.
-
-
-Example:
-
-User:
-State Newton's second law of motion.
-
-Assistant:
-Newton's second law states that the net force acting on an
-object is equal to its mass multiplied by its acceleration.
-
-User:
-Give me an example.
-
-Correct behavior:
-Immediately give an example of Newton's second law.
-
-Do NOT ask:
-"What kind of example are you looking for?"
-
-Another example:
-
-User:
-Give me another one.
-
-Correct behavior:
-Give another example of Newton's second law.
-
-Another example:
-
-User:
-Solve it.
-
-Correct behavior:
-Understand "it" from the previous conversation and solve
-the relevant exercise or problem.
-
-Another example:
-
-User:
-Why?
-
-Correct behavior:
-Explain why the previous statement, answer or result is true.
-
-Another example:
-
-User:
-Make it easier.
-
-Correct behavior:
-Rewrite the previous explanation using simpler language.
-
-Another example:
-
-User:
-Continue.
-
-Correct behavior:
-Continue explaining the current topic.
-
-
-=========================================================
-SHORT FOLLOW-UP QUESTIONS
-=========================================================
-
-Interpret these using conversation context whenever possible:
-
-"Give me an example."
-
-"Give me another example."
-
-"Another one."
-
-"Give me another one."
-
-"Explain."
-
-"Explain that."
-
-"Why?"
-
-"How?"
-
-"Continue."
-
-"Go on."
-
-"Solve it."
-
-"Make it easier."
-
-"Give me an exercise."
-
-"Give me the answer."
-
-"Give me the solution."
-
-"Give me a Cameroon example."
-
-"Give me a practical example."
-
-"Give me another question."
-
-Do not unnecessarily ask the user to repeat the topic.
-
-
-=========================================================
-MATHEMATICS AND PHYSICS
-=========================================================
-
-When answering mathematics or physics questions:
-
-1. Explain the concept clearly.
-
-2. Give the relevant formula when useful.
-
-3. Define the variables.
-
-4. Explain the reasoning.
-
-5. Give examples when requested.
-
-6. If the user asks for an exercise, create an appropriate
-   exercise.
-
-7. If the user asks to solve an exercise, solve it step by step.
-
-8. If the user asks for another example, provide a DIFFERENT
-   example.
-
-9. Use simple English unless advanced detail is requested.
-
-10. Use practical examples when appropriate.
-
-Useful practical contexts can include:
-
-- motorcycles
-- cars
-- trucks
-- construction
-- pumps
-- water tanks
-- electricity
-- generators
-- agricultural machines
-- solar systems
-- lifting equipment
-
-Do not invent specific real-world facts.
-
-
-=========================================================
-EDUCATIONAL BEHAVIOR
-=========================================================
-
-When a student asks for an explanation:
-
-Explain first.
-
-When appropriate, provide an example.
-
-If the student asks for another example:
-
-Give a different example.
-
-If the student asks for an exercise:
-
-Give the exercise without immediately giving the answer,
-unless the student asks for the solution.
-
-If the student asks for the solution:
-
-Give a detailed step-by-step solution.
-
-If the student makes a mistake:
-
-Politely identify the mistake and explain how to correct it.
-
-
-=========================================================
-BUSINESS BEHAVIOR
-=========================================================
-
-For business questions:
-
-Give practical recommendations.
-
-Consider small and medium-sized businesses.
-
-Consider African and Cameroonian business realities when
-relevant.
-
-Do not invent prices, statistics, regulations or market data.
-
-If information is uncertain, clearly say so.
-
-
-=========================================================
-DIRECT ANSWERS
-=========================================================
-
-Do not ask unnecessary clarification questions.
-
-If a reasonable interpretation of the user's request is
-possible, answer according to that interpretation.
+Help with business management, customer service, marketing,
+sales, business ideas, business planning, mathematics, physics,
+engineering, education, general knowledge, writing,
+communication and problem solving.
+
+CONVERSATION:
+Always use the conversation history supplied by the application.
+A new message may be a follow-up to the previous message.
 
 If the user says "give me an example" after a clear topic,
-give an example of that topic.
+immediately give an example of that topic. Do not ask what kind
+of example they want unless the topic genuinely cannot be known.
 
-If the user says "another one", provide another example.
+If the user says "another one" or "give me another example",
+give a different example of the current topic.
 
-Only ask a clarification question when the request genuinely
-cannot be understood from the available conversation.
+If the user says "solve it", identify the most recent relevant
+exercise or problem and solve it.
 
+If the user says "why", explain the previous statement or result.
 
-=========================================================
-CONTEXT EXAMPLE
-=========================================================
+If the user says "make it easier", explain the previous answer
+using simpler English.
 
-User:
-What is acceleration?
+If the user says "continue" or "go on", continue the current topic.
 
-Assistant:
-Acceleration is the rate at which velocity changes with time.
+For mathematics and physics:
+- Explain concepts clearly.
+- Give formulas when useful.
+- Define variables when useful.
+- Show reasoning.
+- Give examples when requested.
+- Create exercises when requested.
+- Solve exercises step by step when requested.
+- If another example is requested, make it different.
+- Use simple English unless advanced detail is requested.
+- Use practical Cameroon-related contexts when appropriate.
 
-User:
-Give me an example.
+For education:
+- Explain before giving an example when appropriate.
+- Do not give an exercise's answer unless the student asks for it.
+- Correct mistakes politely.
 
-Assistant:
-Give an example of acceleration.
+For business:
+- Give practical recommendations.
+- Consider small and medium businesses and African/Cameroonian
+  realities when relevant.
+- Do not invent prices, statistics, regulations or market data.
 
-User:
-Make it easier.
+Do not ask unnecessary clarification questions. When a reasonable
+interpretation is available, use it and answer directly.
 
-Assistant:
-Explain acceleration more simply.
-
-User:
-Give me an exercise.
-
-Assistant:
-Create an acceleration exercise.
-
-User:
-Solve it.
-
-Assistant:
-Solve the acceleration exercise just created.
-
-
-=========================================================
-ACCURACY
-=========================================================
-
-Be accurate.
-
-Do not fabricate information.
-
-Do not claim to have performed an action that you did not
-perform.
-
-If you do not know something, say so.
-
-
-=========================================================
-STYLE
-=========================================================
-
-Be helpful, natural and conversational.
-
-Do not make every answer unnecessarily long.
-
-For simple questions, answer simply.
-
-For complex questions, provide enough detail to make the answer
-understandable.
-
-Use headings, bullet points and numbered steps when useful.
-
+Be accurate, natural, helpful and conversational. Do not fabricate
+information or claim to have performed an action you did not perform.
 Do not repeatedly say that you are an AI.
-
 """
 
 
-    # =====================================================
-    # BUILD MESSAGE LIST
-    # =====================================================
+@app.route("/api/ai", methods=["POST"])
+def ai_reply():
+    data = request.get_json(silent=True) or {}
 
-    messages = [
+    question = str(data.get("question", "")).strip()
+    conversation = data.get("conversation", [])
 
-        {
-            "role": "system",
-            "content": system_instruction
-        }
+    if not question:
+        return jsonify({"answer": "Please enter your question."}), 400
 
-    ]
+    if not OPENROUTER_API_KEY:
+        return jsonify({
+            "answer": "OpenRouter API key is not configured."
+        }), 500
 
+    messages = [{
+        "role": "system",
+        "content": NEXAFLOW_SYSTEM_PROMPT
+    }]
 
-    # =====================================================
-    # ADD CONVERSATION HISTORY
-    # =====================================================
-
-    if isinstance(
-        conversation,
-        list
-    ):
-
+    if isinstance(conversation, list):
         for item in conversation:
-
-            if not isinstance(
-                item,
-                dict
-            ):
+            if not isinstance(item, dict):
                 continue
 
-            role = item.get(
-                "role"
-            )
+            role = item.get("role")
+            content = item.get("content")
 
-            content = item.get(
-                "content"
-            )
-
-            if role not in [
-                "user",
-                "assistant"
-            ]:
+            if role not in ("user", "assistant"):
+                continue
+            if content is None:
                 continue
 
+            content = str(content).strip()
             if not content:
                 continue
 
             messages.append({
-
-                "role":
-                role,
-
-                "content":
-                str(content)
-
+                "role": role,
+                "content": content
             })
 
-
-    # =====================================================
-    # ADD CURRENT QUESTION
-    # =====================================================
-
     messages.append({
-
-        "role":
-        "user",
-
-        "content":
-        question
-
+        "role": "user",
+        "content": question
     })
 
-
-    # =====================================================
-    # LIMIT CONVERSATION SIZE
-    # =====================================================
-
+    # Keep the system prompt plus the most recent 20 messages.
     if len(messages) > 21:
-
-        messages = (
-            [messages[0]]
-            +
-            messages[-20:]
-        )
-
-
-    # =====================================================
-    # SEND TO OPENROUTER
-    # =====================================================
-
-    try:
-
+        messages = [messages[0]] + messages[-20:]
+            try:
         response = requests.post(
-
             "https://openrouter.ai/api/v1/chat/completions",
-
             headers={
-
-                "Authorization":
-                "Bearer " +
-                OPENROUTER_API_KEY,
-
-                "Content-Type":
-                "application/json"
-
+                "Authorization": "Bearer " + OPENROUTER_API_KEY,
+                "Content-Type": "application/json"
             },
-
             json={
-
-                "model":
-                "openai/gpt-oss-20b:free",
-
-                "messages":
-                messages
-
+                "model": "openai/gpt-oss-20b:free",
+                "messages": messages
             },
-
             timeout=60
-
         )
-
 
         try:
-
             result = response.json()
-
-        except Exception:
-
+        except ValueError:
             result = {}
 
-
-        print(
-            "OpenRouter status:",
-            response.status_code
-        )
-
+        print("OpenRouter status:", response.status_code)
 
         if response.status_code != 200:
-
-            print(
-                "OpenRouter error:",
-                result
-            )
-
-            error_information = result.get(
-                "error",
-                result
-            )
-
+            print("OpenRouter error:", result)
+            error_info = result.get("error", result)
             return jsonify({
-
-                "answer":
-                "AI service error: " +
-                str(
-                    error_information
-                )
-
+                "answer": "AI service error: " + str(error_info)
             }), 500
 
+        choices = result.get("choices", [])
 
-        if (
-            "choices" in result
-            and
-            len(result["choices"]) > 0
-            and
-            "message" in result["choices"][0]
-        ):
-
-            answer = (
-                result["choices"][0]
-                ["message"]
-                .get(
-                    "content",
-                    ""
-                )
-            )
-
-            if not answer:
-
-                answer = (
-                    "The AI returned an empty answer."
-                )
-
+        if choices:
+            message = choices[0].get("message", {})
+            answer = str(message.get("content", "")).strip()
         else:
+            answer = ""
 
-            answer = (
-                "The AI did not return an answer."
-            )
+        if not answer:
+            answer = "The AI did not return an answer."
 
+        return jsonify({"answer": answer})
 
     except Exception as error:
-
-        print(
-            "AI service exception:",
-            error
-        )
-
+        print("AI service exception:", error)
         return jsonify({
-
-            "answer":
-            "AI service connection error: " +
-            str(error)
-
+            "answer": "AI service connection error: " + str(error)
         }), 500
 
 
-    # =====================================================
-    # RETURN AI ANSWER
-    # =====================================================
-
-    return jsonify({
-
-        "answer":
-        answer
-
-    })
-
-
-# =========================================================
-# GET BUSINESS ACCOUNT
-# =========================================================
-
-@app.route(
-    "/api/business",
-    methods=["GET"]
-)
+@app.route("/api/business", methods=["GET"])
 def get_business():
-
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-            "error":
-            "Invalid or expired login session."
+            "error": "Invalid or expired login session."
         }), 401
 
-    user_id = user["id"]
-
     try:
-
         response = requests.get(
-
             BUSINESS_ACCOUNTS_URL,
-
             headers=SUPABASE_HEADERS,
-
             params={
-
                 "select": "*",
-
-                "user_id":
-                "eq." + user_id,
-
+                "user_id": "eq." + user["id"],
                 "limit": "1"
-
             },
-
             timeout=15
-
         )
 
         if response.status_code != 200:
-
-            print(
-                "Business account error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
+            return jsonify({"error": response.text}), response.status_code
 
         businesses = response.json()
 
-        if not businesses:
-
-            return jsonify({
-                "business": None
-            })
-
         return jsonify({
-            "business":
-            businesses[0]
+            "business": businesses[0] if businesses else None
         })
 
     except Exception as error:
-
-        print(
-            "Business API error:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
+        print("Business API error:", error)
+        return jsonify({"error": str(error)}), 500
 
 
-# =========================================================
-# SAVE BUSINESS ACCOUNT
-# =========================================================
-
-@app.route(
-    "/api/business",
-    methods=["POST"]
-)
+@app.route("/api/business", methods=["POST"])
 def save_business():
-
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-            "error":
-            "Invalid or expired login session."
+            "error": "Invalid or expired login session."
         }), 401
 
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
 
     business = {
-
-        "user_id":
-        user["id"],
-
-        "business_name":
-        data.get(
-            "business_name",
-            ""
-        ),
-
-        "owner_name":
-        data.get(
-            "owner_name",
-            ""
-        ),
-
-        "phone":
-        data.get(
-            "phone",
-            ""
-        ),
-
-        "email":
-        data.get(
-            "email",
-            ""
-        ),
-
-        "address":
-        data.get(
-            "address",
-            ""
-        ),
-
-        "description":
-        data.get(
-            "description",
-            ""
-        ),
-
-        "logo":
-        data.get(
-            "logo",
-            ""
-        )
-
+        "user_id": user["id"],
+        "business_name": data.get("business_name", ""),
+        "owner_name": data.get("owner_name", ""),
+        "phone": data.get("phone", ""),
+        "email": data.get("email", ""),
+        "address": data.get("address", ""),
+        "description": data.get("description", ""),
+        "logo": data.get("logo", "")
     }
 
     try:
-
         response = requests.post(
-
             BUSINESS_ACCOUNTS_URL,
-
             headers={
                 **SUPABASE_HEADERS,
-                "Prefer":
-                "return=representation"
+                "Prefer": "return=representation"
             },
-
             json=business,
-
             timeout=15
-
         )
 
-        if response.status_code not in [
-            200,
-            201
-        ]:
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
+        if response.status_code not in (200, 201):
+            return jsonify({"error": response.text}), response.status_code
 
         return jsonify({
-
-            "message":
-            "Business profile saved successfully."
-
+            "message": "Business profile saved successfully."
         })
 
     except Exception as error:
-
-        return jsonify({
-
-            "error":
-            str(error)
-
-        }), 500
+        return jsonify({"error": str(error)}), 500
 
 
-# =========================================================
-# ADD CUSTOMER
-# =========================================================
-
-@app.route(
-    "/api/customers",
-    methods=["POST"]
-)
+@app.route("/api/customers", methods=["POST"])
 def add_customer():
-
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-            "error":
-            "Invalid or expired login session."
+            "error": "Invalid or expired login session."
         }), 401
 
+    data = request.get_json(silent=True) or {}
 
-    # =====================================================
-    # CURRENT USER UUID
-    # =====================================================
+    name = str(data.get("name", "")).strip()
+    phone = str(data.get("phone", "")).strip()
+    location = str(data.get("location", "")).strip()
+    message = str(data.get("message", "")).strip()
 
-    user_id = user["id"]
-
-    data = request.get_json() or {}
-
-    name = data.get(
-        "name",
-        ""
-    ).strip()
-
-    phone = data.get(
-        "phone",
-        ""
-    ).strip()
-
-    location = data.get(
-        "location",
-        ""
-    ).strip()
-
-    message = data.get(
-        "message",
-        ""
-    ).strip()
-
-
-    if name == "" or message == "":
-
+    if not name or not message:
         return jsonify({
-
-            "error":
-            "Customer name and message are required."
-
+            "error": "Customer name and message are required."
         }), 400
-
-
-    # =====================================================
-    # SIMPLE CUSTOMER AI REPLY
-    # =====================================================
 
     text = message.lower()
 
     if "delivery" in text:
-
         ai_reply = (
             "Yes, we provide delivery services. "
             "Please send us your location."
         )
-
-    elif (
-        "price" in text
-        or
-        "prices" in text
-        or
-        "cost" in text
-    ):
-
+    elif any(word in text for word in ("price", "prices", "cost")):
         ai_reply = (
-            "Thank you for your interest. "
-            "Please contact us for our current "
-            "prices and offers."
+            "Thank you for your interest. Please contact us "
+            "for our current prices and offers."
         )
-
-    elif (
-        "hello" in text
-        or
-        "hi" in text
-    ):
-
+    elif "hello" in text or "hi" in text:
         ai_reply = (
             "Hello! Welcome to our business. "
             "How can we help you today?"
         )
-
     elif "thank" in text:
-
-        ai_reply = (
-            "You're welcome. "
-            "We are always happy to help."
-        )
-
+        ai_reply = "You're welcome. We are always happy to help."
     else:
-
         ai_reply = (
             "Thank you for your message. "
-            "We will 
+            "We will assist you shortly."
+        )
+
+    customer = {
+        "user_id": user["id"],
+        "name": name,
+        "phone": phone,
+        "location": location,
+        "message": message,
+        "ai_reply": ai_reply,
+        "created_at": datetime.utcnow().isoformat()
+    }
+
+    try:
+        response = requests.post(
+            CUSTOMERS_URL,
+            headers={
+                **SUPABASE_HEADERS,
+                "Prefer": "return=representation"
+            },
+            json=customer,
+            timeout=15
+        )
+
+        if response.status_code not in (200, 201):
+            print("Customer save error:", response.text)
+            return jsonify({"error": response.text}), response.status_code
+
+        return jsonify({
+            "message": "Customer saved successfully.",
+            "ai_reply": ai_reply
+        })
+
+    except Exception as error:
+        print("Customer save exception:", error)
+        return jsonify({"error": str(error)}), 500
+        @app.route("/api/customers", methods=["GET"])
+def get_customers():
+    user = get_authenticated_user()
+
+    if not user:
+        return jsonify({
+            "error": "Invalid or expired login session."
+        }), 401
+
+    try:
+        response = requests.get(
+            CUSTOMERS_URL,
+            headers=SUPABASE_HEADERS,
+            params={
+                "select": (
+                    "id,user_id,name,phone,location,"
+                    "message,ai_reply,created_at"
+                ),
+                "user_id": "eq." + user["id"],
+                "order": "created_at.desc"
+            },
+            timeout=15
+        )
+
+        print("Supabase customers status:", response.status_code)
+
+        if response.status_code != 200:
+            print("Supabase customers error:", response.text)
+            return jsonify({"error": response.text}), response.status_code
+
+        customers = response.json()
+
+        print(
+            "Customers returned for user:",
+            user["id"],
+            "Count:",
+            len(customers)
+        )
+
+        return jsonify(customers)
+
+    except Exception as error:
+        print("Get customers exception:", error)
+        return jsonify({"error": str(error)}), 500
+
+
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000))
+        )
