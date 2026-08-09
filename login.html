@@ -117,22 +117,17 @@ display:none;
 
 </head>
 
-
 <body>
 
-
 <div class="auth-container">
-
 
 <div class="logo">
 NexaFlow AI
 </div>
 
-
 <div class="subtitle">
 Business Management Platform
 </div>
-
 
 <div class="tabs">
 
@@ -144,7 +139,6 @@ onclick="showLogin()">
 Login
 
 </button>
-
 
 <button
 id="registerTab"
@@ -163,7 +157,6 @@ Create Account
 
 <div id="loginForm">
 
-
 <div class="form-group">
 
 <label>
@@ -177,7 +170,6 @@ placeholder="Enter email">
 
 </div>
 
-
 <div class="form-group">
 
 <label>
@@ -190,7 +182,6 @@ id="loginPassword"
 placeholder="Enter password">
 
 </div>
-
 
 <button
 class="auth-btn"
@@ -211,7 +202,6 @@ Login
 id="registerForm"
 class="hidden">
 
-
 <div class="form-group">
 
 <label>
@@ -224,7 +214,6 @@ id="ownerName"
 placeholder="Enter owner name">
 
 </div>
-
 
 <div class="form-group">
 
@@ -239,7 +228,6 @@ placeholder="Enter business name">
 
 </div>
 
-
 <div class="form-group">
 
 <label>
@@ -252,7 +240,6 @@ id="phone"
 placeholder="Enter phone number">
 
 </div>
-
 
 <div class="form-group">
 
@@ -267,7 +254,6 @@ placeholder="Enter email">
 
 </div>
 
-
 <div class="form-group">
 
 <label>
@@ -280,7 +266,6 @@ id="registerPassword"
 placeholder="Create password">
 
 </div>
-
 
 <button
 class="auth-btn"
@@ -298,12 +283,10 @@ id="message"
 class="message">
 </div>
 
-
 </div>
 
 
 <script>
-
 
 /* ==================================================
    SUPABASE CONFIGURATION
@@ -313,8 +296,14 @@ const SUPABASE_URL =
 "https://xfjroysinifwncfjvrsg.supabase.co";
 
 
+/*
+IMPORTANT:
+This is the correct ANON PUBLIC key.
+Do NOT put the Supabase service-role secret key here.
+*/
+
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmxlIiwicmVmIjoieGZqcm95c2luaWZ3bmNmanZyc2ciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDI1NTc0MCwiZXhwIjoyMDk5ODMxNzQwfQ.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
 
 
 /* ==================================================
@@ -323,24 +312,17 @@ const SUPABASE_ANON_KEY =
 
 function showLogin(){
 
-document.getElementById(
-"loginForm"
-).style.display="block";
+document.getElementById("loginForm")
+.style.display="block";
 
+document.getElementById("registerForm")
+.style.display="none";
 
-document.getElementById(
-"registerForm"
-).style.display="none";
+document.getElementById("loginTab")
+.classList.add("active");
 
-
-document.getElementById(
-"loginTab"
-).classList.add("active");
-
-
-document.getElementById(
-"registerTab"
-).classList.remove("active");
+document.getElementById("registerTab")
+.classList.remove("active");
 
 }
 
@@ -351,24 +333,17 @@ document.getElementById(
 
 function showRegister(){
 
-document.getElementById(
-"loginForm"
-).style.display="none";
+document.getElementById("loginForm")
+.style.display="none";
 
+document.getElementById("registerForm")
+.style.display="block";
 
-document.getElementById(
-"registerForm"
-).style.display="block";
+document.getElementById("registerTab")
+.classList.add("active");
 
-
-document.getElementById(
-"registerTab"
-).classList.add("active");
-
-
-document.getElementById(
-"loginTab"
-).classList.remove("active");
+document.getElementById("loginTab")
+.classList.remove("active");
 
 }
 
@@ -380,39 +355,27 @@ document.getElementById(
 async function registerUser(){
 
 const ownerName =
-document.getElementById(
-"ownerName"
-).value.trim();
-
+document.getElementById("ownerName")
+.value.trim();
 
 const businessName =
-document.getElementById(
-"businessName"
-).value.trim();
-
+document.getElementById("businessName")
+.value.trim();
 
 const phone =
-document.getElementById(
-"phone"
-).value.trim();
-
+document.getElementById("phone")
+.value.trim();
 
 const email =
-document.getElementById(
-"registerEmail"
-).value.trim();
-
+document.getElementById("registerEmail")
+.value.trim();
 
 const password =
-document.getElementById(
-"registerPassword"
-).value;
-
+document.getElementById("registerPassword")
+.value;
 
 const message =
-document.getElementById(
-"message"
-);
+document.getElementById("message");
 
 
 if(
@@ -506,9 +469,6 @@ return;
 
 /*
 Save business information temporarily.
-
-It will be connected to the
-authenticated user's UUID after login.
 */
 
 localStorage.setItem(
@@ -547,7 +507,6 @@ showLogin();
 
 console.error(error);
 
-
 message.innerHTML =
 "❌ Connection error.";
 
@@ -563,21 +522,15 @@ message.innerHTML =
 async function loginUser(){
 
 const email =
-document.getElementById(
-"loginEmail"
-).value.trim();
-
+document.getElementById("loginEmail")
+.value.trim();
 
 const password =
-document.getElementById(
-"loginPassword"
-).value;
-
+document.getElementById("loginPassword")
+.value;
 
 const message =
-document.getElementById(
-"message"
-);
+document.getElementById("message");
 
 
 if(!email || !password){
@@ -648,10 +601,8 @@ result.error ||
 result.msg ||
 "Login failed.";
 
-
 message.innerHTML =
 "❌ " + errorMessage;
-
 
 return;
 
@@ -659,7 +610,7 @@ return;
 
 
 /* ==================================================
-   SAVE ACCESS TOKEN
+   VERIFY ACCESS TOKEN
 ================================================== */
 
 if(!result.access_token){
@@ -672,15 +623,24 @@ return;
 }
 
 
+/* ==================================================
+   CLEAR OLD SESSION
+================================================== */
+
+localStorage.removeItem("access_token");
+localStorage.removeItem("refresh_token");
+localStorage.removeItem("user_id");
+
+
+/* ==================================================
+   SAVE NEW SESSION
+================================================== */
+
 localStorage.setItem(
 "access_token",
 result.access_token
 );
 
-
-/* ==================================================
-   SAVE REFRESH TOKEN
-================================================== */
 
 if(result.refresh_token){
 
@@ -731,7 +691,7 @@ localStorage.getItem(
 
 if(pendingProfile){
 
-let profile;
+let profile = null;
 
 
 try{
@@ -751,8 +711,6 @@ error
 localStorage.removeItem(
 "pending_business_profile"
 );
-
-profile = null;
 
 }
 
@@ -809,9 +767,7 @@ profile.phone
 );
 
 
-if(
-businessResponse.ok
-){
+if(businessResponse.ok){
 
 localStorage.removeItem(
 "pending_business_profile"
@@ -824,26 +780,26 @@ await businessResponse.text();
 
 
 console.error(
-"Business account error:",
+"Business account response:",
 errorText
 );
 
 
 /*
-Do not destroy the login session
-if the business profile already exists.
+If the business account already exists,
+do not destroy the valid login session.
 */
 
 if(
-!errorText.includes(
-"duplicate"
-)
+!errorText.toLowerCase().includes("duplicate") &&
+!errorText.toLowerCase().includes("already exists") &&
+!errorText.toLowerCase().includes("23505")
 ){
 
-message.innerHTML =
-"❌ Login succeeded, but business profile could not be saved.";
-
-return;
+console.warn(
+"Business profile was not saved:",
+errorText
+);
 
 }
 
@@ -886,7 +842,6 @@ console.error(
 error
 );
 
-
 message.innerHTML =
 "❌ Connection error.";
 
@@ -896,7 +851,6 @@ message.innerHTML =
 
 </script>
 
-
 </body>
 
-   </html>
+     </html>
