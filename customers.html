@@ -5,186 +5,260 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NexaFlow AI - Customers</title>
 
 <style>
 
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
 body{
-display:flex;
-background:#f4f7fb;
-min-height:100vh;
+    display:flex;
+    background:#f4f7fb;
+    min-height:100vh;
+    color:#222;
 }
 
 .sidebar{
-width:250px;
-background:#0b1f3a;
-color:white;
-padding:25px;
-min-height:100vh;
+    width:250px;
+    background:#0b1f3a;
+    color:white;
+    padding:25px;
+    min-height:100vh;
+    flex-shrink:0;
 }
 
 .logo{
-font-size:22px;
-font-weight:bold;
-margin-bottom:30px;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:30px;
 }
 
 .business-logo{
-width:70px;
-height:70px;
-background:white;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:30px;
-color:#0b1f3a;
-margin-bottom:15px;
+    width:70px;
+    height:70px;
+    background:white;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    color:#0b1f3a;
+    margin-bottom:15px;
+}
+
+.sidebar h3{
+    margin-bottom:20px;
+    word-break:break-word;
 }
 
 .sidebar a{
-display:block;
-color:white;
-text-decoration:none;
-padding:12px;
-margin-bottom:8px;
-border-radius:8px;
+    display:block;
+    color:white;
+    text-decoration:none;
+    padding:12px;
+    margin-bottom:8px;
+    border-radius:8px;
 }
 
-.sidebar a:hover{
-background:#0066ff;
+.sidebar a:hover,
+.sidebar a.active{
+    background:#0066ff;
 }
 
 .main{
-flex:1;
-padding:30px;
+    flex:1;
+    padding:30px;
+    min-width:0;
 }
 
 .header{
-background:white;
-padding:20px;
-border-radius:12px;
-margin-bottom:25px;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:25px;
+    border:1px solid #e5e7eb;
+}
+
+.header h2{
+    color:#0b1f3a;
+    margin-bottom:6px;
+}
+
+.header p{
+    color:#777;
 }
 
 .customer-box{
-background:white;
-padding:25px;
-border-radius:12px;
-margin-bottom:25px;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:25px;
+    border:1px solid #e5e7eb;
+}
+
+.customer-box h3{
+    color:#0b1f3a;
+    margin-bottom:10px;
 }
 
 input,
 textarea{
-width:100%;
-padding:12px;
-margin-top:12px;
-border:1px solid #ddd;
-border-radius:8px;
-font-size:15px;
+    width:100%;
+    padding:12px;
+    margin-top:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:15px;
+    outline:none;
+}
+
+input:focus,
+textarea:focus{
+    border-color:#0066ff;
+    box-shadow:0 0 0 2px rgba(0,102,255,.08);
 }
 
 textarea{
-height:100px;
-resize:none;
+    height:100px;
+    resize:vertical;
+    min-height:100px;
 }
 
-button{
-margin-top:15px;
-padding:12px 25px;
-background:#0066ff;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
+.save-button{
+    margin-top:15px;
+    padding:12px 25px;
+    background:#0066ff;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
 }
 
-button:hover{
-background:#004ccc;
+.save-button:hover{
+    background:#004ccc;
 }
 
-.customer-list{
-background:white;
-padding:25px;
-border-radius:12px;
-}
-
-.customer-card{
-background:#f4f7fb;
-padding:15px;
-margin-top:15px;
-border-radius:8px;
-border-left:5px solid #0066ff;
+.save-button:disabled{
+    background:#999;
+    cursor:not-allowed;
 }
 
 .status{
-margin-top:15px;
-font-weight:bold;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.success{
+    color:#16803c;
+}
+
+.error-text{
+    color:#c62828;
+}
+
+.customer-list{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+}
+
+.customer-list h3{
+    color:#0b1f3a;
+    margin-bottom:10px;
 }
 
 .loading{
-padding:15px 0;
-color:#666;
+    padding:20px 0;
+    color:#666;
 }
 
-.error{
-padding:15px;
-background:#fff0f0;
-color:#c62828;
-border-radius:8px;
-margin-top:15px;
+.error-box{
+    padding:15px;
+    background:#fff0f0;
+    color:#c62828;
+    border-radius:8px;
+    margin-top:15px;
 }
 
 .empty{
-padding:15px 0;
-color:#666;
+    padding:20px 0;
+    color:#666;
+}
+
+.customer-card{
+    background:#f4f7fb;
+    padding:18px;
+    margin-top:15px;
+    border-radius:10px;
+    border-left:5px solid #0066ff;
+}
+
+.customer-card b{
+    color:#0b1f3a;
+}
+
+.customer-message,
+.ai-reply{
+    margin-top:6px;
+    line-height:1.5;
+    white-space:pre-wrap;
+}
+
+.customer-date{
+    display:block;
+    margin-top:15px;
+    color:#777;
+    font-size:12px;
 }
 
 @media(max-width:800px){
 
-body{
-display:flex;
-}
+    .sidebar{
+        width:85px;
+        min-height:100vh;
+        padding:12px;
+    }
 
-.sidebar{
-width:85px;
-min-height:100vh;
-padding:12px;
-}
+    .logo{
+        font-size:15px;
+    }
 
-.logo{
-font-size:16px;
-}
+    .business-logo{
+        width:45px;
+        height:45px;
+        font-size:20px;
+    }
 
-.business-logo{
-width:45px;
-height:45px;
-font-size:20px;
-}
+    .sidebar h3{
+        display:none;
+    }
 
-.sidebar h3{
-display:none;
-}
+    .sidebar a{
+        font-size:11px;
+        padding:8px;
+    }
 
-.sidebar a{
-font-size:12px;
-padding:8px;
-}
+    .main{
+        padding:15px;
+    }
 
-.main{
-flex:1;
-padding:15px;
-}
+    .header{
+        padding:17px;
+    }
+
+    .customer-box,
+    .customer-list{
+        padding:18px;
+    }
 
 }
 
@@ -195,11 +269,6 @@ padding:15px;
 <body>
 
 <script src="auth_guard.js"></script>
-
-
-<!-- =====================================================
-     SIDEBAR
-===================================================== -->
 
 <div class="sidebar">
 
@@ -215,8 +284,6 @@ NexaFlow AI
 Your Business
 </h3>
 
-<br>
-
 <a href="dashboard.html">
 Dashboard
 </a>
@@ -225,7 +292,7 @@ Dashboard
 AI Assistant
 </a>
 
-<a href="customers.html">
+<a href="customers.html" class="active">
 Customers
 </a>
 
@@ -247,13 +314,7 @@ Settings
 
 </div>
 
-
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
 <div class="main">
-
 
 <div class="header">
 
@@ -267,48 +328,41 @@ Manage customer information and AI replies.
 
 </div>
 
-
-<!-- =====================================================
-     ADD CUSTOMER
-===================================================== -->
-
 <div class="customer-box">
 
 <h3>
 Add Customer
 </h3>
 
-
 <input
 type="text"
 id="customerName"
-placeholder="Customer Name">
-
+placeholder="Customer Name"
+autocomplete="name">
 
 <input
 type="text"
 id="customerPhone"
-placeholder="Phone Number">
-
+placeholder="Phone Number"
+autocomplete="tel">
 
 <input
 type="text"
 id="customerLocation"
 placeholder="Location">
 
-
 <textarea
 id="customerMessage"
 placeholder="Customer Message"></textarea>
 
-
 <button
+id="saveButton"
+class="save-button"
 onclick="saveCustomer()">
 
 Save Customer
 
 </button>
-
 
 <div
 id="saveStatus"
@@ -317,17 +371,11 @@ class="status">
 
 </div>
 
-
-<!-- =====================================================
-     CUSTOMER HISTORY
-===================================================== -->
-
 <div class="customer-list">
 
 <h3>
 Customer History
 </h3>
-
 
 <div
 id="customerHistory"
@@ -339,519 +387,446 @@ Loading customers...
 
 </div>
 
-
-</div>
-
-
-<script>
-
-/* =====================================================
-   LOAD BUSINESS NAME
-===================================================== */
+     </div>
+     <script>
 
 async function loadBusiness(){
 
-const token =
-localStorage.getItem(
-"access_token"
-);
+    const token = localStorage.getItem("access_token");
 
+    if(!token){
+        return;
+    }
 
-if(!token){
+    try{
 
-return;
+        const response = await fetch("/api/business", {
+            method:"GET",
+            headers:{
+                "Authorization":"Bearer " + token
+            }
+        });
 
-}
+        if(response.status === 401){
+            return;
+        }
 
+        const result = await response.json();
 
-try{
+        if(
+            result.business &&
+            result.business.business_name
+        ){
 
-const response =
-await fetch(
+            const businessName =
+                document.getElementById("businessName");
 
-"/api/business",
+            if(businessName){
+                businessName.textContent =
+                    result.business.business_name;
+            }
 
-{
+        }
 
-method:"GET",
+    }catch(error){
 
-headers:{
+        console.error(
+            "Business loading error:",
+            error
+        );
 
-"Authorization":
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-const result =
-await response.json();
-
-
-if(
-response.status === 401
-){
-
-return;
-
-}
-
-
-if(
-result.business &&
-result.business.business_name
-){
-
-document.getElementById(
-"businessName"
-).textContent =
-result.business.business_name;
+    }
 
 }
 
-}catch(error){
-
-console.error(
-"Business loading error:",
-error
-);
-
-}
-
-}
-
-
-/* =====================================================
-   SAVE CUSTOMER
-===================================================== */
 
 async function saveCustomer(){
 
-const name =
-document.getElementById(
-"customerName"
-).value.trim();
+    const name =
+        document.getElementById("customerName").value.trim();
+
+    const phone =
+        document.getElementById("customerPhone").value.trim();
+
+    const location =
+        document.getElementById("customerLocation").value.trim();
+
+    const message =
+        document.getElementById("customerMessage").value.trim();
+
+    const status =
+        document.getElementById("saveStatus");
+
+    const button =
+        document.getElementById("saveButton");
 
 
-const phone =
-document.getElementById(
-"customerPhone"
-).value.trim();
+    if(name === "" || message === ""){
+
+        status.className =
+            "status error-text";
+
+        status.textContent =
+            "❌ Please enter customer name and message.";
+
+        return;
+
+    }
 
 
-const location =
-document.getElementById(
-"customerLocation"
-).value.trim();
+    const token =
+        localStorage.getItem("access_token");
 
 
-const message =
-document.getElementById(
-"customerMessage"
-).value.trim();
+    if(!token){
+
+        status.className =
+            "status error-text";
+
+        status.textContent =
+            "❌ Login session unavailable. Please log in again.";
+
+        return;
+
+    }
 
 
-const status =
-document.getElementById(
-"saveStatus"
-);
+    button.disabled = true;
+
+    status.className = "status";
+
+    status.textContent =
+        "Saving customer...";
 
 
-if(
-name === ""
-||
-message === ""
-){
+    try{
 
-status.innerHTML =
-"❌ Please enter customer name and message.";
+        const response =
+            await fetch("/api/customers", {
 
-return;
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":"Bearer " + token
+                },
+
+                body:JSON.stringify({
+
+                    name:name,
+                    phone:phone,
+                    location:location,
+                    message:message
+
+                })
+
+            });
+
+
+        let result;
+
+        try{
+
+            result =
+                await response.json();
+
+        }catch(error){
+
+            result = {};
+
+        }
+
+
+        console.log(
+            "Save customer response:",
+            result
+        );
+
+
+        if(response.status === 401){
+
+            status.className =
+                "status error-text";
+
+            status.textContent =
+                "❌ Login session expired. Please log in again.";
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            status.className =
+                "status error-text";
+
+            status.textContent =
+                "❌ " +
+                (
+                    result.error ||
+                    "Unable to save customer."
+                );
+
+            return;
+
+        }
+
+
+        status.className =
+            "status success";
+
+        status.textContent =
+            "✅ Customer saved successfully.";
+
+
+        document.getElementById(
+            "customerName"
+        ).value = "";
+
+
+        document.getElementById(
+            "customerPhone"
+        ).value = "";
+
+
+        document.getElementById(
+            "customerLocation"
+        ).value = "";
+
+
+        document.getElementById(
+            "customerMessage"
+        ).value = "";
+
+
+        await loadCustomers();
+
+
+    }catch(error){
+
+        console.error(
+            "Customer save error:",
+            error
+        );
+
+
+        status.className =
+            "status error-text";
+
+        status.textContent =
+            "❌ Connection error. Please try again.";
+
+    }finally{
+
+        button.disabled = false;
+
+    }
 
 }
 
-
-const token =
-localStorage.getItem(
-"access_token"
-);
-
-
-if(!token){
-
-status.innerHTML =
-"❌ Login session unavailable. Please log in again.";
-
-return;
-
-}
-
-
-status.innerHTML =
-"Saving customer...";
-
-
-try{
-
-const response =
-await fetch(
-
-"/api/customers",
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":
-"application/json",
-
-"Authorization":
-"Bearer " + token
-
-},
-
-body:JSON.stringify({
-
-name:name,
-
-phone:phone,
-
-location:location,
-
-message:message
-
-})
-
-}
-
-);
-
-
-const result =
-await response.json();
-
-
-console.log(
-"Save customer response:",
-result
-);
-
-
-if(
-response.status === 401
-){
-
-status.innerHTML =
-"❌ Login session expired. Please log in again.";
-
-return;
-
-}
-
-
-if(!response.ok){
-
-status.innerHTML =
-"❌ " +
-(
-result.error ||
-"Unable to save customer."
-);
-
-return;
-
-}
-
-
-status.innerHTML =
-"✅ Customer saved successfully.";
-
-
-document.getElementById(
-"customerName"
-).value = "";
-
-
-document.getElementById(
-"customerPhone"
-).value = "";
-
-
-document.getElementById(
-"customerLocation"
-).value = "";
-
-
-document.getElementById(
-"customerMessage"
-).value = "";
-
-
-await loadCustomers();
-
-
-}catch(error){
-
-console.error(
-"Customer save error:",
-error
-);
-
-status.innerHTML =
-"❌ Connection error.";
-
-}
-
-}
-
-
-/* =====================================================
-   LOAD CUSTOMERS
-===================================================== */
 
 async function loadCustomers(){
 
-const history =
-document.getElementById(
-"customerHistory"
-);
+    const history =
+        document.getElementById("customerHistory");
 
 
-const token =
-localStorage.getItem(
-"access_token"
-);
+    const token =
+        localStorage.getItem("access_token");
 
 
-if(!token){
+    if(!token){
 
-history.innerHTML =
-'<div class="error">Login session unavailable.</div>';
+        history.innerHTML =
+            '<div class="error-box">Login session unavailable.</div>';
 
-return;
+        return;
+
+    }
+
+
+    history.innerHTML =
+        '<div class="loading">Loading customers...</div>';
+
+
+    try{
+
+        const response =
+            await fetch("/api/customers", {
+
+                method:"GET",
+
+                headers:{
+                    "Authorization":"Bearer " + token
+                }
+
+            });
+
+
+        let result;
+
+        try{
+
+            result =
+                await response.json();
+
+        }catch(error){
+
+            result = {};
+
+        }
+
+
+        console.log(
+            "Customers response:",
+            result
+        );
+
+
+        if(response.status === 401){
+
+            history.innerHTML =
+                '<div class="error-box">Login session expired. Please log in again.</div>';
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            history.innerHTML =
+                '<div class="error-box">' +
+                (
+                    result.error ||
+                    "Unable to load customers."
+                ) +
+                '</div>';
+
+            return;
+
+        }
+
+
+        if(!Array.isArray(result)){
+
+            history.innerHTML =
+                '<div class="error-box">The server returned an unexpected response.</div>';
+
+            return;
+
+        }
+
+
+        if(result.length === 0){
+
+            history.innerHTML =
+                '<div class="empty">No customers found yet.</div>';
+
+            return;
+
+        }
+
+
+        let html = "";
+
+
+        result.forEach(function(customer){
+
+            html += `
+
+                <div class="customer-card">
+
+                    <b>Name:</b>
+                    ${escapeHtml(customer.name || "")}
+
+                    <br>
+
+                    <b>Phone:</b>
+                    ${escapeHtml(customer.phone || "")}
+
+                    <br>
+
+                    <b>Location:</b>
+                    ${escapeHtml(customer.location || "")}
+
+                    <br><br>
+
+                    <b>Message:</b>
+
+                    <div class="customer-message">
+                        ${escapeHtml(customer.message || "")}
+                    </div>
+
+                    <br>
+
+                    <b>AI Reply:</b>
+
+                    <div class="ai-reply">
+                        ${escapeHtml(customer.ai_reply || "")}
+                    </div>
+
+                    <span class="customer-date">
+                        ${escapeHtml(customer.created_at || "")}
+                    </span>
+
+                </div>
+
+            `;
+
+        });
+
+
+        history.innerHTML = html;
+
+
+    }catch(error){
+
+        console.error(
+            "Customer loading error:",
+            error
+        );
+
+
+        history.innerHTML =
+            '<div class="error-box">Unable to load customers. Check your connection and server.</div>';
+
+    }
 
 }
 
-
-history.innerHTML =
-'<div class="loading">Loading customers...</div>';
-
-
-try{
-
-const response =
-await fetch(
-
-"/api/customers",
-
-{
-
-method:"GET",
-
-headers:{
-
-"Authorization":
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-const result =
-await response.json();
-
-
-console.log(
-"Customers response:",
-result
-);
-
-
-if(
-response.status === 401
-){
-
-history.innerHTML =
-'<div class="error">Login session expired. Please log in again.</div>';
-
-return;
-
-}
-
-
-if(!response.ok){
-
-history.innerHTML =
-'<div class="error">' +
-(
-result.error ||
-"Unable to load customers."
-) +
-'</div>';
-
-return;
-
-}
-
-
-if(
-!Array.isArray(result)
-){
-
-history.innerHTML =
-'<div class="error">The server returned an unexpected response.</div>';
-
-return;
-
-}
-
-
-if(result.length === 0){
-
-history.innerHTML =
-'<div class="empty">No customers found yet.</div>';
-
-return;
-
-}
-
-
-let html = "";
-
-
-result.forEach(
-function(customer){
-
-html += `
-
-<div class="customer-card">
-
-<b>Name:</b>
-${escapeHtml(customer.name || "")}
-
-<br>
-
-<b>Phone:</b>
-${escapeHtml(customer.phone || "")}
-
-<br>
-
-<b>Location:</b>
-${escapeHtml(customer.location || "")}
-
-<br><br>
-
-<b>Message:</b>
-
-<br>
-
-${escapeHtml(customer.message || "")}
-
-<br><br>
-
-<b>AI Reply:</b>
-
-<br>
-
-${escapeHtml(customer.ai_reply || "")}
-
-<br><br>
-
-<small>
-
-${escapeHtml(customer.created_at || "")}
-
-</small>
-
-</div>
-
-`;
-
-});
-
-
-history.innerHTML =
-html;
-
-
-}catch(error){
-
-console.error(
-"Customer loading error:",
-error
-);
-
-
-history.innerHTML =
-'<div class="error">Unable to load customers. Check the browser console and Render logs.</div>';
-
-}
-
-}
-
-
-/* =====================================================
-   HTML SAFETY
-===================================================== */
 
 function escapeHtml(value){
 
-return String(value)
+    return String(value)
 
-.replace(
-/&/g,
-"&amp;"
-)
+        .replace(/&/g, "&amp;")
 
-.replace(
-/</g,
-"&lt;"
-)
+        .replace(/</g, "&lt;")
 
-.replace(
-/>/g,
-"&gt;"
-)
+        .replace(/>/g, "&gt;")
 
-.replace(
-/"/g,
-"&quot;"
-)
+        .replace(/"/g, "&quot;")
 
-.replace(
-/'/g,
-"&#039;"
-);
+        .replace(/'/g, "&#039;");
 
 }
 
-
-/* =====================================================
-   PAGE START
-===================================================== */
 
 window.addEventListener(
-"load",
-function(){
+    "load",
+    function(){
 
-loadBusiness();
+        loadBusiness();
 
-loadCustomers();
+        loadCustomers();
 
-}
+    }
 );
 
 </script>
 
-
 </body>
 
-   </html>
+     </html>
