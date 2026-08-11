@@ -18,6 +18,10 @@ BUSINESS_ACCOUNTS_URL = (
     SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
 )
 
+AUTOMATION_SETTINGS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
+)
+
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_SECRET_KEY,
     "Authorization": "Bearer " + str(SUPABASE_SECRET_KEY),
@@ -254,7 +258,6 @@ def ai_reply():
                 continue
 
             role = item.get("role")
-
             content = item.get("content")
 
             if role not in (
@@ -281,7 +284,6 @@ def ai_reply():
         "content": question
     })
 
-    # Keep system prompt + most recent 20 messages.
     if len(messages) > 21:
 
         messages = (
@@ -594,9 +596,7 @@ def save_business():
             str(error)
 
         }), 500
-
-
-# =========================================================
+        # =========================================================
 # ADD CUSTOMER
 # =========================================================
 
@@ -611,10 +611,8 @@ def add_customer():
     if not user:
 
         return jsonify({
-
             "error":
             "Invalid or expired login session."
-
         }), 401
 
     data = request.get_json(
@@ -652,10 +650,8 @@ def add_customer():
     if not name or not message:
 
         return jsonify({
-
             "error":
             "Customer name and message are required."
-
         }), 400
 
     text = message.lower()
@@ -759,10 +755,8 @@ def add_customer():
             )
 
             return jsonify({
-
                 "error":
                 response.text
-
             }), response.status_code
 
         return jsonify({
@@ -783,12 +777,12 @@ def add_customer():
         )
 
         return jsonify({
-
             "error":
             str(error)
-
         }), 500
-        # =========================================================
+
+
+# =========================================================
 # GET CUSTOMERS
 # =========================================================
 
@@ -803,10 +797,8 @@ def get_customers():
     if not user:
 
         return jsonify({
-
             "error":
             "Invalid or expired login session."
-
         }), 401
 
     try:
@@ -848,24 +840,17 @@ def get_customers():
             )
 
             return jsonify({
-
                 "error":
                 response.text
-
             }), response.status_code
 
         customers = response.json()
 
         print(
-
             "Customers returned for user:",
-
             user["id"],
-
             "Count:",
-
             len(customers)
-
         )
 
         return jsonify(customers)
@@ -878,10 +863,582 @@ def get_customers():
         )
 
         return jsonify({
-
             "error":
             str(error)
+        }), 500
 
+
+# =========================================================
+# AUTOMATION SETTINGS
+# =========================================================
+
+@app.route(
+    "/api/automation",
+    methods=["GET"]
+)
+def get_automation_settings():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+            "Invalid or expired login session."
+        }), 401
+
+    try:
+
+        response = requests.get(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers=SUPABASE_HEADERS,
+
+            params={
+
+                "select":
+                "id,user_id,ai_replies,message_automation,task_automation,created_at,updated_at",
+
+                "user_id":
+                "eq." + user["id"],
+
+                "limit":
+                "1"
+
+            },
+
+            timeout=15
+        )
+
+        print(
+            "Automation settings status:",
+            response.status_code
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "Automation settings error:",
+                response.text
+            )
+
+            return jsonify({
+                "error":
+                response.text
+            }), response.status_code
+
+        settings = response.json()
+
+        if settings:
+
+            return jsonify({
+                "settings":
+                settings[0]
+            })
+
+        return jsonify({
+            "settings": {
+                "user_id": user["id"],
+                "ai_replies": True,
+                "message_automation": True,
+                "task_automation": True
+            }
+        })
+
+    except Exception as error:
+
+        print(
+            "Get automation settings exception:",
+            error
+        )
+
+        return jsonify({
+            "error":
+            str(error)
+        }), 500
+
+
+# =========================================================
+# SAVE AUTOMATION SETTINGS
+# =========================================================
+
+@app.route(
+    "/api/automation",
+    methods=["POST"]
+)
+def save_automation_settings():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+            "Invalid or expired login session."
+        }), 401
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    ai_replies = bool(
+        data.get(
+            "ai_replies",
+            True
+        )
+    )
+
+    message_automation = bool(
+        data.get(
+            "message_automation",
+            True
+        )
+    )
+
+    task_automation = bool(
+        data.get(
+            "task_automation",
+            True
+        )
+    )
+
+    automation = {
+
+        "user_id":
+        user["id"],
+
+        "ai_replies":
+        ai_replies,
+
+        "message_automation":
+        message_automation,
+
+        "task_automation":
+        task_automation,
+
+        "updated_at":
+        datetime.utcnow().isoformat()
+    }
+
+    try:
+
+        response = requests.post(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers={
+                **SUPABASE_HEADERS,
+
+                "Prefer":
+                "resolution=merge-duplicates,return=representation"
+            },
+
+            json=automation,
+
+            timeout=15
+        )
+
+        print(
+            "Save automation settings status:",
+            response.status_code
+        )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            print(
+                "Save automation settings error:",
+                response.text
+            )
+
+            return jsonify({
+                "error":
+                response.text
+            }), response.status_code
+
+        saved = response.json()
+
+        return jsonify({
+
+            "message":
+            "Automation settings saved successfully.",
+
+            "settings":
+            saved[0]
+            if isinstance(saved, list) and saved
+            else automation
+
+        })
+
+    except Exception as error:
+
+        print(
+            "Save automation settings exception:",
+            error
+        )
+
+        return jsonify({
+            "error":
+            str(error)
+        }), 500
+        # =========================================================
+# AUTOMATION SETTINGS
+# =========================================================
+
+AUTOMATION_SETTINGS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
+)
+
+
+# =========================================================
+# GET AUTOMATION SETTINGS
+# =========================================================
+
+@app.route(
+    "/api/automation",
+    methods=["GET"]
+)
+def get_automation():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+            "Invalid or expired login session."
+        }), 401
+
+    try:
+
+        response = requests.get(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers=SUPABASE_HEADERS,
+
+            params={
+                "select": "*",
+                "user_id":
+                "eq." + user["id"],
+                "limit": "1"
+            },
+
+            timeout=15
+        )
+
+        print(
+            "Automation settings status:",
+            response.status_code
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "Automation settings error:",
+                response.text
+            )
+
+            return jsonify({
+                "error":
+                response.text
+            }), response.status_code
+
+        settings = response.json()
+
+        if settings:
+
+            return jsonify({
+                "automation":
+                settings[0]
+            })
+
+        return jsonify({
+            "automation": {
+                "user_id":
+                user["id"],
+                "ai_replies": True,
+                "message_automation": True,
+                "task_automation": True
+            }
+        })
+
+    except Exception as error:
+
+        print(
+            "Get automation exception:",
+            error
+        )
+
+        return jsonify({
+            "error":
+            str(error)
+        }), 500
+
+
+# =========================================================
+# SAVE AUTOMATION SETTINGS
+# =========================================================
+
+@app.route(
+    "/api/automation",
+    methods=["POST"]
+)
+def save_automation():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+            "Invalid or expired login session."
+        }), 401
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    ai_replies = bool(
+        data.get(
+            "ai_replies",
+            True
+        )
+    )
+
+    message_automation = bool(
+        data.get(
+            "message_automation",
+            True
+        )
+    )
+
+    task_automation = bool(
+        data.get(
+            "task_automation",
+            True
+        )
+    )
+
+    automation = {
+
+        "user_id":
+        user["id"],
+
+        "ai_replies":
+        ai_replies,
+
+        "message_automation":
+        message_automation,
+
+        "task_automation":
+        task_automation,
+
+        "updated_at":
+        datetime.utcnow().isoformat()
+    }
+
+    try:
+
+        response = requests.post(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers={
+                **SUPABASE_HEADERS,
+                "Prefer":
+                "resolution=merge-duplicates,return=representation"
+            },
+
+            json=automation,
+
+            timeout=15
+        )
+
+        print(
+            "Save automation status:",
+            response.status_code
+        )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            print(
+                "Save automation error:",
+                response.text
+            )
+
+            return jsonify({
+                "error":
+                response.text
+            }), response.status_code
+
+        result = response.json()
+
+        saved = (
+            result[0]
+            if isinstance(result, list)
+            and result
+            else automation
+        )
+
+        return jsonify({
+            "message":
+            "Automation settings saved successfully.",
+            "automation":
+            saved
+        })
+
+    except Exception as error:
+
+        print(
+            "Save automation exception:",
+            error
+        )
+
+        return jsonify({
+            "error":
+            str(error)
+        }), 500
+
+
+# =========================================================
+# UPDATE ONE AUTOMATION SETTING
+# =========================================================
+
+@app.route(
+    "/api/automation/toggle",
+    methods=["POST"]
+)
+def toggle_automation():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+            "Invalid or expired login session."
+        }), 401
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    setting = str(
+        data.get(
+            "setting",
+            ""
+        )
+    ).strip()
+
+    value = data.get(
+        "value"
+    )
+
+    allowed_settings = {
+        "ai_replies",
+        "message_automation",
+        "task_automation"
+    }
+
+    if setting not in allowed_settings:
+
+        return jsonify({
+            "error":
+            "Invalid automation setting."
+        }), 400
+
+    if not isinstance(
+        value,
+        bool
+    ):
+
+        return jsonify({
+            "error":
+            "Automation value must be true or false."
+        }), 400
+
+    update_data = {
+
+        setting:
+        value,
+
+        "updated_at":
+        datetime.utcnow().isoformat()
+
+    }
+
+    try:
+
+        response = requests.patch(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers={
+                **SUPABASE_HEADERS,
+                "Prefer":
+                "return=representation"
+            },
+
+            params={
+                "user_id":
+                "eq." + user["id"]
+            },
+
+            json=update_data,
+
+            timeout=15
+        )
+
+        print(
+            "Toggle automation status:",
+            response.status_code
+        )
+
+        if response.status_code not in (
+            200,
+            204
+        ):
+
+            print(
+                "Toggle automation error:",
+                response.text
+            )
+
+            return jsonify({
+                "error":
+                response.text
+            }), response.status_code
+
+        result = response.json() if response.text else []
+
+        return jsonify({
+            "message":
+            "Automation setting updated successfully.",
+            "setting":
+            setting,
+            "value":
+            value,
+            "data":
+            result
+        })
+
+    except Exception as error:
+
+        print(
+            "Toggle automation exception:",
+            error
+        )
+
+        return jsonify({
+            "error":
+            str(error)
         }), 500
 
 
@@ -899,9 +1456,6 @@ if __name__ == "__main__":
     )
 
     app.run(
-
         host="0.0.0.0",
-
         port=port
-
-)
+    )
