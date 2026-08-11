@@ -4,10 +4,11 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Automation</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
+<title>NexaFlow AI - Automation</title>
 
 <style>
 
@@ -18,42 +19,29 @@ box-sizing:border-box;
 font-family:Arial,sans-serif;
 }
 
-
 body{
-
 display:flex;
 background:#f4f7fb;
 min-height:100vh;
-
 }
-
-
 
 /* SIDEBAR */
 
-
 .sidebar{
-
 width:250px;
 background:#0b1f3a;
 color:white;
 padding:25px;
-
+min-height:100vh;
 }
 
-
 .logo{
-
 font-size:22px;
 font-weight:bold;
 margin-bottom:30px;
-
 }
 
-
-
 .business-logo{
-
 width:70px;
 height:70px;
 background:white;
@@ -64,98 +52,88 @@ justify-content:center;
 font-size:30px;
 color:#0b1f3a;
 margin-bottom:15px;
-
 }
 
-
+.sidebar h3{
+word-break:break-word;
+}
 
 .sidebar a{
-
 display:block;
 color:white;
 text-decoration:none;
 padding:12px;
 margin-bottom:8px;
 border-radius:8px;
-
 }
-
-
 
 .sidebar a:hover{
-
 background:#0066ff;
-
 }
-
-
 
 /* MAIN */
 
-
 .main{
-
 flex:1;
 padding:30px;
-
+min-width:0;
 }
 
-
+/* HEADER */
 
 .header{
-
 background:white;
 padding:20px;
 border-radius:12px;
 margin-bottom:30px;
-
 }
 
+.header h2{
+margin-bottom:8px;
+}
 
+.header p{
+color:#666;
+}
 
-/* CARDS */
-
+/* AUTOMATION CARDS */
 
 .grid{
-
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:20px;
-
 }
 
-
 .card{
-
 background:white;
 padding:25px;
 border-radius:12px;
 box-shadow:0 3px 10px rgba(0,0,0,0.08);
-
 }
-
-
 
 .card h3{
-
 margin-bottom:15px;
-
 }
 
-
-
 .status{
-
 font-size:30px;
 font-weight:bold;
 color:#00a651;
-
+margin-bottom:10px;
 }
 
+.status.off{
+color:#e53935;
+}
 
+.card p{
+color:#666;
+line-height:1.5;
+}
+
+/* BUTTON */
 
 button{
-
 padding:12px 25px;
 border:none;
 border-radius:8px;
@@ -163,186 +141,143 @@ background:#0066ff;
 color:white;
 cursor:pointer;
 margin-top:15px;
-
+font-size:14px;
 }
-
 
 button:hover{
-
 background:#004ccc;
-
 }
 
+button:disabled{
+background:#999;
+cursor:not-allowed;
+}
 
-
-/* LOG */
-
+/* LOGS */
 
 .logs{
-
 margin-top:30px;
 background:white;
 padding:25px;
 border-radius:12px;
-
 }
 
-
 .log-item{
-
 background:#f4f7fb;
 padding:12px;
 margin-top:10px;
 border-radius:8px;
-
+line-height:1.5;
 }
 
+.empty{
+color:#666;
+padding:15px 0;
+}
 
+.error{
+background:#fff0f0;
+color:#c62828;
+padding:15px;
+border-radius:8px;
+margin-top:15px;
+}
 
 /* MOBILE */
 
-
 @media(max-width:800px){
 
-
-body{
-
-display:flex;
-
-}
-
-
 .sidebar{
-
 width:85px;
 padding:12px;
-
 }
-
 
 .logo{
-
 font-size:16px;
-
 }
 
-
 .business-logo{
-
 width:45px;
 height:45px;
 font-size:20px;
-
 }
-
 
 .sidebar h3{
-
 display:none;
-
 }
-
 
 .sidebar a{
-
 font-size:12px;
 padding:8px;
-
 }
-
 
 .main{
-
 padding:15px;
-
 }
-
 
 .grid{
-
 grid-template-columns:1fr;
-
 }
 
-
 }
-
-
 
 </style>
 
-
 </head>
 
-
 <body>
-  <script src="auth_guard.js"></script>
+
+<script src="auth_guard.js"></script>
 
 
 <div class="sidebar">
 
-
 <div class="logo">
-
 NexaFlow AI
-
 </div>
-
 
 <div class="business-logo">
-
 ⚙️
-
 </div>
 
-
-<h3>Your Business</h3>
-
+<h3 id="businessName">
+Your Business
+</h3>
 
 <br>
-
 
 <a href="dashboard.html">
 Dashboard
 </a>
 
-
 <a href="ai-assistant.html">
 AI Assistant
 </a>
-
 
 <a href="customers.html">
 Customers
 </a>
 
-
 <a href="analytics.html">
 Analytics
 </a>
-
 
 <a href="automation.html">
 Automation
 </a>
 
-
 <a href="reports.html">
 Reports
 </a>
-
 
 <a href="settings.html">
 Settings
 </a>
 
-
 </div>
 
 
-
 <div class="main">
-
 
 <div class="header">
 
@@ -351,11 +286,10 @@ Settings
 </h2>
 
 <p>
-Manage your business automation services.
+Manage your NexaFlow AI business automation services.
 </p>
 
 </div>
-
 
 
 <div class="grid">
@@ -367,20 +301,26 @@ Manage your business automation services.
 AI Customer Replies
 </h3>
 
-<div class="status" id="aiStatus">
+<div
+class="status"
+id="aiStatus">
 ON
 </div>
 
 <p>
-Automatic customer responses.
+Automatically process customer messages
+and generate AI responses.
 </p>
 
-<button onclick="toggleAI()">
+<button
+id="aiToggleButton"
+onclick="toggleAI()">
+
 Disable
+
 </button>
 
 </div>
-
 
 
 <div class="card">
@@ -389,16 +329,28 @@ Disable
 Message Automation
 </h3>
 
-<div class="status">
+<div
+class="status"
+id="messageStatus">
+
 ON
+
 </div>
 
 <p>
-Automatic message processing.
+Automatically process incoming business
+messages.
 </p>
 
-</div>
+<button
+id="messageToggleButton"
+onclick="toggleMessageAutomation()">
 
+Disable
+
+</button>
+
+</div>
 
 
 <div class="card">
@@ -407,161 +359,46 @@ Automatic message processing.
 Task Automation
 </h3>
 
-<div class="status">
+<div
+class="status"
+id="taskStatus">
+
 ON
+
 </div>
 
 <p>
-Business tasks management.
+Manage automated business tasks and
+background operations.
 </p>
 
-</div>
+<button
+id="taskToggleButton"
+onclick="toggleTaskAutomation()">
 
+Disable
 
-
-  </div>
-  <script>
-
-
-let automationActive = true;
-
-
-
-function toggleAI(){
-
-
-automationActive = !automationActive;
-
-
-
-const status =
-document.getElementById("aiStatus");
-
-
-
-const button =
-event.target;
-
-
-
-if(automationActive){
-
-
-status.innerHTML="ON";
-
-status.style.color="#00a651";
-
-button.innerHTML="Disable";
-
-
-addLog(
-"AI customer reply automation enabled"
-);
-
-
-}else{
-
-
-status.innerHTML="OFF";
-
-status.style.color="red";
-
-button.innerHTML="Enable";
-
-
-addLog(
-"AI customer reply automation disabled"
-);
-
-
-}
-
-
-
-}
-
-
-
-
-
-function addLog(message){
-
-
-const logContainer =
-document.getElementById("automationLogs");
-
-
-
-if(logContainer){
-
-
-logContainer.innerHTML +=
-
-`
-
-<div class="log-item">
-
-${new Date().toLocaleString()}
-
-<br>
-
-${message}
+</button>
 
 </div>
 
-`;
 
-}
-
-
-}
-
-
-
-
-
-function checkAutomation(){
-
-
-addLog(
-"Automation system checked successfully"
-);
-
-
-}
-
-
-
-window.onload=function(){
-
-
-window.scrollTo(0,0);
-
-
-checkAutomation();
-
-
-};
-
-
-</script>
-
+</div>
 
 
 <div class="logs">
-
 
 <h3>
 Automation Activity Log
 </h3>
 
-
 <div id="automationLogs">
 
-
 <div class="log-item">
-
 System ready. Automation monitoring active.
+</div>
+
+</div>
 
 </div>
 
@@ -569,13 +406,483 @@ System ready. Automation monitoring active.
 </div>
 
 
-</div>
+<script>
+  
+async function loadBusiness(){
+
+const token =
+localStorage.getItem(
+"access_token"
+);
+
+if(!token){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+try{
+
+const response =
+await fetch(
+"/api/business",
+{
+method:"GET",
+headers:{
+"Authorization":
+"Bearer " + token
+}
+}
+);
+
+const result =
+await response.json();
+
+if(response.status === 401){
+
+localStorage.removeItem(
+"access_token"
+);
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+if(
+result.business &&
+result.business.business_name
+){
+
+document.getElementById(
+"businessName"
+).textContent =
+result.business.business_name;
+
+}
+
+}catch(error){
+
+console.error(
+"Business loading error:",
+error
+);
+
+}
+
+}
 
 
+/* =====================================================
+   AUTOMATION STATE
+===================================================== */
 
-</div>
+let automationState = {
 
+aiReplies:true,
+
+messageAutomation:true,
+
+taskAutomation:true
+
+};
+
+
+/* =====================================================
+   SAVE AUTOMATION STATE
+===================================================== */
+
+function saveAutomationState(){
+
+localStorage.setItem(
+"nexaflow_automation_state",
+JSON.stringify(
+automationState
+)
+);
+
+}
+
+
+/* =====================================================
+   LOAD AUTOMATION STATE
+===================================================== */
+
+function loadAutomationState(){
+
+try{
+
+const saved =
+localStorage.getItem(
+"nexaflow_automation_state"
+);
+
+if(saved){
+
+const parsed =
+JSON.parse(saved);
+
+if(
+parsed &&
+typeof parsed === "object"
+){
+
+automationState = {
+
+aiReplies:
+parsed.aiReplies !== false,
+
+messageAutomation:
+parsed.messageAutomation !== false,
+
+taskAutomation:
+parsed.taskAutomation !== false
+
+};
+
+}
+
+}
+
+}catch(error){
+
+console.error(
+"Automation state error:",
+error
+);
+
+}
+
+updateAutomationUI();
+
+}
+
+
+/* =====================================================
+   UPDATE AUTOMATION UI
+===================================================== */
+
+function updateAutomationUI(){
+
+const aiStatus =
+document.getElementById(
+"aiStatus"
+);
+
+const aiButton =
+document.getElementById(
+"aiToggleButton"
+);
+
+
+if(automationState.aiReplies){
+
+aiStatus.textContent =
+"ON";
+
+aiStatus.classList.remove(
+"off"
+);
+
+aiButton.textContent =
+"Disable";
+
+}else{
+
+aiStatus.textContent =
+"OFF";
+
+aiStatus.classList.add(
+"off"
+);
+
+aiButton.textContent =
+"Enable";
+
+}
+
+
+/* MESSAGE AUTOMATION */
+
+const messageStatus =
+document.getElementById(
+"messageStatus"
+);
+
+const messageButton =
+document.getElementById(
+"messageToggleButton"
+);
+
+
+if(automationState.messageAutomation){
+
+messageStatus.textContent =
+"ON";
+
+messageStatus.classList.remove(
+"off"
+);
+
+messageButton.textContent =
+"Disable";
+
+}else{
+
+messageStatus.textContent =
+"OFF";
+
+messageStatus.classList.add(
+"off"
+);
+
+messageButton.textContent =
+"Enable";
+
+}
+
+
+/* TASK AUTOMATION */
+
+const taskStatus =
+document.getElementById(
+"taskStatus"
+);
+
+const taskButton =
+document.getElementById(
+"taskToggleButton"
+);
+
+
+if(automationState.taskAutomation){
+
+taskStatus.textContent =
+"ON";
+
+taskStatus.classList.remove(
+"off"
+);
+
+taskButton.textContent =
+"Disable";
+
+}else{
+
+taskStatus.textContent =
+"OFF";
+
+taskStatus.classList.add(
+"off"
+);
+
+taskButton.textContent =
+"Enable";
+
+}
+
+}
+
+
+/* =====================================================
+   TOGGLE AI
+===================================================== */
+
+function toggleAI(){
+
+automationState.aiReplies =
+!automationState.aiReplies;
+
+saveAutomationState();
+
+updateAutomationUI();
+
+addLog(
+
+automationState.aiReplies
+
+?
+
+"AI customer reply automation enabled."
+
+:
+
+"AI customer reply automation disabled."
+
+);
+
+}
+
+
+/* =====================================================
+   TOGGLE MESSAGE AUTOMATION
+===================================================== */
+
+function toggleMessageAutomation(){
+
+automationState.messageAutomation =
+!automationState.messageAutomation;
+
+saveAutomationState();
+
+updateAutomationUI();
+
+addLog(
+
+automationState.messageAutomation
+
+?
+
+"Message automation enabled."
+
+:
+
+"Message automation disabled."
+
+);
+
+}
+
+
+/* =====================================================
+   TOGGLE TASK AUTOMATION
+===================================================== */
+
+function toggleTaskAutomation(){
+
+automationState.taskAutomation =
+!automationState.taskAutomation;
+
+saveAutomationState();
+
+updateAutomationUI();
+
+addLog(
+
+automationState.taskAutomation
+
+?
+
+"Task automation enabled."
+
+:
+
+"Task automation disabled."
+
+);
+
+}
+
+
+/* =====================================================
+   ADD AUTOMATION LOG
+===================================================== */
+
+function addLog(message){
+
+const logContainer =
+document.getElementById(
+"automationLogs"
+);
+
+if(!logContainer){
+
+return;
+
+}
+
+const log =
+document.createElement(
+"div"
+);
+
+log.className =
+"log-item";
+
+const time =
+new Date().toLocaleString();
+
+log.innerHTML =
+"<b>" +
+escapeHtml(time) +
+"</b><br>" +
+escapeHtml(message);
+
+logContainer.prepend(
+log
+);
+
+}
+
+
+/* =====================================================
+   HTML SECURITY
+===================================================== */
+
+function escapeHtml(value){
+
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
+  }
+  
+async function checkAutomation(){
+
+addLog(
+"Automation system checked successfully."
+);
+
+}
+
+
+/* =====================================================
+   PAGE START
+===================================================== */
+
+window.addEventListener(
+"load",
+async function(){
+
+await loadBusiness();
+
+loadAutomationState();
+
+await checkAutomation();
+
+}
+);
+
+</script>
 
 </body>
 
-  </html>
+</html>
