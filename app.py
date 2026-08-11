@@ -7,25 +7,46 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+# =========================================================
+# ENVIRONMENT VARIABLES
+# =========================================================
+
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
-SUPABASE_PROJECT_URL = "https://xfjroysinifwncfjvrsg.supabase.co"
+SUPABASE_PROJECT_URL = (
+    "https://xfjroysinifwncfjvrsg.supabase.co"
+)
 
-CUSTOMERS_URL = SUPABASE_PROJECT_URL + "/rest/v1/customers"
+# =========================================================
+# SUPABASE TABLE URLS
+# =========================================================
+
+CUSTOMERS_URL = (
+    SUPABASE_PROJECT_URL
+    + "/rest/v1/customers"
+)
 
 BUSINESS_ACCOUNTS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
+    SUPABASE_PROJECT_URL
+    + "/rest/v1/business_accounts"
 )
 
 AUTOMATION_SETTINGS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
+    SUPABASE_PROJECT_URL
+    + "/rest/v1/automation_settings"
 )
+
+# =========================================================
+# SUPABASE HEADERS
+# =========================================================
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_SECRET_KEY,
-    "Authorization": "Bearer " + str(SUPABASE_SECRET_KEY),
-    "Content-Type": "application/json",
+    "Authorization":
+        "Bearer " + str(SUPABASE_SECRET_KEY),
+    "Content-Type":
+        "application/json"
 }
 
 
@@ -35,18 +56,33 @@ SUPABASE_HEADERS = {
 
 @app.route("/")
 def home():
-    return send_from_directory(".", "index.html")
+
+    return send_from_directory(
+        ".",
+        "index.html"
+    )
 
 
 @app.route("/index.html")
 def index_page():
-    return send_from_directory(".", "index.html")
+
+    return send_from_directory(
+        ".",
+        "index.html"
+    )
 
 
 @app.route("/<path:filename>")
 def serve_files(filename):
-    if filename.endswith((".html", ".css", ".js")):
-        return send_from_directory(".", filename)
+
+    if filename.endswith(
+        (".html", ".css", ".js")
+    ):
+
+        return send_from_directory(
+            ".",
+            filename
+        )
 
     return "File not found", 404
 
@@ -57,9 +93,11 @@ def serve_files(filename):
 
 @app.route("/api/status")
 def status():
+
     return jsonify({
         "status": "online",
-        "message": "NexaFlow AI API is working"
+        "message":
+            "NexaFlow AI API is working"
     })
 
 
@@ -69,12 +107,18 @@ def status():
 
 def get_authenticated_user():
 
-    authorization = request.headers.get("Authorization")
+    authorization = request.headers.get(
+        "Authorization"
+    )
 
     if not authorization:
+
         return None
 
-    if not authorization.startswith("Bearer "):
+    if not authorization.startswith(
+        "Bearer "
+    ):
+
         return None
 
     access_token = authorization.replace(
@@ -84,16 +128,24 @@ def get_authenticated_user():
     ).strip()
 
     if not access_token:
+
         return None
 
     try:
 
         response = requests.get(
-            SUPABASE_PROJECT_URL + "/auth/v1/user",
+
+            SUPABASE_PROJECT_URL
+            + "/auth/v1/user",
 
             headers={
-                "apikey": SUPABASE_SECRET_KEY,
-                "Authorization": "Bearer " + access_token
+
+                "apikey":
+                    SUPABASE_SECRET_KEY,
+
+                "Authorization":
+                    "Bearer " + access_token
+
             },
 
             timeout=15
@@ -111,6 +163,7 @@ def get_authenticated_user():
         user = response.json()
 
         if not user.get("id"):
+
             return None
 
         return user
@@ -216,13 +269,21 @@ Do not repeatedly say that you are an AI.
 # AI ASSISTANT
 # =========================================================
 
-@app.route("/api/ai", methods=["POST"])
+@app.route(
+    "/api/ai",
+    methods=["POST"]
+)
 def ai_reply():
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     question = str(
-        data.get("question", "")
+        data.get(
+            "question",
+            ""
+        )
     ).strip()
 
     conversation = data.get(
@@ -233,57 +294,92 @@ def ai_reply():
     if not question:
 
         return jsonify({
-            "answer": "Please enter your question."
+            "answer":
+                "Please enter your question."
         }), 400
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
             "answer":
-            "OpenRouter API key is not configured."
+                "OpenRouter API key is not configured."
         }), 500
 
     messages = [
+
         {
-            "role": "system",
-            "content": NEXAFLOW_SYSTEM_PROMPT
+            "role":
+                "system",
+
+            "content":
+                NEXAFLOW_SYSTEM_PROMPT
         }
+
     ]
 
-    if isinstance(conversation, list):
+    if isinstance(
+        conversation,
+        list
+    ):
 
         for item in conversation:
 
-            if not isinstance(item, dict):
+            if not isinstance(
+                item,
+                dict
+            ):
+
                 continue
 
-            role = item.get("role")
-            content = item.get("content")
+            role = item.get(
+                "role"
+            )
+
+            content = item.get(
+                "content"
+            )
 
             if role not in (
                 "user",
                 "assistant"
             ):
+
                 continue
 
             if content is None:
+
                 continue
 
-            content = str(content).strip()
+            content = str(
+                content
+            ).strip()
 
             if not content:
+
                 continue
 
             messages.append({
-                "role": role,
-                "content": content
+
+                "role":
+                    role,
+
+                "content":
+                    content
+
             })
 
     messages.append({
-        "role": "user",
-        "content": question
+
+        "role":
+            "user",
+
+        "content":
+            question
+
     })
 
+    # Keep the system prompt plus
+    # the latest 20 conversation messages.
     if len(messages) > 21:
 
         messages = (
@@ -299,19 +395,24 @@ def ai_reply():
             "https://openrouter.ai/api/v1/chat/completions",
 
             headers={
+
                 "Authorization":
-                "Bearer " + OPENROUTER_API_KEY,
+                    "Bearer "
+                    + OPENROUTER_API_KEY,
 
                 "Content-Type":
-                "application/json"
+                    "application/json"
+
             },
 
             json={
+
                 "model":
-                "openai/gpt-oss-20b:free",
+                    "openai/gpt-oss-20b:free",
 
                 "messages":
-                messages
+                    messages
+
             },
 
             timeout=60
@@ -345,9 +446,8 @@ def ai_reply():
             return jsonify({
 
                 "answer":
-                "AI service error: "
-                +
-                str(error_info)
+                    "AI service error: "
+                    + str(error_info)
 
             }), 500
 
@@ -381,7 +481,10 @@ def ai_reply():
             )
 
         return jsonify({
-            "answer": answer
+
+            "answer":
+                answer
+
         })
 
     except Exception as error:
@@ -394,481 +497,11 @@ def ai_reply():
         return jsonify({
 
             "answer":
-            "AI service connection error: "
-            +
-            str(error)
-
-        }), 500
-
-
-# =========================================================
-# GET BUSINESS ACCOUNT
-# =========================================================
-
-@app.route(
-    "/api/business",
-    methods=["GET"]
-)
-def get_business():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-
-            "error":
-            "Invalid or expired login session."
-
-        }), 401
-
-    try:
-
-        response = requests.get(
-
-            BUSINESS_ACCOUNTS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select": "*",
-
-                "user_id":
-                "eq." + user["id"],
-
-                "limit": "1"
-
-            },
-
-            timeout=15
-        )
-
-        if response.status_code != 200:
-
-            return jsonify({
-
-                "error":
-                response.text
-
-            }), response.status_code
-
-        businesses = response.json()
-
-        return jsonify({
-
-            "business":
-            businesses[0]
-            if businesses
-            else None
-
-        })
-
-    except Exception as error:
-
-        print(
-            "Business API error:",
-            error
-        )
-
-        return jsonify({
-
-            "error":
-            str(error)
-
-        }), 500
-
-
-# =========================================================
-# SAVE BUSINESS ACCOUNT
-# =========================================================
-
-@app.route(
-    "/api/business",
-    methods=["POST"]
-)
-def save_business():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-
-            "error":
-            "Invalid or expired login session."
-
-        }), 401
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    business = {
-
-        "user_id":
-        user["id"],
-
-        "business_name":
-        data.get(
-            "business_name",
-            ""
-        ),
-
-        "owner_name":
-        data.get(
-            "owner_name",
-            ""
-        ),
-
-        "phone":
-        data.get(
-            "phone",
-            ""
-        ),
-
-        "email":
-        data.get(
-            "email",
-            ""
-        ),
-
-        "address":
-        data.get(
-            "address",
-            ""
-        ),
-
-        "description":
-        data.get(
-            "description",
-            ""
-        ),
-
-        "logo":
-        data.get(
-            "logo",
-            ""
-        )
-    }
-
-    try:
-
-        response = requests.post(
-
-            BUSINESS_ACCOUNTS_URL,
-
-            headers={
-                **SUPABASE_HEADERS,
-                "Prefer":
-                "return=representation"
-            },
-
-            json=business,
-
-            timeout=15
-        )
-
-        if response.status_code not in (
-            200,
-            201
-        ):
-
-            return jsonify({
-
-                "error":
-                response.text
-
-            }), response.status_code
-
-        return jsonify({
-
-            "message":
-            "Business profile saved successfully."
-
-        })
-
-    except Exception as error:
-
-        return jsonify({
-
-            "error":
-            str(error)
+                "AI service connection error: "
+                + str(error)
 
         }), 500
         # =========================================================
-# ADD CUSTOMER
-# =========================================================
-
-@app.route(
-    "/api/customers",
-    methods=["POST"]
-)
-def add_customer():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-            "error":
-            "Invalid or expired login session."
-        }), 401
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    name = str(
-        data.get(
-            "name",
-            ""
-        )
-    ).strip()
-
-    phone = str(
-        data.get(
-            "phone",
-            ""
-        )
-    ).strip()
-
-    location = str(
-        data.get(
-            "location",
-            ""
-        )
-    ).strip()
-
-    message = str(
-        data.get(
-            "message",
-            ""
-        )
-    ).strip()
-
-    if not name or not message:
-
-        return jsonify({
-            "error":
-            "Customer name and message are required."
-        }), 400
-
-    text = message.lower()
-
-    if "delivery" in text:
-
-        ai_reply = (
-            "Yes, we provide delivery services. "
-            "Please send us your location."
-        )
-
-    elif any(
-        word in text
-        for word in (
-            "price",
-            "prices",
-            "cost"
-        )
-    ):
-
-        ai_reply = (
-            "Thank you for your interest. "
-            "Please contact us for our current "
-            "prices and offers."
-        )
-
-    elif (
-        "hello" in text
-        or
-        "hi" in text
-    ):
-
-        ai_reply = (
-            "Hello! Welcome to our business. "
-            "How can we help you today?"
-        )
-
-    elif "thank" in text:
-
-        ai_reply = (
-            "You're welcome. "
-            "We are always happy to help."
-        )
-
-    else:
-
-        ai_reply = (
-            "Thank you for your message. "
-            "We will assist you shortly."
-        )
-
-    customer = {
-
-        "user_id":
-        user["id"],
-
-        "name":
-        name,
-
-        "phone":
-        phone,
-
-        "location":
-        location,
-
-        "message":
-        message,
-
-        "ai_reply":
-        ai_reply,
-
-        "created_at":
-        datetime.utcnow().isoformat()
-    }
-
-    try:
-
-        response = requests.post(
-
-            CUSTOMERS_URL,
-
-            headers={
-                **SUPABASE_HEADERS,
-                "Prefer":
-                "return=representation"
-            },
-
-            json=customer,
-
-            timeout=15
-        )
-
-        if response.status_code not in (
-            200,
-            201
-        ):
-
-            print(
-                "Customer save error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
-
-        return jsonify({
-
-            "message":
-            "Customer saved successfully.",
-
-            "ai_reply":
-            ai_reply
-
-        })
-
-    except Exception as error:
-
-        print(
-            "Customer save exception:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
-
-
-# =========================================================
-# GET CUSTOMERS
-# =========================================================
-
-@app.route(
-    "/api/customers",
-    methods=["GET"]
-)
-def get_customers():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-            "error":
-            "Invalid or expired login session."
-        }), 401
-
-    try:
-
-        response = requests.get(
-
-            CUSTOMERS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select": (
-                    "id,user_id,name,phone,location,"
-                    "message,ai_reply,created_at"
-                ),
-
-                "user_id":
-                "eq." + user["id"],
-
-                "order":
-                "created_at.desc"
-
-            },
-
-            timeout=15
-        )
-
-        print(
-            "Supabase customers status:",
-            response.status_code
-        )
-
-        if response.status_code != 200:
-
-            print(
-                "Supabase customers error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
-
-        customers = response.json()
-
-        print(
-            "Customers returned for user:",
-            user["id"],
-            "Count:",
-            len(customers)
-        )
-
-        return jsonify(customers)
-
-    except Exception as error:
-
-        print(
-            "Get customers exception:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
-
-
-# =========================================================
 # AUTOMATION SETTINGS
 # =========================================================
 
@@ -896,30 +529,24 @@ def get_automation_settings():
             headers=SUPABASE_HEADERS,
 
             params={
-
-                "select":
-                "id,user_id,ai_replies,message_automation,task_automation,created_at,updated_at",
-
+                "select": "*",
                 "user_id":
                 "eq." + user["id"],
-
-                "limit":
-                "1"
-
+                "limit": "1"
             },
 
             timeout=15
         )
 
         print(
-            "Automation settings status:",
+            "Automation settings GET status:",
             response.status_code
         )
 
         if response.status_code != 200:
 
             print(
-                "Automation settings error:",
+                "Automation GET error:",
                 response.text
             )
 
@@ -933,12 +560,13 @@ def get_automation_settings():
         if settings:
 
             return jsonify({
-                "settings":
+                "automation":
                 settings[0]
             })
 
+        # No row yet: return default settings
         return jsonify({
-            "settings": {
+            "automation": {
                 "user_id": user["id"],
                 "ai_replies": True,
                 "message_automation": True,
@@ -949,7 +577,7 @@ def get_automation_settings():
     except Exception as error:
 
         print(
-            "Get automation settings exception:",
+            "Automation GET exception:",
             error
         )
 
@@ -1040,7 +668,7 @@ def save_automation_settings():
         )
 
         print(
-            "Save automation settings status:",
+            "Automation SAVE status:",
             response.status_code
         )
 
@@ -1050,7 +678,7 @@ def save_automation_settings():
         ):
 
             print(
-                "Save automation settings error:",
+                "Automation SAVE error:",
                 response.text
             )
 
@@ -1059,245 +687,38 @@ def save_automation_settings():
                 response.text
             }), response.status_code
 
-        saved = response.json()
+        try:
 
-        return jsonify({
+            result = response.json()
 
-            "message":
-            "Automation settings saved successfully.",
+        except ValueError:
 
-            "settings":
-            saved[0]
-            if isinstance(saved, list) and saved
-            else automation
-
-        })
-
-    except Exception as error:
-
-        print(
-            "Save automation settings exception:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
-        # =========================================================
-# AUTOMATION SETTINGS
-# =========================================================
-
-AUTOMATION_SETTINGS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
-)
-
-
-# =========================================================
-# GET AUTOMATION SETTINGS
-# =========================================================
-
-@app.route(
-    "/api/automation",
-    methods=["GET"]
-)
-def get_automation():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-            "error":
-            "Invalid or expired login session."
-        }), 401
-
-    try:
-
-        response = requests.get(
-
-            AUTOMATION_SETTINGS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-                "select": "*",
-                "user_id":
-                "eq." + user["id"],
-                "limit": "1"
-            },
-
-            timeout=15
-        )
-
-        print(
-            "Automation settings status:",
-            response.status_code
-        )
-
-        if response.status_code != 200:
-
-            print(
-                "Automation settings error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
-
-        settings = response.json()
-
-        if settings:
-
-            return jsonify({
-                "automation":
-                settings[0]
-            })
-
-        return jsonify({
-            "automation": {
-                "user_id":
-                user["id"],
-                "ai_replies": True,
-                "message_automation": True,
-                "task_automation": True
-            }
-        })
-
-    except Exception as error:
-
-        print(
-            "Get automation exception:",
-            error
-        )
-
-        return jsonify({
-            "error":
-            str(error)
-        }), 500
-
-
-# =========================================================
-# SAVE AUTOMATION SETTINGS
-# =========================================================
-
-@app.route(
-    "/api/automation",
-    methods=["POST"]
-)
-def save_automation():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-            "error":
-            "Invalid or expired login session."
-        }), 401
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    ai_replies = bool(
-        data.get(
-            "ai_replies",
-            True
-        )
-    )
-
-    message_automation = bool(
-        data.get(
-            "message_automation",
-            True
-        )
-    )
-
-    task_automation = bool(
-        data.get(
-            "task_automation",
-            True
-        )
-    )
-
-    automation = {
-
-        "user_id":
-        user["id"],
-
-        "ai_replies":
-        ai_replies,
-
-        "message_automation":
-        message_automation,
-
-        "task_automation":
-        task_automation,
-
-        "updated_at":
-        datetime.utcnow().isoformat()
-    }
-
-    try:
-
-        response = requests.post(
-
-            AUTOMATION_SETTINGS_URL,
-
-            headers={
-                **SUPABASE_HEADERS,
-                "Prefer":
-                "resolution=merge-duplicates,return=representation"
-            },
-
-            json=automation,
-
-            timeout=15
-        )
-
-        print(
-            "Save automation status:",
-            response.status_code
-        )
-
-        if response.status_code not in (
-            200,
-            201
-        ):
-
-            print(
-                "Save automation error:",
-                response.text
-            )
-
-            return jsonify({
-                "error":
-                response.text
-            }), response.status_code
-
-        result = response.json()
+            result = []
 
         saved = (
+
             result[0]
+
             if isinstance(result, list)
             and result
+
             else automation
         )
 
         return jsonify({
+
             "message":
             "Automation settings saved successfully.",
+
             "automation":
             saved
+
         })
 
     except Exception as error:
 
         print(
-            "Save automation exception:",
+            "Automation SAVE exception:",
             error
         )
 
@@ -1342,9 +763,13 @@ def toggle_automation():
     )
 
     allowed_settings = {
+
         "ai_replies",
+
         "message_automation",
+
         "task_automation"
+
     }
 
     if setting not in allowed_settings:
@@ -1376,73 +801,178 @@ def toggle_automation():
 
     try:
 
-        response = requests.patch(
+        # First check whether the user's
+        # automation row already exists.
+
+        check = requests.get(
 
             AUTOMATION_SETTINGS_URL,
 
-            headers={
-                **SUPABASE_HEADERS,
-                "Prefer":
-                "return=representation"
-            },
+            headers=SUPABASE_HEADERS,
 
             params={
-                "user_id":
-                "eq." + user["id"]
-            },
 
-            json=update_data,
+                "select": "id",
+
+                "user_id":
+                "eq." + user["id"],
+
+                "limit": "1"
+
+            },
 
             timeout=15
         )
 
+        if check.status_code != 200:
+
+            return jsonify({
+
+                "error":
+                check.text
+
+            }), check.status_code
+
+        existing = check.json()
+
+        # =================================================
+        # ROW EXISTS -> UPDATE
+        # =================================================
+
+        if existing:
+
+            response = requests.patch(
+
+                AUTOMATION_SETTINGS_URL,
+
+                headers={
+                    **SUPABASE_HEADERS,
+                    "Prefer":
+                    "return=representation"
+                },
+
+                params={
+
+                    "user_id":
+                    "eq." + user["id"]
+
+                },
+
+                json=update_data,
+
+                timeout=15
+            )
+
+        # =================================================
+        # ROW DOES NOT EXIST -> CREATE
+        # =================================================
+
+        else:
+
+            new_settings = {
+
+                "user_id":
+                user["id"],
+
+                "ai_replies":
+                True,
+
+                "message_automation":
+                True,
+
+                "task_automation":
+                True
+
+            }
+
+            new_settings[
+                setting
+            ] = value
+
+            new_settings[
+                "updated_at"
+            ] = datetime.utcnow().isoformat()
+
+            response = requests.post(
+
+                AUTOMATION_SETTINGS_URL,
+
+                headers={
+                    **SUPABASE_HEADERS,
+                    "Prefer":
+                    "return=representation"
+                },
+
+                json=new_settings,
+
+                timeout=15
+            )
+
         print(
-            "Toggle automation status:",
+            "Automation TOGGLE status:",
             response.status_code
         )
 
         if response.status_code not in (
             200,
+            201,
             204
         ):
 
             print(
-                "Toggle automation error:",
+                "Automation TOGGLE error:",
                 response.text
             )
 
             return jsonify({
+
                 "error":
                 response.text
+
             }), response.status_code
 
-        result = response.json() if response.text else []
+        try:
+
+            result = response.json()
+
+        except ValueError:
+
+            result = []
 
         return jsonify({
+
             "message":
             "Automation setting updated successfully.",
+
             "setting":
             setting,
+
             "value":
             value,
-            "data":
-            result
+
+            "automation":
+            result[0]
+            if isinstance(result, list)
+            and result
+            else None
+
         })
 
     except Exception as error:
 
         print(
-            "Toggle automation exception:",
+            "Automation TOGGLE exception:",
             error
         )
 
         return jsonify({
+
             "error":
             str(error)
+
         }), 500
-
-
-# =========================================================
+        from
+        # =========================================================
 # APPLICATION START
 # =========================================================
 
@@ -1458,4 +988,4 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=port
-    )
+        )
