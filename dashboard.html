@@ -548,185 +548,98 @@ View Reports
    LOAD BUSINESS INFORMATION
 ===================================================== */
 
-
 async function loadBusinessInformation(){
 
+    const status =
+        document.getElementById(
+            "dashboardStatus"
+        );
 
-const token =
-localStorage.getItem(
-"access_token"
-);
 
+    const profile =
+        document.getElementById(
+            "profileName"
+        );
 
 
-const status =
-document.getElementById(
-"dashboardStatus"
-);
+    const business =
+        document.getElementById(
+            "businessName"
+        );
 
 
+    /* =====================================
+       GET INFORMATION SAVED DURING LOGIN
+    ===================================== */
 
-if(!token){
+    const userName =
+        localStorage.getItem(
+            "user_name"
+        );
 
-window.location.href =
-"login.html";
 
-return;
+    const businessName =
+        localStorage.getItem(
+            "business_name"
+        );
 
-}
 
+    /* =====================================
+       SHOW USER NAME
+    ===================================== */
 
+    if(userName){
 
-try{
+        profile.textContent =
+            "Welcome, " + userName;
 
+    }
+    else{
 
-const response =
-await fetch(
+        profile.textContent =
+            "Welcome Back";
 
-"/api/business",
+    }
 
-{
 
-method:"GET",
+    /* =====================================
+       SHOW BUSINESS NAME
+    ===================================== */
 
-headers:{
+    if(businessName){
 
-"Authorization":
-"Bearer " + token
+        business.textContent =
+            businessName;
 
-}
+    }
 
-}
 
-);
+    /* =====================================
+       CHECK TOKEN
+    ===================================== */
 
+    const token =
+        localStorage.getItem(
+            "access_token"
+        );
 
 
-const result =
-await response.json();
+    if(!token){
 
+        status.textContent =
+            "No active login session.";
 
+        return;
 
-if(response.status === 401){
+    }
 
 
-localStorage.clear();
+    status.textContent =
+        "Dashboard loaded successfully.";
 
+    }
 
-window.location.href =
-"login.html";
 
-
-return;
-
-
-}
-
-
-
-if(!response.ok){
-
-
-status.textContent =
-"Unable to load business information.";
-
-
-return;
-
-
-}
-
-
-
-if(result.business){
-
-
-const business =
-result.business;
-
-
-
-if(business.business_name){
-
-
-document.getElementById(
-"businessName"
-).textContent =
-business.business_name;
-
-
-}
-
-
-
-const profile =
-document.getElementById(
-"profileName"
-);
-
-
-
-if(business.owner_name){
-
-
-profile.textContent =
-"Welcome, " +
-business.owner_name;
-
-
-}
-else{
-
-
-profile.textContent =
-"Welcome, " +
-business.business_name;
-
-
-}
-
-
-
-if(business.id){
-
-
-localStorage.setItem(
-"business_id",
-business.id
-);
-
-
-}
-
-
-
-status.textContent =
-"Dashboard loaded successfully.";
-
-
-}
-
-
-
-}catch(error){
-
-
-console.error(
-"Business loading error:",
-error
-);
-
-
-
-status.textContent =
-"Unable to connect to business service.";
-
-
-}
-
-
-
-}
 
 
 
