@@ -971,6 +971,154 @@ def toggle_automation():
             str(error)
 
         }), 500
+        # =========================================================
+# BUSINESS ACCOUNT
+# =========================================================
+
+@app.route("/api/business", methods=["GET", "POST"])
+def business_account():
+
+    user = get_authenticated_user()
+
+    if not user:
+        return jsonify({
+            "error": "Invalid or expired login session."
+        }), 401
+
+    user_id = user["id"]
+
+    # GET BUSINESS
+    if request.method == "GET":
+
+        try:
+            response = requests.get(
+                BUSINESS_ACCOUNTS_URL,
+                headers=SUPABASE_HEADERS,
+                params={
+                    "select": "*",
+                    "user_id": "eq." + user_id,
+                    "limit": "1"
+                },
+                timeout=15
+            )
+
+            if response.status_code != 200:
+                return jsonify({
+                    "error": response.text
+                }), response.status_code
+
+            businesses = response.json()
+
+            if businesses:
+                return jsonify({
+                    "business": businesses[0]
+                })
+
+            return jsonify({
+                "business": None
+            })
+
+        except Exception as error:
+            return jsonify({
+                "error": str(error)
+            }), 500
+
+
+    # SAVE BUSINESS
+    data = request.get_json(silent=True) or {}
+
+    business_data = {
+        "user_id": user_id,
+        "business_name": str(data.get("business_name", "")).strip(),
+        "owner_name": str(data.get("owner_name", "")).strip(),
+        "phone": str(data.get("phone", "")).strip(),
+        "email": str(data.get("email", "")).strip(),
+        "address": str(data.get("address", "")).strip(),
+        "description": str(data.get("description", "")).strip(),
+        "logo": str(data.get("logo", "")).strip(),
+        "updated_at": datetime.utcnow().isoformat()
+    }
+
+    try:
+
+        check = requests.get(
+            BUSINESS_ACCOUNTS_URL,
+            headers=SUPABASE_HEADERS,
+            params={
+                "select": "id",
+                "user_id": "eq." + user_id,
+                "limit": "1"
+            },
+            timeout=15
+        )
+
+        if check.status_code != 200:
+            return jsonify({
+                "error": check.text
+            }), check.status_code
+
+        existing = check.json()
+
+        # UPDATE EXISTING BUSINESS
+        if existing:
+
+            business_id = existing[0]["id"]
+
+            response = requests.patch(
+                BUSINESS_ACCOUNTS_URL,
+                headers={
+                    **SUPABASE_HEADERS,
+                    "Prefer": "return=representation"
+                },
+                params={
+                    "id": "eq." + str(business_id),
+                    "user_id": "eq." + user_id
+                },
+                json=business_data,
+                timeout=15
+            )
+
+        # CREATE NEW BUSINESS
+        else:
+
+            response = requests.post(
+                BUSINESS_ACCOUNTS_URL,
+                headers={
+                    **SUPABASE_HEADERS,
+                    "Prefer": "return=representation"
+                },
+                json=business_data,
+                timeout=15
+            )
+
+        if response.status_code not in (200, 201):
+            return jsonify({
+                "error": response.text
+            }), response.status_code
+
+        try:
+            saved = response.json()
+        except ValueError:
+            saved = []
+
+        if isinstance(saved, list) and saved:
+            saved_business = saved[0]
+        else:
+            saved_business = business_data
+
+        return jsonify({
+            "success": True,
+            "business": saved_business,
+            "message": "Business settings saved successfully."
+        })
+
+    except Exception as error:
+
+        return jsonify({
+            "error": str(error)
+        }), 500
+
+
         
         # =========================================================
 # APPLICATION START
