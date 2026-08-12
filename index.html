@@ -728,60 +728,63 @@ alert("Authentication service is being connected.");
 
 async function loginUser(){
 
-
-const email =
-document.getElementById("loginEmail").value;
-
-
-const password =
-document.getElementById("loginPassword").value;
+    const email =
+        document.getElementById(
+            "loginEmail"
+        ).value.trim();
 
 
-
-if(!email || !password){
-
-alert("Enter email and password");
-
-return;
-
-}
+    const password =
+        document.getElementById(
+            "loginPassword"
+        ).value;
 
 
+    if(!email || !password){
 
-// Authentication connection point
+        alert(
+            "Enter email and password"
+        );
 
-if(window.supabaseAuth){
+        return;
 
-
-const result =
-await window.supabaseAuth.login(
-
-email,
-
-password
-
-);
+    }
 
 
+    if(!window.supabaseAuth){
 
-if(result.success){
+        alert(
+            "Authentication system did not load. Please refresh the page."
+        );
 
-window.location.href="dashboard.html";
+        console.error(
+            "window.supabaseAuth is missing."
+        );
 
-}
+        return;
 
-
-}else{
-
-
-alert("Authentication service is being connected.");
-
-
-}
+    }
 
 
+    const result =
+        await window.supabaseAuth.login(
+            email,
+            password
+        );
 
-}
+
+    if(result.success){
+
+        console.log(
+            "Login successful. Opening dashboard..."
+        );
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+    }
 
 
 
