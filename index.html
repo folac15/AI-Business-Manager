@@ -840,32 +840,49 @@ window.supabaseAuth = {
   },
 
 
+async login(email, password) {
 
-  async login(email, password) {
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-
-      email,
-
-      password
-
-    });
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
 
     if (error) {
 
-      alert(error.message);
+        alert(error.message);
 
-      return { success: false };
-
+        return {
+            success: false
+        };
     }
 
-    window.location.href = "dashboard.html";
+    if (!data.session) {
 
-    return { success: true };
+        alert("Login successful, but no session was created.");
 
-  }
+        return {
+            success: false
+        };
+    }
 
-};
+    localStorage.setItem(
+        "access_token",
+        data.session.access_token
+    );
+
+    localStorage.setItem(
+        "user_id",
+        data.user.id
+    );
+
+    window.location.href =
+        "dashboard.html";
+
+    return {
+        success: true
+    };
+    }
 </script>
 
 </body>
