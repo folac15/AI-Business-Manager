@@ -786,104 +786,278 @@ alert("Authentication service is being connected.");
 
 
 </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ==========================================
+     SUPABASE AUTHENTICATION
+========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://xfjroysinifwncfjvrsg.supabase.co";
+
+const SUPABASE_URL =
+    "https://xfjroysinifwncfjvrsg.supabase.co";
+
 
 /*
-PASTE YOUR CURRENT SUPABASE PUBLISHABLE (ANON) KEY
-BETWEEN THE QUOTES BELOW.
+KEEP YOUR CURRENT SUPABASE KEY HERE.
+DO NOT CHANGE IT.
 */
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
+const SUPABASE_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmanJveXNpbmlmd25jZmp2cnNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTU3NDAsImV4cCI6MjA5OTgzMTc0MH0.wxKe_cs9n78YhF5nw63crh3pxNnkQW7VGjcqzv3adPs";
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+
+/* CREATE SUPABASE CLIENT */
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* MAKE CLIENT AVAILABLE TO OTHER FUNCTIONS */
+
+window.supabaseClient =
+    supabaseClient;
+
+
+/* ==========================================
+   SUPABASE AUTH FUNCTIONS
+========================================== */
 
 window.supabaseAuth = {
 
-  async signUp(user) {
 
-    const { data, error } = await supabaseClient.auth.signUp({
+    /* ======================================
+       CREATE ACCOUNT
+    ====================================== */
 
-      email: user.email,
+    async signUp(user) {
 
-      password: user.password,
+        try {
 
-      options: {
+            const { data, error } =
+                await supabaseClient.auth.signUp({
 
-        data: {
+                    email:
+                        user.email,
 
-          name: user.name,
+                    password:
+                        user.password,
 
-          business: user.business
+                    options: {
+
+                        data: {
+
+                            name:
+                                user.name,
+
+                            business:
+                                user.business
+
+                        }
+
+                    }
+
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Signup error:",
+                    error
+                );
+
+                alert(
+                    error.message
+                );
+
+                return {
+                    success: false
+                };
+
+            }
+
+
+            alert(
+                "Account created successfully. Please check your email to verify your account."
+            );
+
+
+            return {
+                success: true,
+                data: data
+            };
+
+
+        } catch (error) {
+
+            console.error(
+                "Signup exception:",
+                error
+            );
+
+            alert(
+                "Authentication connection error: "
+                + error.message
+            );
+
+            return {
+                success: false
+            };
 
         }
 
-      }
+    },
 
-    });
 
-    if (error) {
+    /* ======================================
+       LOGIN
+    ====================================== */
 
-      alert(error.message);
+    async login(email, password) {
 
-      return;
+        try {
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+
+                    email:
+                        email,
+
+                    password:
+                        password
+
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+                alert(
+                    error.message
+                );
+
+                return {
+                    success: false
+                };
+
+            }
+
+
+            if (!data.session) {
+
+                alert(
+                    "Login succeeded but no session was returned."
+                );
+
+                return {
+                    success: false
+                };
+
+            }
+
+
+            /* ==================================
+               SAVE LOGIN SESSION
+            ================================== */
+
+            localStorage.setItem(
+                "access_token",
+                data.session.access_token
+            );
+
+
+            localStorage.setItem(
+                "refresh_token",
+                data.session.refresh_token
+            );
+
+
+            localStorage.setItem(
+                "user_id",
+                data.user.id
+            );
+
+
+            /* ==================================
+               SAVE USER INFORMATION
+            ================================== */
+
+            const userName =
+                data.user.user_metadata?.name || "";
+
+
+            const businessName =
+                data.user.user_metadata?.business || "";
+
+
+            localStorage.setItem(
+                "user_name",
+                userName
+            );
+
+
+            localStorage.setItem(
+                "business_name",
+                businessName
+            );
+
+
+            console.log(
+                "Login successful"
+            );
+
+
+            /* ==================================
+               GO TO DASHBOARD
+            ================================== */
+
+            window.location.href =
+                "dashboard.html";
+
+
+            return {
+                success: true
+            };
+
+
+        } catch (error) {
+
+            console.error(
+                "Login exception:",
+                error
+            );
+
+            alert(
+                "Authentication connection error: "
+                + error.message
+            );
+
+            return {
+                success: false
+            };
+
+        }
 
     }
 
-    alert("Account created successfully. Please check your email to verify your account.");
-
-  },
+};
 
 
-async login(email, password) {
+console.log(
+    "NexaFlow Supabase authentication loaded successfully."
+);
 
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
-
-    if (error) {
-
-        alert(error.message);
-
-        return {
-            success: false
-        };
-    }
-
-    if (!data.session) {
-
-        alert("Login successful, but no session was created.");
-
-        return {
-            success: false
-        };
-    }
-
-    localStorage.setItem(
-        "access_token",
-        data.session.access_token
-    );
-
-    localStorage.setItem(
-        "user_id",
-        data.user.id
-    );
-
-    window.location.href =
-        "dashboard.html";
-
-    return {
-        success: true
-    };
-    }
 </script>
+    
 
 </body>
 
