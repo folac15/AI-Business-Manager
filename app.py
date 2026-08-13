@@ -1118,7 +1118,182 @@ def business_account():
             "error": str(error)
         }), 500
 
+# =========================================================
+# BUSINESS LOGO UPLOAD
+# =========================================================
 
+@app.route("/api/business/logo", methods=["POST"])
+def upload_business_logo():
+
+    user = get_authenticated_user()
+
+    if not user:
+        return jsonify({
+            "error": "Invalid or expired login session."
+        }), 401
+
+    if "logo" not in request.files:
+        return jsonify({
+            "error": "No logo file was provided."
+        }), 400
+
+    logo_file = request.files["logo"]
+
+    if not logo_file or not logo_file.filename:
+        return jsonify({
+            "error": "No logo file was selected."
+        }), 400
+
+    try:
+
+        # Read the image file
+        file_bytes = logo_file.read()
+
+        if not file_bytes:
+            return jsonify({
+                "error": "The selected logo file is empty."
+            }), 400
+
+        filename = logo_file.filename
+
+        # Basic extension check
+        allowed_extensions = (
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".webp"
+        )
+
+        if not filename.lower().endswith(
+            allowed_extensions
+        ):
+            return jsonify({
+                "error":
+                "Unsupported logo format. "
+                "Use JPG, JPEG, PNG, GIF or WEBP."
+            }), 400
+
+        # =====================================================
+        # SUPABASE STORAGE
+        # =====================================================
+
+        bucket_name = "business-logos"
+
+        # Create a safe unique filename
+        user_id = user["id"]
+
+        extension = os.path.splitext(
+            filename
+        )[1].lower()
+
+        storage_path = (
+            user_id
+            + "/business-logo"
+            + extension
+        )
+
+        storage_url = (
+            SUPABASE_PROJECT_URL
+            + "/storage/v1/object/"
+            + bucket_name
+            + "/"
+            + storage_path
+        )
+
+        upload_headers = {
+
+            "Authorization":
+            "Bearer " + str(
+                SUPABASE_SECRET_KEY
+            ),
+
+            "apikey":
+            SUPABASE_SECRET_KEY,
+
+            "Content-Type":
+            logo_file.content_type
+            or "application/octet-stream",
+
+            "x-upsert":
+            "true"
+
+        }
+
+        upload_response = requests.post(
+
+            storage_url,
+
+            headers=upload_headers,
+
+            data=file_bytes,
+
+            timeout=30
+
+        )
+
+        print(
+            "Logo upload status:",
+            upload_response.status_code
+        )
+
+        print(
+            "Logo upload response:",
+            upload_response.text
+        )
+
+        if upload_response.status_code not in (
+            200,
+            201
+        ):
+
+            return jsonify({
+
+                "error":
+                "Logo upload failed: "
+                + upload_response.text
+
+            }), upload_response.status_code
+
+        # =====================================================
+        # PUBLIC LOGO URL
+        # =====================================================
+
+        logo_url = (
+            SUPABASE_PROJECT_URL
+            + "/storage/v1/object/public/"
+            + bucket_name
+            + "/"
+            + storage_path
+        )
+
+        return jsonify({
+
+            "success":
+            True,
+
+            "logo":
+            logo_url,
+
+            "message":
+            "Business logo uploaded successfully."
+
+        })
+
+    except Exception as error:
+
+        print(
+            "Logo upload exception:",
+            error
+        )
+
+        return jsonify({
+
+            "error":
+            "Logo upload error: "
+            + str(error)
+
+        }), 500
         
         # =========================================================
 # APPLICATION START
