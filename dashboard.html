@@ -872,35 +872,149 @@ error
 ===================================================== */
 
 
-function loadAdditionalStatistics(){
+/* =====================================================
+   LOAD ADDITIONAL STATISTICS
+===================================================== */
+
+async function loadAdditionalStatistics(){
+
+    const automationStatus =
+        document.getElementById(
+            "automationStatus"
+        );
+
+    const token =
+        localStorage.getItem(
+            "access_token"
+        );
+
+    /* =====================================
+       DEFAULT VALUES
+    ===================================== */
+
+    document.getElementById(
+        "conversationCount"
+    ).textContent = "0";
+
+    document.getElementById(
+        "reportCount"
+    ).textContent = "0";
+
+    automationStatus.textContent =
+        "Inactive";
 
 
-/*
-   These modules will be connected
-   to their backend routes as they
-   are developed.
-*/
+    /* =====================================
+       CHECK LOGIN TOKEN
+    ===================================== */
+
+    if(!token){
+
+        return;
+
+    }
 
 
-document.getElementById(
-"conversationCount"
-).textContent =
-"0";
+    /* =====================================
+       LOAD AUTOMATION SETTINGS
+    ===================================== */
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/automation",
+                {
+                    method:"GET",
+
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
 
 
-
-document.getElementById(
-"reportCount"
-).textContent =
-"0";
+        const result =
+            await response.json();
 
 
+        /* =====================================
+           SESSION EXPIRED
+        ===================================== */
 
-document.getElementById(
-"automationStatus"
-).textContent =
-"Inactive";
+        if(response.status === 401){
 
+            localStorage.clear();
+
+            window.location.href =
+                "index.html";
+
+            return;
+
+        }
+
+
+        /* =====================================
+           CHECK AUTOMATION DATA
+        ===================================== */
+
+        if(
+            response.ok &&
+            result.automation
+        ){
+
+            const automation =
+                result.automation;
+
+
+            const aiReplies =
+                automation.ai_replies === true;
+
+
+            const messageAutomation =
+                automation.message_automation === true;
+
+
+            const taskAutomation =
+                automation.task_automation === true;
+
+
+            /* =====================================
+               SHOW AUTOMATION STATUS
+            ===================================== */
+
+            if(
+                aiReplies ||
+                messageAutomation ||
+                taskAutomation
+            ){
+
+                automationStatus.textContent =
+                    "Active";
+
+            }
+            else{
+
+                automationStatus.textContent =
+                    "Inactive";
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Automation statistics error:",
+            error
+        );
+
+        automationStatus.textContent =
+            "Inactive";
+
+    }
 
 }
 
