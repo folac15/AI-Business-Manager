@@ -111,11 +111,11 @@ body{
 input,
 textarea{
     width:100%;
-    padding:12px;
+    padding:14px;
     margin-top:12px;
     border:1px solid #ddd;
     border-radius:8px;
-    font-size:15px;
+    font-size:16px;
     outline:none;
 }
 
@@ -126,20 +126,21 @@ textarea:focus{
 }
 
 textarea{
-    height:100px;
+    height:110px;
     resize:vertical;
     min-height:100px;
 }
 
 .save-button{
     margin-top:15px;
-    padding:12px 25px;
+    padding:14px 25px;
     background:#0066ff;
     color:white;
     border:none;
     border-radius:8px;
     cursor:pointer;
-    font-size:15px;
+    font-size:16px;
+    width:100%;
 }
 
 .save-button:hover{
@@ -154,6 +155,7 @@ textarea{
 .status{
     margin-top:15px;
     font-weight:bold;
+    line-height:1.5;
 }
 
 .success{
@@ -187,6 +189,7 @@ textarea{
     color:#c62828;
     border-radius:8px;
     margin-top:15px;
+    line-height:1.5;
 }
 
 .empty{
@@ -211,6 +214,7 @@ textarea{
     margin-top:6px;
     line-height:1.5;
     white-space:pre-wrap;
+    word-break:break-word;
 }
 
 .customer-date{
@@ -218,6 +222,34 @@ textarea{
     margin-top:15px;
     color:#777;
     font-size:12px;
+}
+
+.delete-button{
+    margin-top:15px;
+    padding:9px 15px;
+    background:#dc3545;
+    color:white;
+    border:none;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.delete-button:hover{
+    background:#b02a37;
+}
+
+.refresh-button{
+    margin-top:10px;
+    padding:10px 18px;
+    background:#0b1f3a;
+    color:white;
+    border:none;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.refresh-button:hover{
+    background:#17365f;
 }
 
 @media(max-width:800px){
@@ -272,127 +304,146 @@ textarea{
 
 <div class="sidebar">
 
-<div class="logo">
-NexaFlow AI
+    <div class="logo">
+        NexaFlow AI
+    </div>
+
+    <div class="business-logo">
+        🏢
+    </div>
+
+    <h3 id="businessName">
+        Your Business
+    </h3>
+
+    <a href="dashboard.html">
+        Dashboard
+    </a>
+
+    <a href="ai-assistant.html">
+        AI Assistant
+    </a>
+
+    <a href="customers.html" class="active">
+        Customers
+    </a>
+
+    <a href="analytics.html">
+        Analytics
+    </a>
+
+    <a href="automation.html">
+        Automation
+    </a>
+
+    <a href="reports.html">
+        Reports
+    </a>
+
+    <a href="settings.html">
+        Settings
+    </a>
+
 </div>
 
-<div class="business-logo">
-🏢
-</div>
-
-<h3 id="businessName">
-Your Business
-</h3>
-
-<a href="dashboard.html">
-Dashboard
-</a>
-
-<a href="ai-assistant.html">
-AI Assistant
-</a>
-
-<a href="customers.html" class="active">
-Customers
-</a>
-
-<a href="analytics.html">
-Analytics
-</a>
-
-<a href="automation.html">
-Automation
-</a>
-
-<a href="reports.html">
-Reports
-</a>
-
-<a href="settings.html">
-Settings
-</a>
-
-</div>
 
 <div class="main">
 
-<div class="header">
+    <div class="header">
 
-<h2>
-👥 Customers Management
-</h2>
+        <h2>
+            👥 Customers Management
+        </h2>
 
-<p>
-Manage customer information and AI replies.
-</p>
+        <p>
+            Manage customer information and AI replies.
+        </p>
+
+    </div>
+
+
+    <div class="customer-box">
+
+        <h3>
+            Add Customer
+        </h3>
+
+        <input
+            type="text"
+            id="customerName"
+            placeholder="Customer Name"
+            autocomplete="name">
+
+        <input
+            type="text"
+            id="customerPhone"
+            placeholder="Phone Number"
+            autocomplete="tel">
+
+        <input
+            type="text"
+            id="customerLocation"
+            placeholder="Location">
+
+        <textarea
+            id="customerMessage"
+            placeholder="Customer Message"></textarea>
+
+        <button
+            id="saveButton"
+            class="save-button"
+            onclick="saveCustomer()">
+
+            Save Customer
+
+        </button>
+
+        <div
+            id="saveStatus"
+            class="status">
+        </div>
+
+    </div>
+
+
+    <div class="customer-list">
+
+        <h3>
+            Customer History
+        </h3>
+
+        <button
+            class="refresh-button"
+            onclick="loadCustomers()">
+
+            🔄 Refresh Customers
+
+        </button>
+
+        <div
+            id="customerHistory"
+            class="loading">
+
+            Loading customers...
+
+        </div>
+
+    </div>
 
 </div>
 
-<div class="customer-box">
 
-<h3>
-Add Customer
-</h3>
+<script>
 
-<input
-type="text"
-id="customerName"
-placeholder="Customer Name"
-autocomplete="name">
 
-<input
-type="text"
-id="customerPhone"
-placeholder="Phone Number"
-autocomplete="tel">
-
-<input
-type="text"
-id="customerLocation"
-placeholder="Location">
-
-<textarea
-id="customerMessage"
-placeholder="Customer Message"></textarea>
-
-<button
-id="saveButton"
-class="save-button"
-onclick="saveCustomer()">
-
-Save Customer
-
-</button>
-
-<div
-id="saveStatus"
-class="status">
-</div>
-
-</div>
-
-<div class="customer-list">
-
-<h3>
-Customer History
-</h3>
-
-<div
-id="customerHistory"
-class="loading">
-
-Loading customers...
-
-</div>
-
-</div>
-
-     </div>
-     <script>
+// =========================================================
+// LOAD BUSINESS INFORMATION
+// =========================================================
 
 async function loadBusiness(){
 
-    const token = localStorage.getItem("access_token");
+    const token =
+        localStorage.getItem("access_token");
 
     if(!token){
         return;
@@ -400,18 +451,27 @@ async function loadBusiness(){
 
     try{
 
-        const response = await fetch("/api/business", {
-            method:"GET",
-            headers:{
-                "Authorization":"Bearer " + token
-            }
-        });
+        const response =
+            await fetch(
+                "/api/business",
+                {
+                    method:"GET",
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
 
         if(response.status === 401){
             return;
         }
 
-        const result = await response.json();
+
+        const result =
+            await response.json();
+
 
         if(
             result.business &&
@@ -419,14 +479,20 @@ async function loadBusiness(){
         ){
 
             const businessName =
-                document.getElementById("businessName");
+                document.getElementById(
+                    "businessName"
+                );
+
 
             if(businessName){
+
                 businessName.textContent =
                     result.business.business_name;
+
             }
 
         }
+
 
     }catch(error){
 
@@ -440,28 +506,60 @@ async function loadBusiness(){
 }
 
 
+// =========================================================
+// SAVE CUSTOMER
+// =========================================================
+
 async function saveCustomer(){
 
     const name =
-        document.getElementById("customerName").value.trim();
+        document
+        .getElementById("customerName")
+        .value
+        .trim();
+
 
     const phone =
-        document.getElementById("customerPhone").value.trim();
+        document
+        .getElementById("customerPhone")
+        .value
+        .trim();
+
 
     const location =
-        document.getElementById("customerLocation").value.trim();
+        document
+        .getElementById("customerLocation")
+        .value
+        .trim();
+
 
     const message =
-        document.getElementById("customerMessage").value.trim();
+        document
+        .getElementById("customerMessage")
+        .value
+        .trim();
+
 
     const status =
-        document.getElementById("saveStatus");
+        document.getElementById(
+            "saveStatus"
+        );
+
 
     const button =
-        document.getElementById("saveButton");
+        document.getElementById(
+            "saveButton"
+        );
 
 
-    if(name === "" || message === ""){
+    // -----------------------------------------------------
+    // VALIDATION
+    // -----------------------------------------------------
+
+    if(
+        name === "" ||
+        message === ""
+    ){
 
         status.className =
             "status error-text";
@@ -475,7 +573,9 @@ async function saveCustomer(){
 
 
     const token =
-        localStorage.getItem("access_token");
+        localStorage.getItem(
+            "access_token"
+        );
 
 
     if(!token){
@@ -493,7 +593,10 @@ async function saveCustomer(){
 
     button.disabled = true;
 
-    status.className = "status";
+
+    status.className =
+        "status";
+
 
     status.textContent =
         "Saving customer...";
@@ -502,28 +605,36 @@ async function saveCustomer(){
     try{
 
         const response =
-            await fetch("/api/customers", {
+            await fetch(
+                "/api/customers",
+                {
+                    method:"POST",
 
-                method:"POST",
+                    headers:{
+                        "Content-Type":
+                            "application/json",
 
-                headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":"Bearer " + token
-                },
+                        "Authorization":
+                            "Bearer " + token
+                    },
 
-                body:JSON.stringify({
+                    body:JSON.stringify({
 
-                    name:name,
-                    phone:phone,
-                    location:location,
-                    message:message
+                        name:name,
 
-                })
+                        phone:phone,
 
-            });
+                        location:location,
+
+                        message:message
+
+                    })
+                }
+            );
 
 
-        let result;
+        let result = {};
+
 
         try{
 
@@ -576,29 +687,38 @@ async function saveCustomer(){
         status.className =
             "status success";
 
+
         status.textContent =
             "✅ Customer saved successfully.";
 
 
-        document.getElementById(
-            "customerName"
-        ).value = "";
+        // -------------------------------------------------
+        // CLEAR FORM
+        // -------------------------------------------------
+
+        document
+        .getElementById("customerName")
+        .value = "";
 
 
-        document.getElementById(
-            "customerPhone"
-        ).value = "";
+        document
+        .getElementById("customerPhone")
+        .value = "";
 
 
-        document.getElementById(
-            "customerLocation"
-        ).value = "";
+        document
+        .getElementById("customerLocation")
+        .value = "";
 
 
-        document.getElementById(
-            "customerMessage"
-        ).value = "";
+        document
+        .getElementById("customerMessage")
+        .value = "";
 
+
+        // -------------------------------------------------
+        // RELOAD CUSTOMER HISTORY
+        // -------------------------------------------------
 
         await loadCustomers();
 
@@ -614,6 +734,7 @@ async function saveCustomer(){
         status.className =
             "status error-text";
 
+
         status.textContent =
             "❌ Connection error. Please try again.";
 
@@ -626,20 +747,30 @@ async function saveCustomer(){
 }
 
 
+// =========================================================
+// LOAD CUSTOMERS
+// =========================================================
+
 async function loadCustomers(){
 
     const history =
-        document.getElementById("customerHistory");
+        document.getElementById(
+            "customerHistory"
+        );
 
 
     const token =
-        localStorage.getItem("access_token");
+        localStorage.getItem(
+            "access_token"
+        );
 
 
     if(!token){
 
         history.innerHTML =
-            '<div class="error-box">Login session unavailable.</div>';
+            '<div class="error-box">' +
+            'Login session unavailable.' +
+            '</div>';
 
         return;
 
@@ -647,24 +778,29 @@ async function loadCustomers(){
 
 
     history.innerHTML =
-        '<div class="loading">Loading customers...</div>';
+        '<div class="loading">' +
+        'Loading customers...' +
+        '</div>';
 
 
     try{
 
         const response =
-            await fetch("/api/customers", {
+            await fetch(
+                "/api/customers",
+                {
+                    method:"GET",
 
-                method:"GET",
-
-                headers:{
-                    "Authorization":"Bearer " + token
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
                 }
+            );
 
-            });
 
+        let result = {};
 
-        let result;
 
         try{
 
@@ -679,29 +815,20 @@ async function loadCustomers(){
 
 
         console.log(
-            "Customers response:",
+            "Customers GET response:",
             result
         );
 
 
+        // -------------------------------------------------
+        // AUTHENTICATION ERROR
+        // -------------------------------------------------
+
         if(response.status === 401){
 
             history.innerHTML =
-                '<div class="error-box">Login session expired. Please log in again.</div>';
-
-            return;
-
-        }
-
-
-        if(!response.ok){
-
-            history.innerHTML =
                 '<div class="error-box">' +
-                (
-                    result.error ||
-                    "Unable to load customers."
-                ) +
+                'Login session expired. Please log in again.' +
                 '</div>';
 
             return;
@@ -709,76 +836,182 @@ async function loadCustomers(){
         }
 
 
-        if(!Array.isArray(result)){
+        // -------------------------------------------------
+        // SERVER ERROR
+        // -------------------------------------------------
+
+        if(!response.ok){
 
             history.innerHTML =
-                '<div class="error-box">The server returned an unexpected response.</div>';
+                '<div class="error-box">' +
+
+                escapeHtml(
+                    result.error ||
+                    "Unable to load customers."
+                ) +
+
+                '</div>';
 
             return;
 
         }
 
 
-        if(result.length === 0){
+        // -------------------------------------------------
+        // IMPORTANT FIX
+        //
+        // Backend returns:
+        //
+        // {
+        //     customers: [...],
+        //     count: 1
+        // }
+        //
+        // NOT:
+        //
+        // [...]
+        // -------------------------------------------------
+
+        let customers = [];
+
+
+        if(
+            result &&
+            Array.isArray(
+                result.customers
+            )
+        ){
+
+            customers =
+                result.customers;
+
+        }
+
+        else if(
+            Array.isArray(result)
+        ){
+
+            // Backward compatibility
+            customers =
+                result;
+
+        }
+
+        else{
 
             history.innerHTML =
-                '<div class="empty">No customers found yet.</div>';
+                '<div class="error-box">' +
+                'The server returned an invalid customer data format.' +
+                '</div>';
 
             return;
 
         }
 
+
+        // -------------------------------------------------
+        // NO CUSTOMERS
+        // -------------------------------------------------
+
+        if(customers.length === 0){
+
+            history.innerHTML =
+                '<div class="empty">' +
+                'No customers found yet.' +
+                '</div>';
+
+            return;
+
+        }
+
+
+        // -------------------------------------------------
+        // DISPLAY CUSTOMERS
+        // -------------------------------------------------
 
         let html = "";
 
 
-        result.forEach(function(customer){
+        customers.forEach(
+            function(customer){
 
-            html += `
+                html += `
 
-                <div class="customer-card">
+                    <div class="customer-card">
 
-                    <b>Name:</b>
-                    ${escapeHtml(customer.name || "")}
+                        <b>Name:</b>
+                        ${escapeHtml(
+                            customer.name || ""
+                        )}
 
-                    <br>
+                        <br>
 
-                    <b>Phone:</b>
-                    ${escapeHtml(customer.phone || "")}
+                        <b>Phone:</b>
+                        ${escapeHtml(
+                            customer.phone || ""
+                        )}
 
-                    <br>
+                        <br>
 
-                    <b>Location:</b>
-                    ${escapeHtml(customer.location || "")}
+                        <b>Location:</b>
+                        ${escapeHtml(
+                            customer.location || ""
+                        )}
 
-                    <br><br>
+                        <br><br>
 
-                    <b>Message:</b>
+                        <b>Message:</b>
 
-                    <div class="customer-message">
-                        ${escapeHtml(customer.message || "")}
+                        <div class="customer-message">
+                            ${escapeHtml(
+                                customer.message || ""
+                            )}
+                        </div>
+
+                        <br>
+
+                        <b>AI Reply:</b>
+
+                        <div class="ai-reply">
+                            ${escapeHtml(
+                                customer.ai_reply || ""
+                            )}
+                        </div>
+
+                        <span class="customer-date">
+
+                            ${formatDate(
+                                customer.created_at
+                            )}
+
+                        </span>
+
+                        ${
+                            customer.id
+                            ?
+                            `
+                            <button
+                                class="delete-button"
+                                onclick="deleteCustomer(${customer.id})">
+
+                                🗑️ Delete
+
+                            </button>
+                            `
+                            :
+                            ""
+                        }
+
                     </div>
 
-                    <br>
+                `;
 
-                    <b>AI Reply:</b>
-
-                    <div class="ai-reply">
-                        ${escapeHtml(customer.ai_reply || "")}
-                    </div>
-
-                    <span class="customer-date">
-                        ${escapeHtml(customer.created_at || "")}
-                    </span>
-
-                </div>
-
-            `;
-
-        });
+            }
+        );
 
 
-        history.innerHTML = html;
+        history.innerHTML =
+            html;
 
 
     }catch(error){
@@ -790,29 +1023,216 @@ async function loadCustomers(){
 
 
         history.innerHTML =
-            '<div class="error-box">Unable to load customers. Check your connection and server.</div>';
+            '<div class="error-box">' +
+            'Unable to load customers. Check your connection and server.' +
+            '</div>';
 
     }
 
 }
 
 
-function escapeHtml(value){
+// =========================================================
+// DELETE CUSTOMER
+// =========================================================
 
-    return String(value)
+async function deleteCustomer(
+    customerId
+){
 
-        .replace(/&/g, "&amp;")
+    if(
+        !confirm(
+            "Are you sure you want to delete this customer?"
+        )
+    ){
 
-        .replace(/</g, "&lt;")
+        return;
 
-        .replace(/>/g, "&gt;")
+    }
 
-        .replace(/"/g, "&quot;")
 
-        .replace(/'/g, "&#039;");
+    const token =
+        localStorage.getItem(
+            "access_token"
+        );
+
+
+    if(!token){
+
+        alert(
+            "Login session unavailable."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/customers/" +
+                customerId,
+                {
+                    method:"DELETE",
+
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        let result = {};
+
+
+        try{
+
+            result =
+                await response.json();
+
+        }catch(error){
+
+            result = {};
+
+        }
+
+
+        if(response.status === 401){
+
+            alert(
+                "Login session expired."
+            );
+
+            return;
+
+        }
+
+
+        if(!response.ok){
+
+            alert(
+                result.error ||
+                "Unable to delete customer."
+            );
+
+            return;
+
+        }
+
+
+        await loadCustomers();
+
+
+    }catch(error){
+
+        console.error(
+            "Delete customer error:",
+            error
+        );
+
+
+        alert(
+            "Connection error while deleting customer."
+        );
+
+    }
 
 }
 
+
+// =========================================================
+// ESCAPE HTML
+// =========================================================
+
+function escapeHtml(
+    value
+){
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// =========================================================
+// FORMAT DATE
+// =========================================================
+
+function formatDate(
+    value
+){
+
+    if(!value){
+
+        return "Date unavailable";
+
+    }
+
+
+    try{
+
+        const date =
+            new Date(value);
+
+
+        if(
+            Number.isNaN(
+                date.getTime()
+            )
+        ){
+
+            return escapeHtml(
+                value
+            );
+
+        }
+
+
+        return escapeHtml(
+            date.toLocaleString()
+        );
+
+    }catch(error){
+
+        return escapeHtml(
+            value
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// PAGE LOAD
+// =========================================================
 
 window.addEventListener(
     "load",
@@ -829,4 +1249,4 @@ window.addEventListener(
 
 </body>
 
-     </html>
+</html>
