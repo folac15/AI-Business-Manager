@@ -7,6 +7,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+
 # =========================================================
 # ENVIRONMENT VARIABLES
 # =========================================================
@@ -17,6 +18,7 @@ SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 SUPABASE_PROJECT_URL = (
     "https://xfjroysinifwncfjvrsg.supabase.co"
 )
+
 
 # =========================================================
 # SUPABASE TABLE URLS
@@ -37,16 +39,23 @@ AUTOMATION_SETTINGS_URL = (
     + "/rest/v1/automation_settings"
 )
 
+AI_CONVERSATIONS_URL = (
+    SUPABASE_PROJECT_URL
+    + "/rest/v1/ai_conversations"
+)
+
+
 # =========================================================
 # SUPABASE HEADERS
 # =========================================================
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_SECRET_KEY,
-    "Authorization":
-        "Bearer " + str(SUPABASE_SECRET_KEY),
-    "Content-Type":
-        "application/json"
+    "Authorization": (
+        "Bearer "
+        + str(SUPABASE_SECRET_KEY)
+    ),
+    "Content-Type": "application/json"
 }
 
 
@@ -88,16 +97,20 @@ def serve_files(filename):
 
 
 # =========================================================
-# STATUS
+# API STATUS
 # =========================================================
 
 @app.route("/api/status")
 def status():
 
     return jsonify({
-        "status": "online",
+
+        "status":
+            "online",
+
         "message":
             "NexaFlow AI API is working"
+
     })
 
 
@@ -144,11 +157,13 @@ def get_authenticated_user():
                     SUPABASE_SECRET_KEY,
 
                 "Authorization":
-                    "Bearer " + access_token
+                    "Bearer "
+                    + access_token
 
             },
 
             timeout=15
+
         )
 
         if response.status_code != 200:
@@ -266,6 +281,91 @@ Do not repeatedly say that you are an AI.
 
 
 # =========================================================
+# SAVE AI CONVERSATION
+# =========================================================
+
+def save_ai_conversation(
+    user_id,
+    question,
+    answer
+):
+
+    if not user_id:
+
+        print(
+            "AI conversation not saved: "
+            "no authenticated user."
+        )
+
+        return False
+
+    conversation_data = {
+
+        "user_id":
+            user_id,
+
+        "question":
+            question,
+
+        "answer":
+            answer,
+
+        "created_at":
+            datetime.utcnow().isoformat()
+
+    }
+
+    try:
+
+        response = requests.post(
+
+            AI_CONVERSATIONS_URL,
+
+            headers={
+
+                **SUPABASE_HEADERS,
+
+                "Prefer":
+                    "return=representation"
+
+            },
+
+            json=conversation_data,
+
+            timeout=15
+
+        )
+
+        print(
+            "AI conversation save status:",
+            response.status_code
+        )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            print(
+                "AI conversation save error:",
+                response.text
+            )
+
+            return False
+
+        return True
+
+    except Exception as error:
+
+        print(
+            "AI conversation save exception:",
+            error
+        )
+
+        return False
+
+
+# =========================================================
 # AI ASSISTANT
 # =========================================================
 
@@ -294,16 +394,33 @@ def ai_reply():
     if not question:
 
         return jsonify({
+
             "answer":
                 "Please enter your question."
+
         }), 400
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
+
             "answer":
                 "OpenRouter API key is not configured."
+
         }), 500
+
+    # The current AI frontend does not yet
+    # require authentication for the AI request.
+    # If a valid token is present, we use its user ID
+    # when saving the conversation.
+
+    user = get_authenticated_user()
+
+    user_id = None
+
+    if user:
+
+        user_id = user.get("id")
 
     messages = [
 
@@ -378,14 +495,19 @@ def ai_reply():
 
     })
 
-    # Keep the system prompt plus
-    # the latest 20 conversation messages.
+    # Keep system prompt plus latest
+    # 20 conversation messages.
+
     if len(messages) > 21:
 
         messages = (
+
             [messages[0]]
+
             +
+
             messages[-20:]
+
         )
 
     try:
@@ -416,6 +538,7 @@ def ai_reply():
             },
 
             timeout=60
+
         )
 
         try:
@@ -480,6 +603,15 @@ def ai_reply():
                 "The AI did not return an answer."
             )
 
+        # Save conversation if
+        # a valid user was detected.
+
+        save_ai_conversation(
+            user_id,
+            question,
+            answer
+        )
+
         return jsonify({
 
             "answer":
@@ -501,8 +633,10 @@ def ai_reply():
                 + str(error)
 
         }), 500
-        # =========================================================
-# AUTOMATION SETTINGS
+
+
+# =========================================================
+# AUTOMATION SETTINGS - GET
 # =========================================================
 
 @app.route(
@@ -516,8 +650,10 @@ def get_automation_settings():
     if not user:
 
         return jsonify({
+
             "error":
-            "Invalid or expired login session."
+                "Invalid or expired login session."
+
         }), 401
 
     try:
@@ -529,17 +665,24 @@ def get_automation_settings():
             headers=SUPABASE_HEADERS,
 
             params={
-                "select": "*",
+
+                "select":
+                    "*",
+
                 "user_id":
-                "eq." + user["id"],
-                "limit": "1"
+                    "eq." + user["id"],
+
+                "limit":
+                    "1"
+
             },
 
             timeout=15
+
         )
 
         print(
-            "Automation settings GET status:",
+            "Automation GET status:",
             response.status_code
         )
 
@@ -551,8 +694,10 @@ def get_automation_settings():
             )
 
             return jsonify({
+
                 "error":
-                response.text
+                    response.text
+
             }), response.status_code
 
         settings = response.json()
@@ -560,18 +705,30 @@ def get_automation_settings():
         if settings:
 
             return jsonify({
+
                 "automation":
-                settings[0]
+                    settings[0]
+
             })
 
-        # No row yet: return default settings
         return jsonify({
+
             "automation": {
-                "user_id": user["id"],
-                "ai_replies": True,
-                "message_automation": True,
-                "task_automation": True
+
+                "user_id":
+                    user["id"],
+
+                "ai_replies":
+                    True,
+
+                "message_automation":
+                    True,
+
+                "task_automation":
+                    True
+
             }
+
         })
 
     except Exception as error:
@@ -582,13 +739,15 @@ def get_automation_settings():
         )
 
         return jsonify({
+
             "error":
-            str(error)
+                str(error)
+
         }), 500
 
 
 # =========================================================
-# SAVE AUTOMATION SETTINGS
+# AUTOMATION SETTINGS - SAVE
 # =========================================================
 
 @app.route(
@@ -602,51 +761,48 @@ def save_automation_settings():
     if not user:
 
         return jsonify({
+
             "error":
-            "Invalid or expired login session."
+                "Invalid or expired login session."
+
         }), 401
 
     data = request.get_json(
         silent=True
     ) or {}
 
-    ai_replies = bool(
-        data.get(
-            "ai_replies",
-            True
-        )
-    )
-
-    message_automation = bool(
-        data.get(
-            "message_automation",
-            True
-        )
-    )
-
-    task_automation = bool(
-        data.get(
-            "task_automation",
-            True
-        )
-    )
-
     automation = {
 
         "user_id":
-        user["id"],
+            user["id"],
 
         "ai_replies":
-        ai_replies,
+            bool(
+                data.get(
+                    "ai_replies",
+                    True
+                )
+            ),
 
         "message_automation":
-        message_automation,
+            bool(
+                data.get(
+                    "message_automation",
+                    True
+                )
+            ),
 
         "task_automation":
-        task_automation,
+            bool(
+                data.get(
+                    "task_automation",
+                    True
+                )
+            ),
 
         "updated_at":
-        datetime.utcnow().isoformat()
+            datetime.utcnow().isoformat()
+
     }
 
     try:
@@ -656,15 +812,19 @@ def save_automation_settings():
             AUTOMATION_SETTINGS_URL,
 
             headers={
+
                 **SUPABASE_HEADERS,
 
                 "Prefer":
-                "resolution=merge-duplicates,return=representation"
+                    "resolution=merge-duplicates,"
+                    "return=representation"
+
             },
 
             json=automation,
 
             timeout=15
+
         )
 
         print(
@@ -683,8 +843,10 @@ def save_automation_settings():
             )
 
             return jsonify({
+
                 "error":
-                response.text
+                    response.text
+
             }), response.status_code
 
         try:
@@ -699,19 +861,22 @@ def save_automation_settings():
 
             result[0]
 
-            if isinstance(result, list)
-            and result
+            if (
+                isinstance(result, list)
+                and result
+            )
 
             else automation
+
         )
 
         return jsonify({
 
             "message":
-            "Automation settings saved successfully.",
+                "Automation settings saved successfully.",
 
             "automation":
-            saved
+                saved
 
         })
 
@@ -723,13 +888,15 @@ def save_automation_settings():
         )
 
         return jsonify({
+
             "error":
-            str(error)
+                str(error)
+
         }), 500
 
 
 # =========================================================
-# UPDATE ONE AUTOMATION SETTING
+# AUTOMATION TOGGLE
 # =========================================================
 
 @app.route(
@@ -743,8 +910,10 @@ def toggle_automation():
     if not user:
 
         return jsonify({
+
             "error":
-            "Invalid or expired login session."
+                "Invalid or expired login session."
+
         }), 401
 
     data = request.get_json(
@@ -775,8 +944,10 @@ def toggle_automation():
     if setting not in allowed_settings:
 
         return jsonify({
+
             "error":
-            "Invalid automation setting."
+                "Invalid automation setting."
+
         }), 400
 
     if not isinstance(
@@ -785,24 +956,23 @@ def toggle_automation():
     ):
 
         return jsonify({
+
             "error":
-            "Automation value must be true or false."
+                "Automation value must be true or false."
+
         }), 400
 
     update_data = {
 
         setting:
-        value,
+            value,
 
         "updated_at":
-        datetime.utcnow().isoformat()
+            datetime.utcnow().isoformat()
 
     }
 
     try:
-
-        # First check whether the user's
-        # automation row already exists.
 
         check = requests.get(
 
@@ -812,16 +982,19 @@ def toggle_automation():
 
             params={
 
-                "select": "id",
+                "select":
+                    "id",
 
                 "user_id":
-                "eq." + user["id"],
+                    "eq." + user["id"],
 
-                "limit": "1"
+                "limit":
+                    "1"
 
             },
 
             timeout=15
+
         )
 
         if check.status_code != 200:
@@ -829,15 +1002,11 @@ def toggle_automation():
             return jsonify({
 
                 "error":
-                check.text
+                    check.text
 
             }), check.status_code
 
         existing = check.json()
-
-        # =================================================
-        # ROW EXISTS -> UPDATE
-        # =================================================
 
         if existing:
 
@@ -846,66 +1015,68 @@ def toggle_automation():
                 AUTOMATION_SETTINGS_URL,
 
                 headers={
+
                     **SUPABASE_HEADERS,
+
                     "Prefer":
-                    "return=representation"
+                        "return=representation"
+
                 },
 
                 params={
 
                     "user_id":
-                    "eq." + user["id"]
+                        "eq." + user["id"]
 
                 },
 
                 json=update_data,
 
                 timeout=15
-            )
 
-        # =================================================
-        # ROW DOES NOT EXIST -> CREATE
-        # =================================================
+            )
 
         else:
 
             new_settings = {
 
                 "user_id":
-                user["id"],
+                    user["id"],
 
                 "ai_replies":
-                True,
+                    True,
 
                 "message_automation":
-                True,
+                    True,
 
                 "task_automation":
-                True
+                    True
 
             }
 
-            new_settings[
-                setting
-            ] = value
+            new_settings[setting] = value
 
-            new_settings[
-                "updated_at"
-            ] = datetime.utcnow().isoformat()
+            new_settings["updated_at"] = (
+                datetime.utcnow().isoformat()
+            )
 
             response = requests.post(
 
                 AUTOMATION_SETTINGS_URL,
 
                 headers={
+
                     **SUPABASE_HEADERS,
+
                     "Prefer":
-                    "return=representation"
+                        "return=representation"
+
                 },
 
                 json=new_settings,
 
                 timeout=15
+
             )
 
         print(
@@ -927,7 +1098,7 @@ def toggle_automation():
             return jsonify({
 
                 "error":
-                response.text
+                    response.text
 
             }), response.status_code
 
@@ -942,19 +1113,26 @@ def toggle_automation():
         return jsonify({
 
             "message":
-            "Automation setting updated successfully.",
+                "Automation setting updated successfully.",
 
             "setting":
-            setting,
+                setting,
 
             "value":
-            value,
+                value,
 
-            "automation":
-            result[0]
-            if isinstance(result, list)
-            and result
-            else None
+            "automation": (
+
+                result[0]
+
+                if (
+                    isinstance(result, list)
+                    and result
+                )
+
+                else None
+
+            )
 
         })
 
@@ -968,219 +1146,404 @@ def toggle_automation():
         return jsonify({
 
             "error":
-            str(error)
+                str(error)
 
         }), 500
-        # =========================================================
-# BUSINESS ACCOUNT
+
+
+# =========================================================
+# BUSINESS ACCOUNT - GET / SAVE
 # =========================================================
 
-@app.route("/api/business", methods=["GET", "POST"])
+@app.route(
+    "/api/business",
+    methods=["GET", "POST"]
+)
 def business_account():
 
     user = get_authenticated_user()
 
     if not user:
+
         return jsonify({
-            "error": "Invalid or expired login session."
+
+            "error":
+                "Invalid or expired login session."
+
         }), 401
 
     user_id = user["id"]
 
+    # =====================================================
     # GET BUSINESS
+    # =====================================================
+
     if request.method == "GET":
 
         try:
+
             response = requests.get(
+
                 BUSINESS_ACCOUNTS_URL,
+
                 headers=SUPABASE_HEADERS,
+
                 params={
-                    "select": "*",
-                    "user_id": "eq." + user_id,
-                    "limit": "1"
+
+                    "select":
+                        "*",
+
+                    "user_id":
+                        "eq." + user_id,
+
+                    "limit":
+                        "1"
+
                 },
+
                 timeout=15
+
             )
 
             if response.status_code != 200:
+
                 return jsonify({
-                    "error": response.text
+
+                    "error":
+                        response.text
+
                 }), response.status_code
 
             businesses = response.json()
 
             if businesses:
+
                 return jsonify({
-                    "business": businesses[0]
+
+                    "business":
+                        businesses[0]
+
                 })
 
             return jsonify({
-                "business": None
+
+                "business":
+                    None
+
             })
 
         except Exception as error:
+
             return jsonify({
-                "error": str(error)
+
+                "error":
+                    str(error)
+
             }), 500
 
-
+    # =====================================================
     # SAVE BUSINESS
-    data = request.get_json(silent=True) or {}
+    # =====================================================
+
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     business_data = {
-        "user_id": user_id,
-        "business_name": str(data.get("business_name", "")).strip(),
-        "owner_name": str(data.get("owner_name", "")).strip(),
-        "phone": str(data.get("phone", "")).strip(),
-        "email": str(data.get("email", "")).strip(),
-        "address": str(data.get("address", "")).strip(),
-        "description": str(data.get("description", "")).strip(),
-        "logo": str(data.get("logo", "")).strip(),
-        "updated_at": datetime.utcnow().isoformat()
+
+        "user_id":
+            user_id,
+
+        "business_name":
+            str(
+                data.get(
+                    "business_name",
+                    ""
+                )
+            ).strip(),
+
+        "owner_name":
+            str(
+                data.get(
+                    "owner_name",
+                    ""
+                )
+            ).strip(),
+
+        "phone":
+            str(
+                data.get(
+                    "phone",
+                    ""
+                )
+            ).strip(),
+
+        "email":
+            str(
+                data.get(
+                    "email",
+                    ""
+                )
+            ).strip(),
+
+        "address":
+            str(
+                data.get(
+                    "address",
+                    ""
+                )
+            ).strip(),
+
+        "description":
+            str(
+                data.get(
+                    "description",
+                    ""
+                )
+            ).strip(),
+
+        "logo":
+            str(
+                data.get(
+                    "logo",
+                    ""
+                )
+            ).strip(),
+
+        "updated_at":
+            datetime.utcnow().isoformat()
+
     }
 
     try:
 
         check = requests.get(
+
             BUSINESS_ACCOUNTS_URL,
+
             headers=SUPABASE_HEADERS,
+
             params={
-                "select": "id",
-                "user_id": "eq." + user_id,
-                "limit": "1"
+
+                "select":
+                    "id",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "limit":
+                    "1"
+
             },
+
             timeout=15
+
         )
 
         if check.status_code != 200:
+
             return jsonify({
-                "error": check.text
+
+                "error":
+                    check.text
+
             }), check.status_code
 
         existing = check.json()
 
-        # UPDATE EXISTING BUSINESS
         if existing:
 
             business_id = existing[0]["id"]
 
             response = requests.patch(
+
                 BUSINESS_ACCOUNTS_URL,
+
                 headers={
+
                     **SUPABASE_HEADERS,
-                    "Prefer": "return=representation"
+
+                    "Prefer":
+                        "return=representation"
+
                 },
+
                 params={
-                    "id": "eq." + str(business_id),
-                    "user_id": "eq." + user_id
+
+                    "id":
+                        "eq." + str(
+                            business_id
+                        ),
+
+                    "user_id":
+                        "eq." + user_id
+
                 },
+
                 json=business_data,
+
                 timeout=15
+
             )
 
-        # CREATE NEW BUSINESS
         else:
 
             response = requests.post(
+
                 BUSINESS_ACCOUNTS_URL,
+
                 headers={
+
                     **SUPABASE_HEADERS,
-                    "Prefer": "return=representation"
+
+                    "Prefer":
+                        "return=representation"
+
                 },
+
                 json=business_data,
+
                 timeout=15
+
             )
 
-        if response.status_code not in (200, 201):
+        if response.status_code not in (
+            200,
+            201
+        ):
+
             return jsonify({
-                "error": response.text
+
+                "error":
+                    response.text
+
             }), response.status_code
 
         try:
+
             saved = response.json()
+
         except ValueError:
+
             saved = []
 
-        if isinstance(saved, list) and saved:
+        if (
+            isinstance(saved, list)
+            and saved
+        ):
+
             saved_business = saved[0]
+
         else:
+
             saved_business = business_data
 
         return jsonify({
-            "success": True,
-            "business": saved_business,
-            "message": "Business settings saved successfully."
+
+            "success":
+                True,
+
+            "business":
+                saved_business,
+
+            "message":
+                "Business settings saved successfully."
+
         })
 
     except Exception as error:
 
         return jsonify({
-            "error": str(error)
+
+            "error":
+                str(error)
+
         }), 500
+
 
 # =========================================================
 # BUSINESS LOGO UPLOAD
 # =========================================================
 
-@app.route("/api/business/logo", methods=["POST"])
+@app.route(
+    "/api/business/logo",
+    methods=["POST"]
+)
 def upload_business_logo():
 
     user = get_authenticated_user()
 
     if not user:
+
         return jsonify({
-            "error": "Invalid or expired login session."
+
+            "error":
+                "Invalid or expired login session."
+
         }), 401
 
     if "logo" not in request.files:
+
         return jsonify({
-            "error": "No logo file was provided."
+
+            "error":
+                "No logo file was provided."
+
         }), 400
 
     logo_file = request.files["logo"]
 
-    if not logo_file or not logo_file.filename:
+    if (
+        not logo_file
+        or not logo_file.filename
+    ):
+
         return jsonify({
-            "error": "No logo file was selected."
+
+            "error":
+                "No logo file was selected."
+
         }), 400
 
     try:
 
-        # Read the image file
         file_bytes = logo_file.read()
 
         if not file_bytes:
+
             return jsonify({
-                "error": "The selected logo file is empty."
+
+                "error":
+                    "The selected logo file is empty."
+
             }), 400
 
         filename = logo_file.filename
 
-        # Basic extension check
         allowed_extensions = (
+
             ".jpg",
             ".jpeg",
             ".png",
             ".gif",
             ".webp"
+
         )
 
         if not filename.lower().endswith(
             allowed_extensions
         ):
-            return jsonify({
-                "error":
-                "Unsupported logo format. "
-                "Use JPG, JPEG, PNG, GIF or WEBP."
-            }), 400
 
-        # =====================================================
-        # SUPABASE STORAGE
-        # =====================================================
+            return jsonify({
+
+                "error":
+                    "Unsupported logo format. "
+                    "Use JPG, JPEG, PNG, GIF or WEBP."
+
+            }), 400
 
         bucket_name = "business-logos"
 
-        # Create a safe unique filename
         user_id = user["id"]
 
         extension = os.path.splitext(
@@ -1194,29 +1557,36 @@ def upload_business_logo():
         )
 
         storage_url = (
+
             SUPABASE_PROJECT_URL
+
             + "/storage/v1/object/"
+
             + bucket_name
+
             + "/"
+
             + storage_path
+
         )
 
         upload_headers = {
 
             "Authorization":
-            "Bearer " + str(
-                SUPABASE_SECRET_KEY
-            ),
+                "Bearer "
+                + str(
+                    SUPABASE_SECRET_KEY
+                ),
 
             "apikey":
-            SUPABASE_SECRET_KEY,
+                SUPABASE_SECRET_KEY,
 
             "Content-Type":
-            logo_file.content_type
-            or "application/octet-stream",
+                logo_file.content_type
+                or "application/octet-stream",
 
             "x-upsert":
-            "true"
+                "true"
 
         }
 
@@ -1250,33 +1620,35 @@ def upload_business_logo():
             return jsonify({
 
                 "error":
-                "Logo upload failed: "
-                + upload_response.text
+                    "Logo upload failed: "
+                    + upload_response.text
 
             }), upload_response.status_code
 
-        # =====================================================
-        # PUBLIC LOGO URL
-        # =====================================================
-
         logo_url = (
+
             SUPABASE_PROJECT_URL
+
             + "/storage/v1/object/public/"
+
             + bucket_name
+
             + "/"
+
             + storage_path
+
         )
 
         return jsonify({
 
             "success":
-            True,
+                True,
 
             "logo":
-            logo_url,
+                logo_url,
 
             "message":
-            "Business logo uploaded successfully."
+                "Business logo uploaded successfully."
 
         })
 
@@ -1290,12 +1662,13 @@ def upload_business_logo():
         return jsonify({
 
             "error":
-            "Logo upload error: "
-            + str(error)
+                "Logo upload error: "
+                + str(error)
 
         }), 500
-        
-        # =========================================================
+
+
+# =========================================================
 # APPLICATION START
 # =========================================================
 
@@ -1311,4 +1684,4 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=port
-        )
+    )
