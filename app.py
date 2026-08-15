@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 import os
 
@@ -25,38 +25,49 @@ SUPABASE_PROJECT_URL = (
 # =========================================================
 
 CUSTOMERS_URL = (
-    SUPABASE_PROJECT_URL
-    + "/rest/v1/customers"
+    SUPABASE_PROJECT_URL + "/rest/v1/customers"
 )
 
 BUSINESS_ACCOUNTS_URL = (
-    SUPABASE_PROJECT_URL
-    + "/rest/v1/business_accounts"
+    SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
 )
 
 AUTOMATION_SETTINGS_URL = (
-    SUPABASE_PROJECT_URL
-    + "/rest/v1/automation_settings"
+    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
 )
 
 AI_CONVERSATIONS_URL = (
-    SUPABASE_PROJECT_URL
-    + "/rest/v1/ai_conversations"
+    SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
 )
 
 
 # =========================================================
-# SUPABASE HEADERS
+# TIME
 # =========================================================
 
-SUPABASE_HEADERS = {
-    "apikey": SUPABASE_SECRET_KEY,
-    "Authorization": (
-        "Bearer "
-        + str(SUPABASE_SECRET_KEY)
-    ),
-    "Content-Type": "application/json"
-}
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+
+# =========================================================
+# SUPABASE ADMIN HEADERS
+# =========================================================
+
+def supabase_headers(prefer=None):
+
+    headers = {
+        "apikey": str(SUPABASE_SECRET_KEY or ""),
+        "Authorization": (
+            "Bearer "
+            + str(SUPABASE_SECRET_KEY or "")
+        ),
+        "Content-Type": "application/json"
+    }
+
+    if prefer:
+        headers["Prefer"] = prefer
+
+    return headers
 
 
 # =========================================================
@@ -104,12 +115,8 @@ def serve_files(filename):
 def status():
 
     return jsonify({
-
         "status": "online",
-
-        "message":
-            "NexaFlow AI API is working"
-
+        "message": "NexaFlow AI API is working"
     })
 
 
@@ -141,6 +148,9 @@ def get_authenticated_user():
         return None
 
     if not SUPABASE_SECRET_KEY:
+        print(
+            "SUPABASE_SECRET_KEY is not configured."
+        )
         return None
 
     try:
@@ -151,24 +161,26 @@ def get_authenticated_user():
             + "/auth/v1/user",
 
             headers={
-
                 "apikey":
                     SUPABASE_SECRET_KEY,
 
                 "Authorization":
                     "Bearer "
                     + access_token
-
             },
 
             timeout=15
+        )
 
+        print(
+            "Supabase authentication status:",
+            response.status_code
         )
 
         if response.status_code != 200:
 
             print(
-                "Supabase user verification failed:",
+                "Supabase authentication error:",
                 response.text
             )
 
@@ -184,7 +196,7 @@ def get_authenticated_user():
     except Exception as error:
 
         print(
-            "User authentication error:",
+            "Authentication exception:",
             error
         )
 
@@ -279,7 +291,7 @@ Do not repeatedly say that you are an AI.
 
 
 # =========================================================
-# SAVE AI CONVERSATION
+# AI CONVERSATION SAVE
 # =========================================================
 
 def save_ai_conversation(
@@ -309,8 +321,7 @@ def save_ai_conversation(
             answer,
 
         "created_at":
-            datetime.utcnow().isoformat()
-
+            now_iso()
     }
 
     try:
@@ -319,35 +330,29 @@ def save_ai_conversation(
 
             AI_CONVERSATIONS_URL,
 
-            headers={
-
-                **SUPABASE_HEADERS,
-
-                "Prefer":
-                    "return=representation"
-
-            },
+            headers=supabase_headers(
+                "return=representation"
+            ),
 
             json=conversation_data,
 
             timeout=15
-
         )
 
         print(
-            "AI conversation save status:",
+            "AI conversation SAVE status:",
             response.status_code
+        )
+
+        print(
+            "AI conversation SAVE response:",
+            response.text
         )
 
         if response.status_code not in (
             200,
             201
         ):
-
-            print(
-                "AI conversation save error:",
-                response.text
-            )
 
             return False
 
@@ -356,7 +361,7 @@ def save_ai_conversation(
     except Exception as error:
 
         print(
-            "AI conversation save exception:",
+            "AI conversation SAVE exception:",
             error
         )
 
@@ -392,19 +397,15 @@ def ai_reply():
     if not question:
 
         return jsonify({
-
             "answer":
                 "Please enter your question."
-
         }), 400
 
     if not OPENROUTER_API_KEY:
 
         return jsonify({
-
             "answer":
                 "OpenRouter API key is not configured."
-
         }), 500
 
     user = get_authenticated_user()
@@ -415,15 +416,11 @@ def ai_reply():
         user_id = user.get("id")
 
     messages = [
-
         {
-            "role":
-                "system",
-
+            "role": "system",
             "content":
                 NEXAFLOW_SYSTEM_PROMPT
         }
-
     ]
 
     if isinstance(
@@ -459,23 +456,13 @@ def ai_reply():
                 continue
 
             messages.append({
-
-                "role":
-                    role,
-
-                "content":
-                    content
-
+                "role": role,
+                "content": content
             })
 
     messages.append({
-
-        "role":
-            "user",
-
-        "content":
-            question
-
+        "role": "user",
+        "content": question
     })
 
     if len(messages) > 21:
@@ -493,14 +480,18 @@ def ai_reply():
             "https://openrouter.ai/api/v1/chat/completions",
 
             headers={
-
                 "Authorization":
                     "Bearer "
                     + OPENROUTER_API_KEY,
 
                 "Content-Type":
-                    "application/json"
+                    "application/json",
 
+                "HTTP-Referer":
+                    SUPABASE_PROJECT_URL,
+
+                "X-Title":
+                    "NexaFlow AI"
             },
 
             json={
@@ -510,22 +501,23 @@ def ai_reply():
 
                 "messages":
                     messages
-
             },
 
             timeout=60
-
         )
-
-        try:
-            result = response.json()
-        except ValueError:
-            result = {}
 
         print(
             "OpenRouter status:",
             response.status_code
         )
+
+        try:
+
+            result = response.json()
+
+        except ValueError:
+
+            result = {}
 
         if response.status_code != 200:
 
@@ -552,6 +544,8 @@ def ai_reply():
             []
         )
 
+        answer = ""
+
         if choices:
 
             message = choices[0].get(
@@ -566,26 +560,33 @@ def ai_reply():
                 )
             ).strip()
 
-        else:
-
-            answer = ""
-
         if not answer:
 
             answer = (
                 "The AI did not return an answer."
             )
 
-        save_ai_conversation(
+        saved = save_ai_conversation(
             user_id,
             question,
             answer
         )
 
+        print(
+            "AI conversation saved:",
+            saved
+        )
+
         return jsonify({
 
+            "success":
+                True,
+
             "answer":
-                answer
+                answer,
+
+            "conversation_saved":
+                saved
 
         })
 
@@ -626,13 +627,15 @@ def get_customers():
 
         }), 401
 
+    user_id = user["id"]
+
     try:
 
         response = requests.get(
 
             CUSTOMERS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -640,7 +643,7 @@ def get_customers():
                     "*",
 
                 "user_id":
-                    "eq." + user["id"],
+                    "eq." + user_id,
 
                 "order":
                     "created_at.desc"
@@ -648,7 +651,6 @@ def get_customers():
             },
 
             timeout=15
-
         )
 
         print(
@@ -656,23 +658,27 @@ def get_customers():
             response.status_code
         )
 
-        if response.status_code != 200:
+        print(
+            "Customers GET response:",
+            response.text
+        )
 
-            print(
-                "Customers GET error:",
-                response.text
-            )
+        if response.status_code != 200:
 
             return jsonify({
 
                 "error":
-                    response.text
+                    "Unable to load customers: "
+                    + response.text
 
             }), response.status_code
 
         customers = response.json()
 
         return jsonify({
+
+            "success":
+                True,
 
             "customers":
                 customers,
@@ -692,9 +698,125 @@ def get_customers():
         return jsonify({
 
             "error":
-                str(error)
+                "Unable to load customers: "
+                + str(error)
 
         }), 500
+
+
+# =========================================================
+# CUSTOMER INSERT HELPER
+# =========================================================
+
+def insert_customer(
+    user_id,
+    customer_data
+):
+
+    # First attempt:
+    # Save all available customer information.
+
+    try:
+
+        response = requests.post(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            json=customer_data,
+
+            timeout=15
+        )
+
+        print(
+            "Customer full SAVE status:",
+            response.status_code
+        )
+
+        print(
+            "Customer full SAVE response:",
+            response.text
+        )
+
+        if response.status_code in (
+            200,
+            201
+        ):
+
+            return response
+
+        # -------------------------------------------------
+        # FALLBACK
+        #
+        # Some existing customers tables may not contain
+        # optional columns such as phone, email or location.
+        # -------------------------------------------------
+
+        fallback_data = {
+
+            "user_id":
+                user_id,
+
+            "name":
+                customer_data.get(
+                    "name",
+                    ""
+                ),
+
+            "message":
+                customer_data.get(
+                    "message",
+                    ""
+                ),
+
+            "ai_reply":
+                customer_data.get(
+                    "ai_reply",
+                    ""
+                ),
+
+            "created_at":
+                customer_data.get(
+                    "created_at"
+                )
+        }
+
+        fallback_response = requests.post(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            json=fallback_data,
+
+            timeout=15
+        )
+
+        print(
+            "Customer fallback SAVE status:",
+            fallback_response.status_code
+        )
+
+        print(
+            "Customer fallback SAVE response:",
+            fallback_response.text
+        )
+
+        return fallback_response
+
+    except Exception as error:
+
+        print(
+            "Customer insert exception:",
+            error
+        )
+
+        raise
 
 
 # =========================================================
@@ -718,6 +840,8 @@ def add_customer():
 
         }), 401
 
+    user_id = user["id"]
+
     data = request.get_json(
         silent=True
     ) or {}
@@ -725,6 +849,26 @@ def add_customer():
     name = str(
         data.get(
             "name",
+            data.get(
+                "customer_name",
+                ""
+            )
+        )
+    ).strip()
+
+    phone = str(
+        data.get(
+            "phone",
+            data.get(
+                "phone_number",
+                ""
+            )
+        )
+    ).strip()
+
+    location = str(
+        data.get(
+            "location",
             ""
         )
     ).strip()
@@ -732,20 +876,16 @@ def add_customer():
     message = str(
         data.get(
             "message",
-            ""
+            data.get(
+                "customer_message",
+                ""
+            )
         )
     ).strip()
 
     ai_reply = str(
         data.get(
             "ai_reply",
-            ""
-        )
-    ).strip()
-
-    phone = str(
-        data.get(
-            "phone",
             ""
         )
     ).strip()
@@ -769,16 +909,10 @@ def add_customer():
     customer_data = {
 
         "user_id":
-            user["id"],
+            user_id,
 
         "name":
             name,
-
-        "message":
-            message,
-
-        "ai_reply":
-            ai_reply,
 
         "phone":
             phone,
@@ -786,35 +920,24 @@ def add_customer():
         "email":
             email,
 
-        "created_at":
-            datetime.utcnow().isoformat()
+        "location":
+            location,
 
+        "message":
+            message,
+
+        "ai_reply":
+            ai_reply,
+
+        "created_at":
+            now_iso()
     }
 
     try:
 
-        response = requests.post(
-
-            CUSTOMERS_URL,
-
-            headers={
-
-                **SUPABASE_HEADERS,
-
-                "Prefer":
-                    "return=representation"
-
-            },
-
-            json=customer_data,
-
-            timeout=15
-
-        )
-
-        print(
-            "Customer SAVE status:",
-            response.status_code
+        response = insert_customer(
+            user_id,
+            customer_data
         )
 
         if response.status_code not in (
@@ -822,15 +945,11 @@ def add_customer():
             201
         ):
 
-            print(
-                "Customer SAVE error:",
-                response.text
-            )
-
             return jsonify({
 
                 "error":
-                    response.text
+                    "Unable to save customer: "
+                    + response.text
 
             }), response.status_code
 
@@ -847,12 +966,14 @@ def add_customer():
             result[0]
 
             if (
-                isinstance(result, list)
+                isinstance(
+                    result,
+                    list
+                )
                 and result
             )
 
             else customer_data
-
         )
 
         return jsonify({
@@ -878,7 +999,8 @@ def add_customer():
         return jsonify({
 
             "error":
-                str(error)
+                "Unable to save customer: "
+                + str(error)
 
         }), 500
 
@@ -910,12 +1032,14 @@ def delete_customer(customer_id):
 
             CUSTOMERS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
                 "id":
-                    "eq." + str(customer_id),
+                    "eq." + str(
+                        customer_id
+                    ),
 
                 "user_id":
                     "eq." + user["id"]
@@ -923,7 +1047,6 @@ def delete_customer(customer_id):
             },
 
             timeout=15
-
         )
 
         print(
@@ -969,279 +1092,6 @@ def delete_customer(customer_id):
 
 
 # =========================================================
-# REPORTS
-# =========================================================
-
-@app.route(
-    "/api/reports",
-    methods=["GET"]
-)
-def get_reports():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-
-            "error":
-                "Invalid or expired login session."
-
-        }), 401
-
-    user_id = user["id"]
-
-    try:
-
-        # -------------------------------------------------
-        # CUSTOMERS
-        # -------------------------------------------------
-
-        customer_response = requests.get(
-
-            CUSTOMERS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id
-
-            },
-
-            timeout=15
-
-        )
-
-        if customer_response.status_code != 200:
-
-            return jsonify({
-
-                "error":
-                    "Unable to load customer report: "
-                    + customer_response.text
-
-            }), customer_response.status_code
-
-        customers = customer_response.json()
-
-        # -------------------------------------------------
-        # AI CONVERSATIONS
-        # -------------------------------------------------
-
-        ai_response = requests.get(
-
-            AI_CONVERSATIONS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id
-
-            },
-
-            timeout=15
-
-        )
-
-        if ai_response.status_code != 200:
-
-            print(
-                "AI report load error:",
-                ai_response.text
-            )
-
-            ai_conversations = []
-
-        else:
-
-            ai_conversations = (
-                ai_response.json()
-            )
-
-        # -------------------------------------------------
-        # BUSINESS
-        # -------------------------------------------------
-
-        business_response = requests.get(
-
-            BUSINESS_ACCOUNTS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "limit":
-                    "1"
-
-            },
-
-            timeout=15
-
-        )
-
-        if business_response.status_code == 200:
-
-            businesses = (
-                business_response.json()
-            )
-
-        else:
-
-            businesses = []
-
-        # -------------------------------------------------
-        # AUTOMATION
-        # -------------------------------------------------
-
-        automation_response = requests.get(
-
-            AUTOMATION_SETTINGS_URL,
-
-            headers=SUPABASE_HEADERS,
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "limit":
-                    "1"
-
-            },
-
-            timeout=15
-
-        )
-
-        if automation_response.status_code == 200:
-
-            automation_rows = (
-                automation_response.json()
-            )
-
-        else:
-
-            automation_rows = []
-
-        automation = (
-
-            automation_rows[0]
-
-            if automation_rows
-
-            else {
-
-                "ai_replies":
-                    True,
-
-                "message_automation":
-                    True,
-
-                "task_automation":
-                    True
-
-            }
-
-        )
-
-        # -------------------------------------------------
-        # REPORT SUMMARY
-        # -------------------------------------------------
-
-        total_customers = len(
-            customers
-        )
-
-        total_conversations = len(
-            ai_conversations
-        )
-
-        total_ai_replies = len([
-
-            item
-
-            for item in ai_conversations
-
-            if str(
-                item.get(
-                    "answer",
-                    ""
-                )
-            ).strip()
-
-        ])
-
-        return jsonify({
-
-            "success":
-                True,
-
-            "report": {
-
-                "business":
-                    (
-                        businesses[0]
-                        if businesses
-                        else None
-                    ),
-
-                "total_customers":
-                    total_customers,
-
-                "total_ai_conversations":
-                    total_conversations,
-
-                "total_ai_replies":
-                    total_ai_replies,
-
-                "automation":
-                    automation,
-
-                "customers":
-                    customers,
-
-                "ai_conversations":
-                    ai_conversations
-
-            }
-
-        })
-
-    except Exception as error:
-
-        print(
-            "Reports GET exception:",
-            error
-        )
-
-        return jsonify({
-
-            "error":
-                str(error)
-
-        }), 500
-
-
-# =========================================================
 # DASHBOARD STATISTICS
 # =========================================================
 
@@ -1274,7 +1124,7 @@ def dashboard_stats():
 
             CUSTOMERS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -1283,11 +1133,14 @@ def dashboard_stats():
 
                 "user_id":
                     "eq." + user_id
-
             },
 
             timeout=15
+        )
 
+        print(
+            "Dashboard customers status:",
+            customers_response.status_code
         )
 
         if customers_response.status_code == 200:
@@ -1297,6 +1150,11 @@ def dashboard_stats():
             )
 
         else:
+
+            print(
+                "Dashboard customer error:",
+                customers_response.text
+            )
 
             customers = []
 
@@ -1308,7 +1166,7 @@ def dashboard_stats():
 
             AI_CONVERSATIONS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -1317,11 +1175,14 @@ def dashboard_stats():
 
                 "user_id":
                     "eq." + user_id
-
             },
 
             timeout=15
+        )
 
+        print(
+            "Dashboard AI conversations status:",
+            conversations_response.status_code
         )
 
         if conversations_response.status_code == 200:
@@ -1331,6 +1192,11 @@ def dashboard_stats():
             )
 
         else:
+
+            print(
+                "Dashboard AI error:",
+                conversations_response.text
+            )
 
             conversations = []
 
@@ -1342,7 +1208,7 @@ def dashboard_stats():
 
             BUSINESS_ACCOUNTS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -1354,11 +1220,9 @@ def dashboard_stats():
 
                 "limit":
                     "1"
-
             },
 
             timeout=15
-
         )
 
         if business_response.status_code == 200:
@@ -1384,11 +1248,14 @@ def dashboard_stats():
                 "ai_conversations":
                     len(conversations),
 
+                "reports":
+                    len(customers)
+                    + len(conversations),
+
                 "business_account":
                     1
                     if businesses
                     else 0
-
             }
 
         })
@@ -1396,7 +1263,7 @@ def dashboard_stats():
     except Exception as error:
 
         print(
-            "Dashboard statistics error:",
+            "Dashboard statistics exception:",
             error
         )
 
@@ -1435,7 +1302,7 @@ def get_ai_conversations():
 
             AI_CONVERSATIONS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -1447,11 +1314,19 @@ def get_ai_conversations():
 
                 "order":
                     "created_at.desc"
-
             },
 
             timeout=15
+        )
 
+        print(
+            "AI conversation HISTORY status:",
+            response.status_code
+        )
+
+        print(
+            "AI conversation HISTORY response:",
+            response.text
         )
 
         if response.status_code != 200:
@@ -1459,7 +1334,8 @@ def get_ai_conversations():
             return jsonify({
 
                 "error":
-                    response.text
+                    "Unable to load AI conversations: "
+                    + response.text
 
             }), response.status_code
 
@@ -1481,7 +1357,7 @@ def get_ai_conversations():
     except Exception as error:
 
         print(
-            "AI conversation history error:",
+            "AI conversation history exception:",
             error
         )
 
@@ -1489,6 +1365,268 @@ def get_ai_conversations():
 
             "error":
                 str(error)
+
+        }), 500
+
+
+# =========================================================
+# REPORTS
+# =========================================================
+
+@app.route(
+    "/api/reports",
+    methods=["GET"]
+)
+def get_reports():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+
+            "error":
+                "Invalid or expired login session."
+
+        }), 401
+
+    user_id = user["id"]
+
+    try:
+
+        # -------------------------------------------------
+        # CUSTOMERS
+        # -------------------------------------------------
+
+        customer_response = requests.get(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "user_id":
+                    "eq." + user_id
+            },
+
+            timeout=15
+        )
+
+        print(
+            "Reports customer status:",
+            customer_response.status_code
+        )
+
+        if customer_response.status_code != 200:
+
+            return jsonify({
+
+                "error":
+                    "Unable to load customer report: "
+                    + customer_response.text
+
+            }), customer_response.status_code
+
+        customers = customer_response.json()
+
+        # -------------------------------------------------
+        # AI CONVERSATIONS
+        # -------------------------------------------------
+
+        ai_response = requests.get(
+
+            AI_CONVERSATIONS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "user_id":
+                    "eq." + user_id
+            },
+
+            timeout=15
+        )
+
+        if ai_response.status_code == 200:
+
+            ai_conversations = (
+                ai_response.json()
+            )
+
+        else:
+
+            print(
+                "Reports AI error:",
+                ai_response.text
+            )
+
+            ai_conversations = []
+
+        # -------------------------------------------------
+        # BUSINESS
+        # -------------------------------------------------
+
+        business_response = requests.get(
+
+            BUSINESS_ACCOUNTS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "limit":
+                    "1"
+            },
+
+            timeout=15
+        )
+
+        if business_response.status_code == 200:
+
+            businesses = (
+                business_response.json()
+            )
+
+        else:
+
+            businesses = []
+
+        # -------------------------------------------------
+        # AUTOMATION
+        # -------------------------------------------------
+
+        automation_response = requests.get(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "limit":
+                    "1"
+            },
+
+            timeout=15
+        )
+
+        if automation_response.status_code == 200:
+
+            automation_rows = (
+                automation_response.json()
+            )
+
+        else:
+
+            automation_rows = []
+
+        automation = (
+
+            automation_rows[0]
+
+            if automation_rows
+
+            else {
+
+                "ai_replies":
+                    True,
+
+                "message_automation":
+                    True,
+
+                "task_automation":
+                    True
+            }
+        )
+
+        total_customers = len(
+            customers
+        )
+
+        total_conversations = len(
+            ai_conversations
+        )
+
+        total_ai_replies = len([
+
+            item
+
+            for item in ai_conversations
+
+            if str(
+                item.get(
+                    "answer",
+                    ""
+                )
+            ).strip()
+        ])
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "report": {
+
+                "business":
+                    (
+                        businesses[0]
+                        if businesses
+                        else None
+                    ),
+
+                "total_customers":
+                    total_customers,
+
+                "total_ai_conversations":
+                    total_conversations,
+
+                "total_ai_replies":
+                    total_ai_replies,
+
+                "automation":
+                    automation,
+
+                "customers":
+                    customers,
+
+                "ai_conversations":
+                    ai_conversations
+            }
+        })
+
+    except Exception as error:
+
+        print(
+            "Reports GET exception:",
+            error
+        )
+
+        return jsonify({
+
+            "error":
+                "Unable to load reports: "
+                + str(error)
 
         }), 500
 
@@ -1520,7 +1658,7 @@ def get_automation_settings():
 
             AUTOMATION_SETTINGS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -1532,11 +1670,9 @@ def get_automation_settings():
 
                 "limit":
                     "1"
-
             },
 
             timeout=15
-
         )
 
         print(
@@ -1545,11 +1681,6 @@ def get_automation_settings():
         )
 
         if response.status_code != 200:
-
-            print(
-                "Automation GET error:",
-                response.text
-            )
 
             return jsonify({
 
@@ -1584,9 +1715,7 @@ def get_automation_settings():
 
                 "task_automation":
                     True
-
             }
-
         })
 
     except Exception as error:
@@ -1659,8 +1788,7 @@ def save_automation_settings():
             ),
 
         "updated_at":
-            datetime.utcnow().isoformat()
-
+            now_iso()
     }
 
     try:
@@ -1669,20 +1797,14 @@ def save_automation_settings():
 
             AUTOMATION_SETTINGS_URL,
 
-            headers={
-
-                **SUPABASE_HEADERS,
-
-                "Prefer":
-                    "resolution=merge-duplicates,"
-                    "return=representation"
-
-            },
+            headers=supabase_headers(
+                "resolution=merge-duplicates,"
+                "return=representation"
+            ),
 
             json=automation,
 
             timeout=15
-
         )
 
         print(
@@ -1690,15 +1812,15 @@ def save_automation_settings():
             response.status_code
         )
 
+        print(
+            "Automation SAVE response:",
+            response.text
+        )
+
         if response.status_code not in (
             200,
             201
         ):
-
-            print(
-                "Automation SAVE error:",
-                response.text
-            )
 
             return jsonify({
 
@@ -1720,15 +1842,20 @@ def save_automation_settings():
             result[0]
 
             if (
-                isinstance(result, list)
+                isinstance(
+                    result,
+                    list
+                )
                 and result
             )
 
             else automation
-
         )
 
         return jsonify({
+
+            "success":
+                True,
 
             "message":
                 "Automation settings saved successfully.",
@@ -1794,7 +1921,6 @@ def toggle_automation():
         "message_automation",
 
         "task_automation"
-
     }
 
     if setting not in allowed_settings:
@@ -1824,8 +1950,7 @@ def toggle_automation():
             value,
 
         "updated_at":
-            datetime.utcnow().isoformat()
-
+            now_iso()
     }
 
     try:
@@ -1834,7 +1959,7 @@ def toggle_automation():
 
             AUTOMATION_SETTINGS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -1846,11 +1971,9 @@ def toggle_automation():
 
                 "limit":
                     "1"
-
             },
 
             timeout=15
-
         )
 
         if check.status_code != 200:
@@ -1870,26 +1993,19 @@ def toggle_automation():
 
                 AUTOMATION_SETTINGS_URL,
 
-                headers={
-
-                    **SUPABASE_HEADERS,
-
-                    "Prefer":
-                        "return=representation"
-
-                },
+                headers=supabase_headers(
+                    "return=representation"
+                ),
 
                 params={
 
                     "user_id":
                         "eq." + user["id"]
-
                 },
 
                 json=update_data,
 
                 timeout=15
-
             )
 
         else:
@@ -1906,33 +2022,25 @@ def toggle_automation():
                     True,
 
                 "task_automation":
-                    True
+                    True,
 
+                "updated_at":
+                    now_iso()
             }
 
             new_settings[setting] = value
-
-            new_settings["updated_at"] = (
-                datetime.utcnow().isoformat()
-            )
 
             response = requests.post(
 
                 AUTOMATION_SETTINGS_URL,
 
-                headers={
-
-                    **SUPABASE_HEADERS,
-
-                    "Prefer":
-                        "return=representation"
-
-                },
+                headers=supabase_headers(
+                    "return=representation"
+                ),
 
                 json=new_settings,
 
                 timeout=15
-
             )
 
         print(
@@ -1945,11 +2053,6 @@ def toggle_automation():
             201,
             204
         ):
-
-            print(
-                "Automation TOGGLE error:",
-                response.text
-            )
 
             return jsonify({
 
@@ -1968,6 +2071,9 @@ def toggle_automation():
 
         return jsonify({
 
+            "success":
+                True,
+
             "message":
                 "Automation setting updated successfully.",
 
@@ -1982,14 +2088,15 @@ def toggle_automation():
                 result[0]
 
                 if (
-                    isinstance(result, list)
+                    isinstance(
+                        result,
+                        list
+                    )
                     and result
                 )
 
                 else None
-
             )
-
         })
 
     except Exception as error:
@@ -2030,6 +2137,10 @@ def business_account():
 
     user_id = user["id"]
 
+    # -----------------------------------------------------
+    # GET BUSINESS
+    # -----------------------------------------------------
+
     if request.method == "GET":
 
         try:
@@ -2038,7 +2149,7 @@ def business_account():
 
                 BUSINESS_ACCOUNTS_URL,
 
-                headers=SUPABASE_HEADERS,
+                headers=supabase_headers(),
 
                 params={
 
@@ -2050,11 +2161,9 @@ def business_account():
 
                     "limit":
                         "1"
-
                 },
 
                 timeout=15
-
             )
 
             if response.status_code != 200:
@@ -2068,20 +2177,14 @@ def business_account():
 
             businesses = response.json()
 
-            if businesses:
-
-                return jsonify({
-
-                    "business":
-                        businesses[0]
-
-                })
-
             return jsonify({
 
                 "business":
-                    None
-
+                    (
+                        businesses[0]
+                        if businesses
+                        else None
+                    )
             })
 
         except Exception as error:
@@ -2092,6 +2195,10 @@ def business_account():
                     str(error)
 
             }), 500
+
+    # -----------------------------------------------------
+    # SAVE BUSINESS
+    # -----------------------------------------------------
 
     data = request.get_json(
         silent=True
@@ -2159,8 +2266,7 @@ def business_account():
             ).strip(),
 
         "updated_at":
-            datetime.utcnow().isoformat()
-
+            now_iso()
     }
 
     try:
@@ -2169,7 +2275,7 @@ def business_account():
 
             BUSINESS_ACCOUNTS_URL,
 
-            headers=SUPABASE_HEADERS,
+            headers=supabase_headers(),
 
             params={
 
@@ -2181,11 +2287,9 @@ def business_account():
 
                 "limit":
                     "1"
-
             },
 
             timeout=15
-
         )
 
         if check.status_code != 200:
@@ -2207,14 +2311,9 @@ def business_account():
 
                 BUSINESS_ACCOUNTS_URL,
 
-                headers={
-
-                    **SUPABASE_HEADERS,
-
-                    "Prefer":
-                        "return=representation"
-
-                },
+                headers=supabase_headers(
+                    "return=representation"
+                ),
 
                 params={
 
@@ -2225,13 +2324,11 @@ def business_account():
 
                     "user_id":
                         "eq." + user_id
-
                 },
 
                 json=business_data,
 
                 timeout=15
-
             )
 
         else:
@@ -2240,19 +2337,13 @@ def business_account():
 
                 BUSINESS_ACCOUNTS_URL,
 
-                headers={
-
-                    **SUPABASE_HEADERS,
-
-                    "Prefer":
-                        "return=representation"
-
-                },
+                headers=supabase_headers(
+                    "return=representation"
+                ),
 
                 json=business_data,
 
                 timeout=15
-
             )
 
         if response.status_code not in (
@@ -2275,30 +2366,28 @@ def business_account():
 
             saved = []
 
-        saved_business = (
-
-            saved[0]
-
-            if (
-                isinstance(saved, list)
-                and saved
-            )
-
-            else business_data
-
-        )
-
         return jsonify({
 
             "success":
                 True,
 
-            "business":
-                saved_business,
+            "business": (
+
+                saved[0]
+
+                if (
+                    isinstance(
+                        saved,
+                        list
+                    )
+                    and saved
+                )
+
+                else business_data
+            ),
 
             "message":
                 "Business settings saved successfully."
-
         })
 
     except Exception as error:
@@ -2377,7 +2466,6 @@ def upload_business_logo():
             ".png",
             ".gif",
             ".webp"
-
         )
 
         if not filename.lower().endswith(
@@ -2387,8 +2475,7 @@ def upload_business_logo():
             return jsonify({
 
                 "error":
-                    "Unsupported logo format. "
-                    "Use JPG, JPEG, PNG, GIF or WEBP."
+                    "Unsupported logo format."
 
             }), 400
 
@@ -2401,6 +2488,7 @@ def upload_business_logo():
         )[1].lower()
 
         storage_path = (
+
             user_id
             + "/business-logo"
             + extension
@@ -2413,7 +2501,6 @@ def upload_business_logo():
             + bucket_name
             + "/"
             + storage_path
-
         )
 
         upload_headers = {
@@ -2433,7 +2520,6 @@ def upload_business_logo():
 
             "x-upsert":
                 "true"
-
         }
 
         upload_response = requests.post(
@@ -2445,7 +2531,6 @@ def upload_business_logo():
             data=file_bytes,
 
             timeout=30
-
         )
 
         print(
@@ -2473,7 +2558,6 @@ def upload_business_logo():
             + bucket_name
             + "/"
             + storage_path
-
         )
 
         return jsonify({
@@ -2486,7 +2570,6 @@ def upload_business_logo():
 
             "message":
                 "Business logo uploaded successfully."
-
         })
 
     except Exception as error:
