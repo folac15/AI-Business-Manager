@@ -23,9 +23,8 @@ body{
 display:flex;
 background:#f4f7fb;
 min-height:100vh;
+color:#222;
 }
-
-/* SIDEBAR */
 
 .sidebar{
 width:250px;
@@ -33,6 +32,7 @@ background:#0b1f3a;
 color:white;
 padding:25px;
 min-height:100vh;
+flex-shrink:0;
 }
 
 .logo{
@@ -67,11 +67,10 @@ margin-bottom:8px;
 border-radius:8px;
 }
 
-.sidebar a:hover{
+.sidebar a:hover,
+.sidebar a.active{
 background:#0066ff;
 }
-
-/* MAIN */
 
 .main{
 flex:1;
@@ -79,24 +78,22 @@ padding:30px;
 min-width:0;
 }
 
-/* HEADER */
-
 .header{
 background:white;
 padding:20px;
 border-radius:12px;
 margin-bottom:30px;
+border:1px solid #e5e7eb;
 }
 
 .header h2{
 margin-bottom:8px;
+color:#0b1f3a;
 }
 
 .header p{
 color:#666;
 }
-
-/* AUTOMATION CARDS */
 
 .grid{
 display:grid;
@@ -109,10 +106,12 @@ background:white;
 padding:25px;
 border-radius:12px;
 box-shadow:0 3px 10px rgba(0,0,0,0.08);
+border:1px solid #e5e7eb;
 }
 
 .card h3{
 margin-bottom:15px;
+color:#0b1f3a;
 }
 
 .status{
@@ -130,8 +129,6 @@ color:#e53935;
 color:#666;
 line-height:1.5;
 }
-
-/* BUTTON */
 
 button{
 padding:12px 25px;
@@ -153,13 +150,12 @@ background:#999;
 cursor:not-allowed;
 }
 
-/* LOGS */
-
 .logs{
 margin-top:30px;
 background:white;
 padding:25px;
 border-radius:12px;
+border:1px solid #e5e7eb;
 }
 
 .log-item{
@@ -183,7 +179,18 @@ border-radius:8px;
 margin-top:15px;
 }
 
-/* MOBILE */
+.success{
+background:#effaf3;
+color:#16803c;
+padding:15px;
+border-radius:8px;
+margin-top:15px;
+}
+
+.loading{
+color:#666;
+padding:15px 0;
+}
 
 @media(max-width:800px){
 
@@ -219,6 +226,10 @@ padding:15px;
 grid-template-columns:1fr;
 }
 
+.card{
+padding:20px;
+}
+
 }
 
 </style>
@@ -228,7 +239,6 @@ grid-template-columns:1fr;
 <body>
 
 <script src="auth_guard.js"></script>
-
 
 <div class="sidebar">
 
@@ -262,7 +272,7 @@ Customers
 Analytics
 </a>
 
-<a href="automation.html">
+<a href="automation.html" class="active">
 Automation
 </a>
 
@@ -289,6 +299,8 @@ Settings
 Manage your NexaFlow AI business automation services.
 </p>
 
+<div id="pageStatus"></div>
+
 </div>
 
 
@@ -304,7 +316,9 @@ AI Customer Replies
 <div
 class="status"
 id="aiStatus">
-ON
+
+Loading...
+
 </div>
 
 <p>
@@ -314,9 +328,10 @@ and generate AI responses.
 
 <button
 id="aiToggleButton"
-onclick="toggleAI()">
+onclick="toggleAutomation('ai_replies')"
+disabled>
 
-Disable
+Loading...
 
 </button>
 
@@ -333,7 +348,7 @@ Message Automation
 class="status"
 id="messageStatus">
 
-ON
+Loading...
 
 </div>
 
@@ -344,9 +359,10 @@ messages.
 
 <button
 id="messageToggleButton"
-onclick="toggleMessageAutomation()">
+onclick="toggleAutomation('message_automation')"
+disabled>
 
-Disable
+Loading...
 
 </button>
 
@@ -363,7 +379,7 @@ Task Automation
 class="status"
 id="taskStatus">
 
-ON
+Loading...
 
 </div>
 
@@ -374,9 +390,10 @@ background operations.
 
 <button
 id="taskToggleButton"
-onclick="toggleTaskAutomation()">
+onclick="toggleAutomation('task_automation')"
+disabled>
 
-Disable
+Loading...
 
 </button>
 
@@ -395,7 +412,7 @@ Automation Activity Log
 <div id="automationLogs">
 
 <div class="log-item">
-System ready. Automation monitoring active.
+Loading automation system...
 </div>
 
 </div>
@@ -407,20 +424,76 @@ System ready. Automation monitoring active.
 
 
 <script>
-  
+
+/* =====================================================
+   GLOBAL AUTOMATION STATE
+===================================================== */
+
+let automationState = {
+
+ai_replies:true,
+
+message_automation:true,
+
+task_automation:true
+
+};
+
+
+/* =====================================================
+   GET ACCESS TOKEN
+===================================================== */
+
+function getToken(){
+
+return localStorage.getItem(
+"access_token"
+);
+
+}
+
+
+/* =====================================================
+   SHOW PAGE STATUS
+===================================================== */
+
+function showPageStatus(message,type){
+
+const element =
+document.getElementById(
+"pageStatus"
+);
+
+if(!element){
+return;
+}
+
+element.className =
+type === "error"
+? "error"
+: "success";
+
+element.textContent =
+message;
+
+}
+
+
+/* =====================================================
+   LOAD BUSINESS
+===================================================== */
+
 async function loadBusiness(){
 
 const token =
-localStorage.getItem(
-"access_token"
-);
+getToken();
 
 if(!token){
 
 window.location.href =
 "login.html";
 
-return;
+return false;
 
 }
 
@@ -438,8 +511,95 @@ headers:{
 }
 );
 
+if(response.status === 401){
+
+localStorage.removeItem(
+"access_token"
+);
+
+window.location.href =
+"login.html";
+
+return false;
+
+}
+
 const result =
 await response.json();
+
+if(
+result.business &&
+result.business.business_name
+){
+
+document.getElementById(
+"businessName"
+).textContent =
+result.business.business_name;
+
+}
+
+return true;
+
+}catch(error){
+
+console.error(
+"Business loading error:",
+error
+);
+
+return true;
+
+}
+
+}
+
+
+/* =====================================================
+   LOAD AUTOMATION FROM SUPABASE
+===================================================== */
+
+async function loadAutomation(){
+
+const token =
+getToken();
+
+if(!token){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+try{
+
+const response =
+await fetch(
+"/api/automation",
+{
+method:"GET",
+headers:{
+"Authorization":
+"Bearer " + token
+}
+}
+);
+
+let result = {};
+
+try{
+
+result =
+await response.json();
+
+}catch(error){
+
+result = {};
+
+}
+
 
 if(response.status === 401){
 
@@ -454,111 +614,63 @@ return;
 
 }
 
-if(
-result.business &&
-result.business.business_name
-){
 
-document.getElementById(
-"businessName"
-).textContent =
-result.business.business_name;
-
-}
-
-}catch(error){
+if(!response.ok){
 
 console.error(
-"Business loading error:",
-error
+"Automation GET error:",
+result
 );
 
-}
-
-}
-
-
-/* =====================================================
-   AUTOMATION STATE
-===================================================== */
-
-let automationState = {
-
-aiReplies:true,
-
-messageAutomation:true,
-
-taskAutomation:true
-
-};
-
-
-/* =====================================================
-   SAVE AUTOMATION STATE
-===================================================== */
-
-function saveAutomationState(){
-
-localStorage.setItem(
-"nexaflow_automation_state",
-JSON.stringify(
-automationState
-)
+showPageStatus(
+"Unable to load automation settings.",
+"error"
 );
+
+return;
 
 }
 
 
-/* =====================================================
-   LOAD AUTOMATION STATE
-===================================================== */
+const automation =
+result.automation || {};
 
-function loadAutomationState(){
-
-try{
-
-const saved =
-localStorage.getItem(
-"nexaflow_automation_state"
-);
-
-if(saved){
-
-const parsed =
-JSON.parse(saved);
-
-if(
-parsed &&
-typeof parsed === "object"
-){
 
 automationState = {
 
-aiReplies:
-parsed.aiReplies !== false,
+ai_replies:
+automation.ai_replies !== false,
 
-messageAutomation:
-parsed.messageAutomation !== false,
+message_automation:
+automation.message_automation !== false,
 
-taskAutomation:
-parsed.taskAutomation !== false
+task_automation:
+automation.task_automation !== false
 
 };
 
-}
 
-}
+updateAutomationUI();
+
+
+addLog(
+"Automation settings loaded successfully from Supabase."
+);
+
 
 }catch(error){
 
 console.error(
-"Automation state error:",
+"Automation loading error:",
 error
 );
 
-}
+showPageStatus(
+"Connection error while loading automation settings.",
+"error"
+);
 
-updateAutomationUI();
+}
 
 }
 
@@ -569,212 +681,299 @@ updateAutomationUI();
 
 function updateAutomationUI(){
 
-const aiStatus =
-document.getElementById(
-"aiStatus"
+updateCard(
+"aiStatus",
+"aiToggleButton",
+automationState.ai_replies
 );
 
-const aiButton =
-document.getElementById(
-"aiToggleButton"
+updateCard(
+"messageStatus",
+"messageToggleButton",
+automationState.message_automation
 );
 
-
-if(automationState.aiReplies){
-
-aiStatus.textContent =
-"ON";
-
-aiStatus.classList.remove(
-"off"
+updateCard(
+"taskStatus",
+"taskToggleButton",
+automationState.task_automation
 );
-
-aiButton.textContent =
-"Disable";
-
-}else{
-
-aiStatus.textContent =
-"OFF";
-
-aiStatus.classList.add(
-"off"
-);
-
-aiButton.textContent =
-"Enable";
 
 }
 
 
-/* MESSAGE AUTOMATION */
+/* =====================================================
+   UPDATE ONE CARD
+===================================================== */
 
-const messageStatus =
+function updateCard(
+statusId,
+buttonId,
+isOn
+){
+
+const status =
 document.getElementById(
-"messageStatus"
+statusId
 );
 
-const messageButton =
+const button =
 document.getElementById(
-"messageToggleButton"
+buttonId
 );
 
+if(!status || !button){
+return;
+}
 
-if(automationState.messageAutomation){
 
-messageStatus.textContent =
+if(isOn){
+
+status.textContent =
 "ON";
 
-messageStatus.classList.remove(
+status.classList.remove(
 "off"
 );
 
-messageButton.textContent =
+button.textContent =
 "Disable";
 
 }else{
 
-messageStatus.textContent =
+status.textContent =
 "OFF";
 
-messageStatus.classList.add(
+status.classList.add(
 "off"
 );
 
-messageButton.textContent =
+button.textContent =
 "Enable";
 
 }
 
+button.disabled =
+false;
 
-/* TASK AUTOMATION */
+}
 
-const taskStatus =
-document.getElementById(
-"taskStatus"
-);
 
-const taskButton =
-document.getElementById(
+/* =====================================================
+   TOGGLE AUTOMATION
+===================================================== */
+
+async function toggleAutomation(
+setting
+){
+
+const token =
+getToken();
+
+if(!token){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+let currentValue =
+automationState[setting];
+
+const newValue =
+!currentValue;
+
+
+const buttonMap = {
+
+ai_replies:
+"aiToggleButton",
+
+message_automation:
+"messageToggleButton",
+
+task_automation:
 "taskToggleButton"
+
+};
+
+
+const button =
+document.getElementById(
+buttonMap[setting]
 );
 
 
-if(automationState.taskAutomation){
+if(button){
 
-taskStatus.textContent =
-"ON";
+button.disabled =
+true;
 
-taskStatus.classList.remove(
-"off"
-);
-
-taskButton.textContent =
-"Disable";
-
-}else{
-
-taskStatus.textContent =
-"OFF";
-
-taskStatus.classList.add(
-"off"
-);
-
-taskButton.textContent =
-"Enable";
-
-}
+button.textContent =
+"Saving...";
 
 }
 
 
-/* =====================================================
-   TOGGLE AI
-===================================================== */
+try{
 
-function toggleAI(){
+const response =
+await fetch(
+"/api/automation/toggle",
+{
 
-automationState.aiReplies =
-!automationState.aiReplies;
+method:"POST",
 
-saveAutomationState();
+headers:{
+
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " + token
+
+},
+
+body:JSON.stringify({
+
+setting:
+setting,
+
+value:
+newValue
+
+})
+
+}
+);
+
+
+let result = {};
+
+try{
+
+result =
+await response.json();
+
+}catch(error){
+
+result = {};
+
+}
+
+
+console.log(
+"Automation toggle response:",
+result
+);
+
+
+if(response.status === 401){
+
+localStorage.removeItem(
+"access_token"
+);
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+if(!response.ok){
+
+if(button){
+
+button.disabled =
+false;
+
+}
+
+showPageStatus(
+
+result.error ||
+"Unable to update automation setting.",
+
+"error"
+
+);
+
+return;
+
+}
+
+
+/* UPDATE LOCAL PAGE STATE ONLY AFTER SERVER SUCCESS */
+
+automationState[setting] =
+newValue;
+
 
 updateAutomationUI();
 
+
+const names = {
+
+ai_replies:
+"AI customer reply automation",
+
+message_automation:
+"Message automation",
+
+task_automation:
+"Task automation"
+
+};
+
+
 addLog(
 
-automationState.aiReplies
-
-?
-
-"AI customer reply automation enabled."
-
-:
-
-"AI customer reply automation disabled."
+names[setting]
++
+(
+newValue
+? " enabled."
+: " disabled."
+)
 
 );
 
-}
+
+showPageStatus(
+
+names[setting]
++
+(
+newValue
+? " enabled successfully."
+: " disabled successfully."
+),
+
+"success"
+
+);
 
 
-/* =====================================================
-   TOGGLE MESSAGE AUTOMATION
-===================================================== */
+}catch(error){
 
-function toggleMessageAutomation(){
+console.error(
+"Automation toggle error:",
+error
+);
 
-automationState.messageAutomation =
-!automationState.messageAutomation;
-
-saveAutomationState();
+showPageStatus(
+"Connection error. Automation setting was not changed.",
+"error"
+);
 
 updateAutomationUI();
 
-addLog(
-
-automationState.messageAutomation
-
-?
-
-"Message automation enabled."
-
-:
-
-"Message automation disabled."
-
-);
-
 }
-
-
-/* =====================================================
-   TOGGLE TASK AUTOMATION
-===================================================== */
-
-function toggleTaskAutomation(){
-
-automationState.taskAutomation =
-!automationState.taskAutomation;
-
-saveAutomationState();
-
-updateAutomationUI();
-
-addLog(
-
-automationState.taskAutomation
-
-?
-
-"Task automation enabled."
-
-:
-
-"Task automation disabled."
-
-);
 
 }
 
@@ -791,10 +990,21 @@ document.getElementById(
 );
 
 if(!logContainer){
-
 return;
+}
+
+
+const existingLoading =
+logContainer.querySelector(
+".loading-log"
+);
+
+if(existingLoading){
+
+existingLoading.remove();
 
 }
+
 
 const log =
 document.createElement(
@@ -804,14 +1014,17 @@ document.createElement(
 log.className =
 "log-item";
 
+
 const time =
 new Date().toLocaleString();
+
 
 log.innerHTML =
 "<b>" +
 escapeHtml(time) +
 "</b><br>" +
 escapeHtml(message);
+
 
 logContainer.prepend(
 log
@@ -853,14 +1066,6 @@ return String(value)
 "&#039;"
 );
 
-  }
-  
-async function checkAutomation(){
-
-addLog(
-"Automation system checked successfully."
-);
-
 }
 
 
@@ -872,11 +1077,14 @@ window.addEventListener(
 "load",
 async function(){
 
+const authenticated =
 await loadBusiness();
 
-loadAutomationState();
+if(authenticated === false){
+return;
+}
 
-await checkAutomation();
+await loadAutomation();
 
 }
 );
