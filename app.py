@@ -148,9 +148,11 @@ def get_authenticated_user():
         return None
 
     if not SUPABASE_SECRET_KEY:
+
         print(
             "SUPABASE_SECRET_KEY is not configured."
         )
+
         return None
 
     try:
@@ -705,121 +707,6 @@ def get_customers():
 
 
 # =========================================================
-# CUSTOMER INSERT HELPER
-# =========================================================
-
-def insert_customer(
-    user_id,
-    customer_data
-):
-
-    # First attempt:
-    # Save all available customer information.
-
-    try:
-
-        response = requests.post(
-
-            CUSTOMERS_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=customer_data,
-
-            timeout=15
-        )
-
-        print(
-            "Customer full SAVE status:",
-            response.status_code
-        )
-
-        print(
-            "Customer full SAVE response:",
-            response.text
-        )
-
-        if response.status_code in (
-            200,
-            201
-        ):
-
-            return response
-
-        # -------------------------------------------------
-        # FALLBACK
-        #
-        # Some existing customers tables may not contain
-        # optional columns such as phone, email or location.
-        # -------------------------------------------------
-
-        fallback_data = {
-
-            "user_id":
-                user_id,
-
-            "name":
-                customer_data.get(
-                    "name",
-                    ""
-                ),
-
-            "message":
-                customer_data.get(
-                    "message",
-                    ""
-                ),
-
-            "ai_reply":
-                customer_data.get(
-                    "ai_reply",
-                    ""
-                ),
-
-            "created_at":
-                customer_data.get(
-                    "created_at"
-                )
-        }
-
-        fallback_response = requests.post(
-
-            CUSTOMERS_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=fallback_data,
-
-            timeout=15
-        )
-
-        print(
-            "Customer fallback SAVE status:",
-            fallback_response.status_code
-        )
-
-        print(
-            "Customer fallback SAVE response:",
-            fallback_response.text
-        )
-
-        return fallback_response
-
-    except Exception as error:
-
-        print(
-            "Customer insert exception:",
-            error
-        )
-
-        raise
-
-
-# =========================================================
 # CUSTOMERS - ADD
 # =========================================================
 
@@ -866,6 +753,13 @@ def add_customer():
         )
     ).strip()
 
+    email = str(
+        data.get(
+            "email",
+            ""
+        )
+    ).strip()
+
     location = str(
         data.get(
             "location",
@@ -890,13 +784,6 @@ def add_customer():
         )
     ).strip()
 
-    email = str(
-        data.get(
-            "email",
-            ""
-        )
-    ).strip()
-
     if not name:
 
         return jsonify({
@@ -905,6 +792,18 @@ def add_customer():
                 "Customer name is required."
 
         }), 400
+
+    # IMPORTANT:
+    # These fields MUST exist in Supabase customers table:
+    #
+    # name
+    # phone
+    # email
+    # location
+    # message
+    # ai_reply
+    # user_id
+    # created_at
 
     customer_data = {
 
@@ -935,10 +834,33 @@ def add_customer():
 
     try:
 
-        response = insert_customer(
-            user_id,
-            customer_data
+        response = requests.post(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            json=customer_data,
+
+            timeout=15
         )
+
+        print(
+            "Customer SAVE status:",
+            response.status_code
+        )
+
+        print(
+            "Customer SAVE response:",
+            response.text
+        )
+
+        # IMPORTANT:
+        # We no longer silently remove phone,
+        # email or location if Supabase rejects
+        # the insert.
 
         if response.status_code not in (
             200,
@@ -946,6 +868,9 @@ def add_customer():
         ):
 
             return jsonify({
+
+                "success":
+                    False,
 
                 "error":
                     "Unable to save customer: "
@@ -997,6 +922,9 @@ def add_customer():
         )
 
         return jsonify({
+
+            "success":
+                False,
 
             "error":
                 "Unable to save customer: "
@@ -1116,10 +1044,6 @@ def dashboard_stats():
 
     try:
 
-        # -------------------------------------------------
-        # CUSTOMERS
-        # -------------------------------------------------
-
         customers_response = requests.get(
 
             CUSTOMERS_URL,
@@ -1138,11 +1062,6 @@ def dashboard_stats():
             timeout=15
         )
 
-        print(
-            "Dashboard customers status:",
-            customers_response.status_code
-        )
-
         if customers_response.status_code == 200:
 
             customers = (
@@ -1157,10 +1076,6 @@ def dashboard_stats():
             )
 
             customers = []
-
-        # -------------------------------------------------
-        # AI CONVERSATIONS
-        # -------------------------------------------------
 
         conversations_response = requests.get(
 
@@ -1180,11 +1095,6 @@ def dashboard_stats():
             timeout=15
         )
 
-        print(
-            "Dashboard AI conversations status:",
-            conversations_response.status_code
-        )
-
         if conversations_response.status_code == 200:
 
             conversations = (
@@ -1199,10 +1109,6 @@ def dashboard_stats():
             )
 
             conversations = []
-
-        # -------------------------------------------------
-        # BUSINESS
-        # -------------------------------------------------
 
         business_response = requests.get(
 
@@ -1324,11 +1230,6 @@ def get_ai_conversations():
             response.status_code
         )
 
-        print(
-            "AI conversation HISTORY response:",
-            response.text
-        )
-
         if response.status_code != 200:
 
             return jsonify({
@@ -1394,10 +1295,6 @@ def get_reports():
 
     try:
 
-        # -------------------------------------------------
-        # CUSTOMERS
-        # -------------------------------------------------
-
         customer_response = requests.get(
 
             CUSTOMERS_URL,
@@ -1410,15 +1307,13 @@ def get_reports():
                     "*",
 
                 "user_id":
-                    "eq." + user_id
+                    "eq." + user_id,
+
+                "order":
+                    "created_at.desc"
             },
 
             timeout=15
-        )
-
-        print(
-            "Reports customer status:",
-            customer_response.status_code
         )
 
         if customer_response.status_code != 200:
@@ -1433,10 +1328,6 @@ def get_reports():
 
         customers = customer_response.json()
 
-        # -------------------------------------------------
-        # AI CONVERSATIONS
-        # -------------------------------------------------
-
         ai_response = requests.get(
 
             AI_CONVERSATIONS_URL,
@@ -1449,7 +1340,10 @@ def get_reports():
                     "*",
 
                 "user_id":
-                    "eq." + user_id
+                    "eq." + user_id,
+
+                "order":
+                    "created_at.desc"
             },
 
             timeout=15
@@ -1469,10 +1363,6 @@ def get_reports():
             )
 
             ai_conversations = []
-
-        # -------------------------------------------------
-        # BUSINESS
-        # -------------------------------------------------
 
         business_response = requests.get(
 
@@ -1504,10 +1394,6 @@ def get_reports():
         else:
 
             businesses = []
-
-        # -------------------------------------------------
-        # AUTOMATION
-        # -------------------------------------------------
 
         automation_response = requests.get(
 
@@ -1607,6 +1493,10 @@ def get_reports():
                 "automation":
                     automation,
 
+                # IMPORTANT:
+                # Full customer objects are returned,
+                # including phone, email and location.
+
                 "customers":
                     customers,
 
@@ -1673,11 +1563,6 @@ def get_automation_settings():
             },
 
             timeout=15
-        )
-
-        print(
-            "Automation GET status:",
-            response.status_code
         )
 
         if response.status_code != 200:
@@ -1805,16 +1690,6 @@ def save_automation_settings():
             json=automation,
 
             timeout=15
-        )
-
-        print(
-            "Automation SAVE status:",
-            response.status_code
-        )
-
-        print(
-            "Automation SAVE response:",
-            response.text
         )
 
         if response.status_code not in (
@@ -2043,11 +1918,6 @@ def toggle_automation():
                 timeout=15
             )
 
-        print(
-            "Automation TOGGLE status:",
-            response.status_code
-        )
-
         if response.status_code not in (
             200,
             201,
@@ -2137,10 +2007,6 @@ def business_account():
 
     user_id = user["id"]
 
-    # -----------------------------------------------------
-    # GET BUSINESS
-    # -----------------------------------------------------
-
     if request.method == "GET":
 
         try:
@@ -2195,10 +2061,6 @@ def business_account():
                     str(error)
 
             }), 500
-
-    # -----------------------------------------------------
-    # SAVE BUSINESS
-    # -----------------------------------------------------
 
     data = request.get_json(
         silent=True
@@ -2460,7 +2322,6 @@ def upload_business_logo():
         filename = logo_file.filename
 
         allowed_extensions = (
-
             ".jpg",
             ".jpeg",
             ".png",
@@ -2488,14 +2349,12 @@ def upload_business_logo():
         )[1].lower()
 
         storage_path = (
-
             user_id
             + "/business-logo"
             + extension
         )
 
         storage_url = (
-
             SUPABASE_PROJECT_URL
             + "/storage/v1/object/"
             + bucket_name
@@ -2552,7 +2411,6 @@ def upload_business_logo():
             }), upload_response.status_code
 
         logo_url = (
-
             SUPABASE_PROJECT_URL
             + "/storage/v1/object/public/"
             + bucket_name
