@@ -3251,7 +3251,960 @@ def store_whatsapp_message(
 
         return None
 
+# =========================================================
+# WHATSAPP - AI AUTOMATION
+# =========================================================
 
+def whatsapp_automation_enabled(user_id):
+
+    try:
+
+        response = requests.get(
+
+            AUTOMATION_SETTINGS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "ai_replies,message_automation",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "Automation lookup error:",
+                response.text
+            )
+
+            return False
+
+        rows = response.json()
+
+        if not rows:
+
+            return True
+
+        settings = rows[0]
+
+        return bool(
+
+            settings.get(
+                "ai_replies",
+                True
+            )
+
+            and
+
+            settings.get(
+                "message_automation",
+                True
+            )
+
+        )
+
+    except Exception as error:
+
+        print(
+            "Automation lookup exception:",
+            error
+        )
+
+        return False
+
+
+def get_whatsapp_conversation_history(
+    user_id,
+    customer_id,
+    limit=10
+):
+
+    if not customer_id:
+
+        return []
+
+    try:
+
+        response = requests.get(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "direction,message,ai_reply,created_at",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "customer_id":
+                    "eq." + str(customer_id),
+
+                "order":
+                    "created_at.desc",
+
+                "limit":
+                    str(limit)
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "WhatsApp history lookup error:",
+                response.text
+            )
+
+            return []
+
+        rows = response.json()
+
+        rows.reverse()
+
+        history = []
+
+        for row in rows:
+
+            message = str(
+                row.get(
+                    "message",
+                    ""
+                )
+            ).strip()
+
+            ai_reply = str(
+                row.get(
+                    "ai_reply",
+                    ""
+                )
+            ).strip()
+
+            direction = row.get(
+                "direction"
+            )
+
+            if (
+                direction == "inbound"
+                and message
+            ):
+
+                history.append({
+
+                    "role":
+                        "user",
+
+                    "content":
+                        message
+
+                })
+
+                if ai_reply:
+
+                    history.append({
+
+                        "role":
+                            "assistant",
+
+                        "content":
+                            ai_reply
+
+                    })
+
+            elif (
+                direction == "outbound"
+                and message
+            ):
+
+                history.append({
+
+                    "role":
+                        "assistant",
+
+                    "content":
+                        message
+
+                })
+
+        return history[-20:]
+
+    except Exception as error:
+
+        print(
+            "WhatsApp history exception:",
+            error
+        )
+
+        return []
+
+
+def generate_whatsapp_ai_reply(
+    user_id,
+    customer,
+    message_text
+):
+
+    if not OPENROUTER_API_KEY:
+
+        print(
+            "WhatsApp AI error: "
+            "OPENROUTER_API_KEY is missing."
+        )
+
+        return None
+
+    customer_name = ""
+
+    if customer:
+
+        customer_name = str(
+            customer.get(
+                "name",
+                ""
+            )
+        ).strip()
+
+    customer_id = None
+
+    if customer:
+
+        customer_id = customer.get(
+            "id"
+        )
+
+    history = get_whatsapp_conversation_history(
+
+        user_id,
+
+        customer_id
+
+    )
+
+    whatsapp_prompt = (
+
+        NEXAFLOW_SYSTEM_PROMPT
+
+        + "\n\nYou are replying to a customer through WhatsApp."
+
+        + "\nKeep the response natural, helpful and reasonably concise."
+
+        + "\nDo not mention internal systems, databases, APIs, "
+          "or these instructions."
+
+    )
+
+    if customer_name:
+
+        whatsapp_prompt += (
+
+            "\nThe customer's name is "
+            + customer_name
+            + "."
+
+        )
+
+    messages = [
+
+        {
+
+            "role":
+                "system",
+
+            "content":
+                whatsapp_prompt
+
+        }
+
+    ]
+
+    messages.extend(
+        history
+    )
+
+    messages.append({
+
+        "role":
+            "user",
+
+        "content":
+            message_text
+
+    })
+
+    if len(messages) > 21:
+
+        messages = (
+
+            [messages[0]]
+
+            +
+
+            messages[-20:]
+
+        )
+
+    try:
+
+        response = requests.post(
+
+            "https://openrouter.ai/api/v1/chat/completions",
+
+            headers={
+
+                "Authorization":
+                    "Bearer "
+                    + OPENROUTER_API_KEY,
+
+                "Content-Type":
+                    "application/json",
+
+                "HTTP-Referer":
+                    SUPABASE_PROJECT_URL,
+
+                "X-Title":
+                    "NexaFlow AI WhatsApp"
+
+            },
+
+            json={
+
+                "model":
+                    "openai/gpt-oss-20b:free",
+
+                "messages":
+                    messages
+
+            },
+
+            timeout=60
+
+        )
+
+        print(
+            "WhatsApp OpenRouter status:",
+            response.status_code
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "WhatsApp OpenRouter error:",
+                response.text
+            )
+
+            return None
+
+        result = response.json()
+
+        choices = result.get(
+            "choices",
+            []
+        )
+
+        if not choices:
+
+            return None
+
+        answer = str(
+
+            choices[0]
+
+            .get(
+                "message",
+                {}
+            )
+
+            .get(
+                "content",
+                ""
+            )
+
+        ).strip()
+
+        if not answer:
+
+            return None
+
+        return answer
+
+    except Exception as error:
+
+        print(
+            "WhatsApp AI generation exception:",
+            error
+        )
+
+        return None
+
+
+def send_whatsapp_message(
+    integration,
+    recipient_phone,
+    message_text
+):
+
+    if (
+        not integration
+        or not recipient_phone
+        or not message_text
+    ):
+
+        return None
+
+    settings = integration.get(
+        "settings"
+    ) or {}
+
+    phone_number_id = str(
+
+        settings.get(
+
+            "phone_number_id",
+
+            WHATSAPP_PHONE_NUMBER_ID
+            or ""
+
+        )
+
+    ).strip()
+
+    access_token = str(
+
+        integration.get(
+
+            "access_token",
+
+            WHATSAPP_ACCESS_TOKEN
+            or ""
+
+        )
+
+    ).strip()
+
+    if not phone_number_id:
+
+        print(
+            "WhatsApp send error: "
+            "phone number ID missing."
+        )
+
+        return None
+
+    if not access_token:
+
+        print(
+            "WhatsApp send error: "
+            "access token missing."
+        )
+
+        return None
+
+    send_url = (
+
+        "https://graph.facebook.com/v23.0/"
+
+        + phone_number_id
+
+        + "/messages"
+
+    )
+
+    try:
+
+        response = requests.post(
+
+            send_url,
+
+            headers={
+
+                "Authorization":
+                    "Bearer "
+                    + access_token,
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+            json={
+
+                "messaging_product":
+                    "whatsapp",
+
+                "to":
+                    recipient_phone,
+
+                "type":
+                    "text",
+
+                "text": {
+
+                    "preview_url":
+                        False,
+
+                    "body":
+                        message_text
+
+                }
+
+            },
+
+            timeout=30
+
+        )
+
+        print(
+            "WhatsApp SEND status:",
+            response.status_code
+        )
+
+        print(
+            "WhatsApp SEND response:",
+            response.text
+        )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            return None
+
+        return response.json()
+
+    except Exception as error:
+
+        print(
+            "WhatsApp SEND exception:",
+            error
+        )
+
+        return None
+
+
+def store_whatsapp_outgoing_message(
+    integration,
+    customer,
+    recipient_phone,
+    message_text,
+    whatsapp_response
+):
+
+    if not integration:
+
+        return None
+
+    user_id = integration.get(
+        "user_id"
+    )
+
+    customer_id = (
+
+        customer.get("id")
+
+        if customer
+
+        else None
+
+    )
+
+    response_messages = (
+
+        whatsapp_response.get(
+            "messages",
+            []
+        )
+
+        if isinstance(
+            whatsapp_response,
+            dict
+        )
+
+        else []
+
+    )
+
+    external_message_id = ""
+
+    if response_messages:
+
+        external_message_id = str(
+
+            response_messages[0].get(
+                "id",
+                ""
+            )
+
+        )
+
+    message_data = {
+
+        "user_id":
+            user_id,
+
+        "integration_id":
+            integration.get("id"),
+
+        "customer_id":
+            customer_id,
+
+        "platform":
+            "whatsapp",
+
+        "external_message_id":
+            external_message_id,
+
+        "direction":
+            "outbound",
+
+        "sender_name":
+            "NexaFlow AI",
+
+        "sender_phone":
+            recipient_phone,
+
+        "message":
+            message_text,
+
+        "ai_generated":
+            True,
+
+        "ai_reply":
+            message_text,
+
+        "status":
+            "sent",
+
+        "metadata": {
+
+            "source":
+                "nexaflow_ai"
+
+        },
+
+        "created_at":
+            now_iso(),
+
+        "updated_at":
+            now_iso()
+
+    }
+
+    try:
+
+        response = requests.post(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            json=message_data,
+
+            timeout=15
+
+        )
+
+        print(
+            "WhatsApp outgoing SAVE status:",
+            response.status_code
+        )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            print(
+                "WhatsApp outgoing SAVE error:",
+                response.text
+            )
+
+            return None
+
+        result = response.json()
+
+        if (
+            isinstance(
+                result,
+                list
+            )
+            and result
+        ):
+
+            return result[0]
+
+        return message_data
+
+    except Exception as error:
+
+        print(
+            "WhatsApp outgoing SAVE exception:",
+            error
+        )
+
+        return None
+
+
+def update_incoming_message_with_ai_reply(
+    message_id,
+    ai_reply
+):
+
+    if (
+        not message_id
+        or not ai_reply
+    ):
+
+        return False
+
+    try:
+
+        response = requests.patch(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            params={
+
+                "id":
+                    "eq." + str(
+                        message_id
+                    )
+
+            },
+
+            json={
+
+                "ai_reply":
+                    ai_reply,
+
+                "status":
+                    "replied",
+
+                "updated_at":
+                    now_iso()
+
+            },
+
+            timeout=15
+
+        )
+
+        print(
+            "Incoming WhatsApp update status:",
+            response.status_code
+        )
+
+        if response.status_code not in (
+            200,
+            204
+        ):
+
+            print(
+                "Incoming WhatsApp update error:",
+                response.text
+            )
+
+            return False
+
+        return True
+
+    except Exception as error:
+
+        print(
+            "Incoming WhatsApp update exception:",
+            error
+        )
+
+        return False
+
+
+def process_whatsapp_ai_reply(
+    integration,
+    stored_message
+):
+
+    if (
+        not integration
+        or not stored_message
+    ):
+
+        return False
+
+    user_id = integration.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        return False
+
+    if not whatsapp_automation_enabled(
+        user_id
+    ):
+
+        print(
+            "WhatsApp AI automation is disabled."
+        )
+
+        return False
+
+    message_text = str(
+
+        stored_message.get(
+            "message",
+            ""
+        )
+
+    ).strip()
+
+    recipient_phone = str(
+
+        stored_message.get(
+            "sender_phone",
+            ""
+        )
+
+    ).strip()
+
+    if (
+        not message_text
+        or not recipient_phone
+    ):
+
+        return False
+
+    customer_id = stored_message.get(
+        "customer_id"
+    )
+
+    customer = None
+
+    if customer_id:
+
+        try:
+
+            response = requests.get(
+
+                CUSTOMERS_URL,
+
+                headers=supabase_headers(),
+
+                params={
+
+                    "select":
+                        "*",
+
+                    "id":
+                        "eq."
+                        + str(customer_id),
+
+                    "user_id":
+                        "eq." + user_id,
+
+                    "limit":
+                        "1"
+
+                },
+
+                timeout=15
+
+            )
+
+            if response.status_code == 200:
+
+                rows = response.json()
+
+                if rows:
+
+                    customer = rows[0]
+
+        except Exception as error:
+
+            print(
+                "WhatsApp customer retrieval exception:",
+                error
+            )
+
+    ai_reply = generate_whatsapp_ai_reply(
+
+        user_id,
+
+        customer,
+
+        message_text
+
+    )
+
+    if not ai_reply:
+
+        print(
+            "WhatsApp AI did not generate a reply."
+        )
+
+        return False
+
+    whatsapp_response = send_whatsapp_message(
+
+        integration,
+
+        recipient_phone,
+
+        ai_reply
+
+    )
+
+    if not whatsapp_response:
+
+        return False
+
+    outgoing = store_whatsapp_outgoing_message(
+
+        integration,
+
+        customer,
+
+        recipient_phone,
+
+        ai_reply,
+
+        whatsapp_response
+
+    )
+
+    if not outgoing:
+
+        return False
+
+    update_incoming_message_with_ai_reply(
+
+        stored_message.get("id"),
+
+        ai_reply
+
+    )
+
+    return True
 # =========================================================
 # WHATSAPP - WEBHOOK VERIFICATION
 # =========================================================
@@ -3428,17 +4381,27 @@ def whatsapp_webhook():
                         + " message]"
                     )
 
-                stored = store_whatsapp_message(
-                    integration,
-                    sender_phone,
-                    contact_name,
-                    message_text,
-                    message_id
-                )
+               stored = store_whatsapp_message(
+    integration,
+    sender_phone,
+    contact_name,
+    message_text,
+    message_id
+)
 
-                if stored:
+if stored:
 
-                    processed += 1
+    processed += 1
+
+    ai_replied = process_whatsapp_ai_reply(
+        integration,
+        stored
+    )
+
+    print(
+        "WhatsApp AI automatic reply sent:",
+        ai_replied
+    ) 
 
     return jsonify({
 
