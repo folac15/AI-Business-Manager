@@ -4381,27 +4381,27 @@ def whatsapp_webhook():
                         + " message]"
                     )
 
-               stored = store_whatsapp_message(
-    integration,
-    sender_phone,
-    contact_name,
-    message_text,
-    message_id
-)
+                stored = store_whatsapp_message(
+                    integration,
+                    sender_phone,
+                    contact_name,
+                    message_text,
+                    message_id
+                )
 
-if stored:
+                if stored:
 
-    processed += 1
+                    processed += 1
 
-    ai_replied = process_whatsapp_ai_reply(
-        integration,
-        stored
-    )
+                    ai_replied = process_whatsapp_ai_reply(
+                        integration,
+                        stored
+                    )
 
-    print(
-        "WhatsApp AI automatic reply sent:",
-        ai_replied
-    ) 
+                    print(
+                        "WhatsApp AI automatic reply sent:",
+                        ai_replied
+                    )
 
     return jsonify({
 
@@ -4412,10 +4412,7 @@ if stored:
             processed
 
     }), 200
- 
-
-
-
+    
 
 # =========================================================
 # APPLICATION START
