@@ -2700,9 +2700,7 @@ def save_integration():
         existing = check.json()
 
         if existing:
-
-            integration_id =
-                existing[0]["id"]
+    integration_id = existing[0]["id"]
 
             response = requests.patch(
 
