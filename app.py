@@ -39,6 +39,13 @@ AUTOMATION_SETTINGS_URL = (
 AI_CONVERSATIONS_URL = (
     SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
 )
+INTEGRATIONS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/integrations"
+)
+
+MESSAGES_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/messages"
+)
 
 
 # =========================================================
@@ -2444,6 +2451,1032 @@ def upload_business_logo():
                 + str(error)
 
         }), 500
+        # =========================================================
+# WHATSAPP INTEGRATION
+# =========================================================
+
+WHATSAPP_VERIFY_TOKEN = os.environ.get(
+    "WHATSAPP_VERIFY_TOKEN"
+)
+
+WHATSAPP_ACCESS_TOKEN = os.environ.get(
+    "WHATSAPP_ACCESS_TOKEN"
+)
+
+WHATSAPP_PHONE_NUMBER_ID = os.environ.get(
+    "WHATSAPP_PHONE_NUMBER_ID"
+)
+
+WHATSAPP_BUSINESS_ACCOUNT_ID = os.environ.get(
+    "WHATSAPP_BUSINESS_ACCOUNT_ID"
+)
+
+
+# =========================================================
+# WHATSAPP - SAVE INTEGRATION
+# =========================================================
+
+@app.route(
+    "/api/integrations",
+    methods=["GET"]
+)
+def get_integrations():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    try:
+
+        response = requests.get(
+
+            INTEGRATIONS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+                "select": "*",
+                "user_id":
+                    "eq." + user["id"],
+                "order":
+                    "created_at.desc"
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            return jsonify({
+                "error":
+                    response.text
+            }), response.status_code
+
+        integrations = response.json()
+
+        return jsonify({
+
+            "success": True,
+
+            "integrations":
+                integrations,
+
+            "count":
+                len(integrations)
+
+        })
+
+    except Exception as error:
+
+        print(
+            "Integrations GET exception:",
+            error
+        )
+
+        return jsonify({
+            "error": str(error)
+        }), 500
+
+
+# =========================================================
+# WHATSAPP - CREATE / UPDATE INTEGRATION
+# =========================================================
+
+@app.route(
+    "/api/integrations",
+    methods=["POST"]
+)
+def save_integration():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    platform = str(
+        data.get(
+            "platform",
+            "whatsapp"
+        )
+    ).strip().lower()
+
+    if platform != "whatsapp":
+
+        return jsonify({
+            "error":
+                "This endpoint currently supports WhatsApp only."
+        }), 400
+
+    account_name = str(
+        data.get(
+            "account_name",
+            ""
+        )
+    ).strip()
+
+    account_id = str(
+        data.get(
+            "account_id",
+            WHATSAPP_BUSINESS_ACCOUNT_ID or ""
+        )
+    ).strip()
+
+    access_token = str(
+        data.get(
+            "access_token",
+            WHATSAPP_ACCESS_TOKEN or ""
+        )
+    ).strip()
+
+    phone_number = str(
+        data.get(
+            "phone_number",
+            ""
+        )
+    ).strip()
+
+    phone_number_id = str(
+        data.get(
+            "phone_number_id",
+            WHATSAPP_PHONE_NUMBER_ID or ""
+        )
+    ).strip()
+
+    if not phone_number_id:
+
+        return jsonify({
+            "error":
+                "WhatsApp phone number ID is required."
+        }), 400
+
+    integration_data = {
+
+        "user_id":
+            user["id"],
+
+        "platform":
+            "whatsapp",
+
+        "account_name":
+            account_name,
+
+        "account_id":
+            account_id,
+
+        "access_token":
+            access_token,
+
+        "phone_number":
+            phone_number,
+
+        "status":
+            "connected",
+
+        "settings": {
+
+            "phone_number_id":
+                phone_number_id
+
+        },
+
+        "connected_at":
+            now_iso(),
+
+        "updated_at":
+            now_iso()
+
+    }
+
+    try:
+
+        check = requests.get(
+
+            INTEGRATIONS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "id",
+
+                "user_id":
+                    "eq." + user["id"],
+
+                "platform":
+                    "eq.whatsapp",
+
+                "account_id":
+                    "eq." + account_id,
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if check.status_code != 200:
+
+            return jsonify({
+                "error":
+                    check.text
+            }), check.status_code
+
+        existing = check.json()
+
+        if existing:
+
+            integration_id =
+                existing[0]["id"]
+
+            response = requests.patch(
+
+                INTEGRATIONS_URL,
+
+                headers=supabase_headers(
+                    "return=representation"
+                ),
+
+                params={
+
+                    "id":
+                        "eq." +
+                        str(integration_id),
+
+                    "user_id":
+                        "eq." +
+                        user["id"]
+
+                },
+
+                json=integration_data,
+
+                timeout=15
+            )
+
+        else:
+
+            response = requests.post(
+
+                INTEGRATIONS_URL,
+
+                headers=supabase_headers(
+                    "return=representation"
+                ),
+
+                json=integration_data,
+
+                timeout=15
+            )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            return jsonify({
+                "error":
+                    response.text
+            }), response.status_code
+
+        try:
+
+            result = response.json()
+
+        except ValueError:
+
+            result = []
+
+        saved = (
+
+            result[0]
+
+            if (
+                isinstance(
+                    result,
+                    list
+                )
+                and result
+            )
+
+            else integration_data
+        )
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "integration":
+                saved,
+
+            "message":
+                "WhatsApp integration saved successfully."
+
+        })
+
+    except Exception as error:
+
+        print(
+            "Integration SAVE exception:",
+            error
+        )
+
+        return jsonify({
+            "error":
+                str(error)
+        }), 500
+
+
+# =========================================================
+# WHATSAPP - DELETE INTEGRATION
+# =========================================================
+
+@app.route(
+    "/api/integrations/<int:integration_id>",
+    methods=["DELETE"]
+)
+def delete_integration(
+    integration_id
+):
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    try:
+
+        response = requests.delete(
+
+            INTEGRATIONS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "id":
+                    "eq." +
+                    str(integration_id),
+
+                "user_id":
+                    "eq." +
+                    user["id"]
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code not in (
+            200,
+            204
+        ):
+
+            return jsonify({
+                "error":
+                    response.text
+            }), response.status_code
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "message":
+                "Integration deleted successfully."
+
+        })
+
+    except Exception as error:
+
+        return jsonify({
+            "error":
+                str(error)
+        }), 500
+
+
+# =========================================================
+# WHATSAPP - FIND BUSINESS FROM PHONE NUMBER ID
+# =========================================================
+
+def find_whatsapp_integration(
+    phone_number_id
+):
+
+    if not phone_number_id:
+
+        return None
+
+    try:
+
+        response = requests.get(
+
+            INTEGRATIONS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "platform":
+                    "eq.whatsapp",
+
+                "settings":
+                    "cs.{"
+                    "\"phone_number_id\":\""
+                    + str(phone_number_id)
+                    + "\"}",
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "WhatsApp integration lookup error:",
+                response.text
+            )
+
+            return None
+
+        integrations = response.json()
+
+        if integrations:
+
+            return integrations[0]
+
+        return None
+
+    except Exception as error:
+
+        print(
+            "WhatsApp integration lookup exception:",
+            error
+        )
+
+        return None
+
+
+# =========================================================
+# WHATSAPP - FIND OR CREATE CUSTOMER
+# =========================================================
+
+def find_or_create_whatsapp_customer(
+    user_id,
+    phone,
+    name=""
+):
+
+    if not phone:
+
+        return None
+
+    try:
+
+        response = requests.get(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "phone":
+                    "eq." + phone,
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            print(
+                "WhatsApp customer lookup error:",
+                response.text
+            )
+
+            return None
+
+        customers = response.json()
+
+        if customers:
+
+            return customers[0]
+
+        customer_data = {
+
+            "user_id":
+                user_id,
+
+            "name":
+                name or phone,
+
+            "phone":
+                phone,
+
+            "email":
+                "",
+
+            "location":
+                "",
+
+            "message":
+                "",
+
+            "ai_reply":
+                "",
+
+            "created_at":
+                now_iso(),
+
+            "updated_at":
+                now_iso()
+
+        }
+
+        create_response = requests.post(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            json=customer_data,
+
+            timeout=15
+        )
+
+        if create_response.status_code not in (
+            200,
+            201
+        ):
+
+            print(
+                "WhatsApp customer creation error:",
+                create_response.text
+            )
+
+            return None
+
+        created = create_response.json()
+
+        if created:
+
+            return created[0]
+
+        return customer_data
+
+    except Exception as error:
+
+        print(
+            "WhatsApp customer exception:",
+            error
+        )
+
+        return None
+
+
+# =========================================================
+# WHATSAPP - CHECK DUPLICATE MESSAGE
+# =========================================================
+
+def whatsapp_message_exists(
+    external_message_id
+):
+
+    if not external_message_id:
+
+        return False
+
+    try:
+
+        response = requests.get(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "id",
+
+                "external_message_id":
+                    "eq." +
+                    external_message_id,
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            return False
+
+        messages = response.json()
+
+        return bool(messages)
+
+    except Exception:
+
+        return False
+
+
+# =========================================================
+# WHATSAPP - STORE INCOMING MESSAGE
+# =========================================================
+
+def store_whatsapp_message(
+    integration,
+    sender_phone,
+    sender_name,
+    message_text,
+    external_message_id
+):
+
+    if not integration:
+
+        return None
+
+    user_id =
+        integration["user_id"]
+
+    customer =
+        find_or_create_whatsapp_customer(
+            user_id,
+            sender_phone,
+            sender_name
+        )
+
+    customer_id = None
+
+    if customer:
+
+        customer_id =
+            customer.get("id")
+
+    message_data = {
+
+        "user_id":
+            user_id,
+
+        "integration_id":
+            integration.get("id"),
+
+        "customer_id":
+            customer_id,
+
+        "platform":
+            "whatsapp",
+
+        "external_message_id":
+            external_message_id or "",
+
+        "direction":
+            "inbound",
+
+        "sender_name":
+            sender_name or "",
+
+        "sender_phone":
+            sender_phone or "",
+
+        "message":
+            message_text or "",
+
+        "ai_generated":
+            False,
+
+        "ai_reply":
+            "",
+
+        "status":
+            "received",
+
+        "metadata":
+            {
+                "source":
+                    "whatsapp_webhook"
+            },
+
+        "created_at":
+            now_iso(),
+
+        "updated_at":
+            now_iso()
+
+    }
+
+    try:
+
+        response = requests.post(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(
+                "return=representation"
+            ),
+
+            json=message_data,
+
+            timeout=15
+        )
+
+        print(
+            "WhatsApp message SAVE status:",
+            response.status_code
+        )
+
+        print(
+            "WhatsApp message SAVE response:",
+            response.text
+        )
+
+        if response.status_code not in (
+            200,
+            201
+        ):
+
+            return None
+
+        result = response.json()
+
+        if result:
+
+            return result[0]
+
+        return message_data
+
+    except Exception as error:
+
+        print(
+            "WhatsApp message SAVE exception:",
+            error
+        )
+
+        return None
+
+
+# =========================================================
+# WHATSAPP - WEBHOOK VERIFICATION
+# =========================================================
+
+@app.route(
+    "/api/whatsapp/webhook",
+    methods=["GET"]
+)
+def whatsapp_webhook_verify():
+
+    mode =
+        request.args.get(
+            "hub.mode"
+        )
+
+    token =
+        request.args.get(
+            "hub.verify_token"
+        )
+
+    challenge =
+        request.args.get(
+            "hub.challenge"
+        )
+
+    if (
+        mode == "subscribe"
+        and token
+        and WHATSAPP_VERIFY_TOKEN
+        and token == WHATSAPP_VERIFY_TOKEN
+    ):
+
+        return challenge or "", 200
+
+    return "Forbidden", 403
+
+
+# =========================================================
+# WHATSAPP - RECEIVE WEBHOOK
+# =========================================================
+
+@app.route(
+    "/api/whatsapp/webhook",
+    methods=["POST"]
+)
+def whatsapp_webhook():
+
+    payload =
+        request.get_json(
+            silent=True
+        ) or {}
+
+    print(
+        "WhatsApp webhook received:",
+        payload
+    )
+
+    if payload.get("object") != "whatsapp_business_account":
+
+        return jsonify({
+            "success":
+                True
+        }), 200
+
+    entries =
+        payload.get(
+            "entry",
+            []
+        )
+
+    processed = 0
+
+    for entry in entries:
+
+        changes =
+            entry.get(
+                "changes",
+                []
+            )
+
+        for change in changes:
+
+            value =
+                change.get(
+                    "value",
+                    {}
+                )
+
+            metadata =
+                value.get(
+                    "metadata",
+                    {}
+                )
+
+            phone_number_id =
+                metadata.get(
+                    "phone_number_id"
+                )
+
+            integration =
+                find_whatsapp_integration(
+                    phone_number_id
+                )
+
+            if not integration:
+
+                print(
+                    "No NexaFlow integration found for WhatsApp phone number:",
+                    phone_number_id
+                )
+
+                continue
+
+            messages =
+                value.get(
+                    "messages",
+                    []
+                )
+
+            contacts =
+                value.get(
+                    "contacts",
+                    []
+                )
+
+            contact_name = ""
+
+            if contacts:
+
+                profile =
+                    contacts[0].get(
+                        "profile",
+                        {}
+                    )
+
+                contact_name =
+                    profile.get(
+                        "name",
+                        ""
+                    )
+
+            for whatsapp_message in messages:
+
+                message_id =
+                    whatsapp_message.get(
+                        "id"
+                    )
+
+                if whatsapp_message_exists(
+                    message_id
+                ):
+
+                    print(
+                        "Duplicate WhatsApp message ignored:",
+                        message_id
+                    )
+
+                    continue
+
+                sender_phone =
+                    whatsapp_message.get(
+                        "from",
+                        ""
+                    )
+
+                message_type =
+                    whatsapp_message.get(
+                        "type",
+                        ""
+                    )
+
+                message_text = ""
+
+                if message_type == "text":
+
+                    message_text =
+                        whatsapp_message.get(
+                            "text",
+                            {}
+                        ).get(
+                            "body",
+                            ""
+                        )
+
+                else:
+
+                    message_text =
+                        "[" +
+                        message_type +
+                        " message]"
+
+                stored =
+                    store_whatsapp_message(
+
+                        integration,
+
+                        sender_phone,
+
+                        contact_name,
+
+                        message_text,
+
+                        message_id
+                    )
+
+                if stored:
+
+                    processed += 1
+
+    return jsonify({
+
+        "success":
+            True,
+
+        "processed":
+            processed
+
+    }), 200
 
 
 # =========================================================
