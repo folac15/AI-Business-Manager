@@ -18,6 +18,21 @@ SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 SUPABASE_PROJECT_URL = (
     "https://xfjroysinifwncfjvrsg.supabase.co"
 )
+WHATSAPP_VERIFY_TOKEN = os.environ.get(
+    "WHATSAPP_VERIFY_TOKEN"
+)
+
+WHATSAPP_ACCESS_TOKEN = os.environ.get(
+    "WHATSAPP_ACCESS_TOKEN"
+)
+
+WHATSAPP_PHONE_NUMBER_ID = os.environ.get(
+    "WHATSAPP_PHONE_NUMBER_ID"
+)
+
+WHATSAPP_BUSINESS_ACCOUNT_ID = os.environ.get(
+    "WHATSAPP_BUSINESS_ACCOUNT_ID"
+)
 
 
 # =========================================================
