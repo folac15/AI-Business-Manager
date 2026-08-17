@@ -39,6 +39,7 @@ AUTOMATION_SETTINGS_URL = (
 AI_CONVERSATIONS_URL = (
     SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
 )
+
 INTEGRATIONS_URL = (
     SUPABASE_PROJECT_URL + "/rest/v1/integrations"
 )
@@ -800,18 +801,6 @@ def add_customer():
 
         }), 400
 
-    # IMPORTANT:
-    # These fields MUST exist in Supabase customers table:
-    #
-    # name
-    # phone
-    # email
-    # location
-    # message
-    # ai_reply
-    # user_id
-    # created_at
-
     customer_data = {
 
         "user_id":
@@ -863,11 +852,6 @@ def add_customer():
             "Customer SAVE response:",
             response.text
         )
-
-        # IMPORTANT:
-        # We no longer silently remove phone,
-        # email or location if Supabase rejects
-        # the insert.
 
         if response.status_code not in (
             200,
@@ -1499,10 +1483,6 @@ def get_reports():
 
                 "automation":
                     automation,
-
-                # IMPORTANT:
-                # Full customer objects are returned,
-                # including phone, email and location.
 
                 "customers":
                     customers,
@@ -2451,8 +2431,10 @@ def upload_business_logo():
                 + str(error)
 
         }), 500
-        # =========================================================
-# WHATSAPP INTEGRATION
+
+
+# =========================================================
+# WHATSAPP ENVIRONMENT VARIABLES
 # =========================================================
 
 WHATSAPP_VERIFY_TOKEN = os.environ.get(
@@ -2473,7 +2455,7 @@ WHATSAPP_BUSINESS_ACCOUNT_ID = os.environ.get(
 
 
 # =========================================================
-# WHATSAPP - SAVE INTEGRATION
+# WHATSAPP - GET INTEGRATIONS
 # =========================================================
 
 @app.route(
@@ -2700,8 +2682,8 @@ def save_integration():
         existing = check.json()
 
         if existing:
-    integration_id = existing[0]
-    ["id"]
+
+            integration_id = existing[0]["id"]
 
             response = requests.patch(
 
@@ -2714,12 +2696,12 @@ def save_integration():
                 params={
 
                     "id":
-                        "eq." +
-                        str(integration_id),
+                        "eq."
+                        + str(integration_id),
 
                     "user_id":
-                        "eq." +
-                        user["id"]
+                        "eq."
+                        + user["id"]
 
                 },
 
@@ -2834,12 +2816,12 @@ def delete_integration(
             params={
 
                 "id":
-                    "eq." +
-                    str(integration_id),
+                    "eq."
+                    + str(integration_id),
 
                 "user_id":
-                    "eq." +
-                    user["id"]
+                    "eq."
+                    + user["id"]
 
             },
 
@@ -3099,8 +3081,8 @@ def whatsapp_message_exists(
                     "id",
 
                 "external_message_id":
-                    "eq." +
-                    external_message_id,
+                    "eq."
+                    + external_message_id,
 
                 "limit":
                     "1"
@@ -3139,22 +3121,19 @@ def store_whatsapp_message(
 
         return None
 
-    user_id =
-        integration["user_id"]
+    user_id = integration["user_id"]
 
-    customer =
-        find_or_create_whatsapp_customer(
-            user_id,
-            sender_phone,
-            sender_name
-        )
+    customer = find_or_create_whatsapp_customer(
+        user_id,
+        sender_phone,
+        sender_name
+    )
 
     customer_id = None
 
     if customer:
 
-        customer_id =
-            customer.get("id")
+        customer_id = customer.get("id")
 
     message_data = {
 
@@ -3268,20 +3247,17 @@ def store_whatsapp_message(
 )
 def whatsapp_webhook_verify():
 
-    mode =
-        request.args.get(
-            "hub.mode"
-        )
+    mode = request.args.get(
+        "hub.mode"
+    )
 
-    token =
-        request.args.get(
-            "hub.verify_token"
-        )
+    token = request.args.get(
+        "hub.verify_token"
+    )
 
-    challenge =
-        request.args.get(
-            "hub.challenge"
-        )
+    challenge = request.args.get(
+        "hub.challenge"
+    )
 
     if (
         mode == "subscribe"
@@ -3305,62 +3281,57 @@ def whatsapp_webhook_verify():
 )
 def whatsapp_webhook():
 
-    payload =
-        request.get_json(
-            silent=True
-        ) or {}
+    payload = request.get_json(
+        silent=True
+    ) or {}
 
     print(
         "WhatsApp webhook received:",
         payload
     )
 
-    if payload.get("object") != "whatsapp_business_account":
+    if payload.get(
+        "object"
+    ) != "whatsapp_business_account":
 
         return jsonify({
             "success":
                 True
         }), 200
 
-    entries =
-        payload.get(
-            "entry",
-            []
-        )
+    entries = payload.get(
+        "entry",
+        []
+    )
 
     processed = 0
 
     for entry in entries:
 
-        changes =
-            entry.get(
-                "changes",
-                []
-            )
+        changes = entry.get(
+            "changes",
+            []
+        )
 
         for change in changes:
 
-            value =
-                change.get(
-                    "value",
-                    {}
-                )
+            value = change.get(
+                "value",
+                {}
+            )
 
-            metadata =
-                value.get(
-                    "metadata",
-                    {}
-                )
+            metadata = value.get(
+                "metadata",
+                {}
+            )
 
-            phone_number_id =
-                metadata.get(
-                    "phone_number_id"
-                )
+            phone_number_id = metadata.get(
+                "phone_number_id"
+            )
 
-            integration =
-                find_whatsapp_integration(
-                    phone_number_id
-                )
+            integration = find_whatsapp_integration(
+                phone_number_id
+            )
 
             if not integration:
 
@@ -3371,40 +3342,35 @@ def whatsapp_webhook():
 
                 continue
 
-            messages =
-                value.get(
-                    "messages",
-                    []
-                )
+            messages = value.get(
+                "messages",
+                []
+            )
 
-            contacts =
-                value.get(
-                    "contacts",
-                    []
-                )
+            contacts = value.get(
+                "contacts",
+                []
+            )
 
             contact_name = ""
 
             if contacts:
 
-                profile =
-                    contacts[0].get(
-                        "profile",
-                        {}
-                    )
+                profile = contacts[0].get(
+                    "profile",
+                    {}
+                )
 
-                contact_name =
-                    profile.get(
-                        "name",
-                        ""
-                    )
+                contact_name = profile.get(
+                    "name",
+                    ""
+                )
 
             for whatsapp_message in messages:
 
-                message_id =
-                    whatsapp_message.get(
-                        "id"
-                    )
+                message_id = whatsapp_message.get(
+                    "id"
+                )
 
                 if whatsapp_message_exists(
                     message_id
@@ -3417,51 +3383,43 @@ def whatsapp_webhook():
 
                     continue
 
-                sender_phone =
-                    whatsapp_message.get(
-                        "from",
-                        ""
-                    )
+                sender_phone = whatsapp_message.get(
+                    "from",
+                    ""
+                )
 
-                message_type =
-                    whatsapp_message.get(
-                        "type",
-                        ""
-                    )
+                message_type = whatsapp_message.get(
+                    "type",
+                    ""
+                )
 
                 message_text = ""
 
                 if message_type == "text":
 
-                    message_text =
-                        whatsapp_message.get(
-                            "text",
-                            {}
-                        ).get(
-                            "body",
-                            ""
-                        )
+                    message_text = whatsapp_message.get(
+                        "text",
+                        {}
+                    ).get(
+                        "body",
+                        ""
+                    )
 
                 else:
 
-                    message_text =
-                        "[" +
-                        message_type +
-                        " message]"
-
-                stored =
-                    store_whatsapp_message(
-
-                        integration,
-
-                        sender_phone,
-
-                        contact_name,
-
-                        message_text,
-
-                        message_id
+                    message_text = (
+                        "["
+                        + message_type
+                        + " message]"
                     )
+
+                stored = store_whatsapp_message(
+                    integration,
+                    sender_phone,
+                    contact_name,
+                    message_text,
+                    message_id
+                )
 
                 if stored:
 
