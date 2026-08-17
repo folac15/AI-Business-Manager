@@ -25,7 +25,9 @@ body{
     color:#222;
 }
 
-/* SIDEBAR */
+/* =====================================================
+   SIDEBAR
+===================================================== */
 
 .sidebar{
     width:250px;
@@ -53,6 +55,13 @@ body{
     font-size:30px;
     color:#0b1f3a;
     margin-bottom:15px;
+    overflow:hidden;
+}
+
+.business-logo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .sidebar h3{
@@ -74,7 +83,9 @@ body{
     background:#0066ff;
 }
 
-/* MAIN */
+/* =====================================================
+   MAIN
+===================================================== */
 
 .main{
     flex:1;
@@ -82,26 +93,58 @@ body{
     min-width:0;
 }
 
-/* HEADER */
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
     background:white;
-    padding:20px;
-    border-radius:12px;
-    margin-bottom:30px;
+    padding:25px;
+    border-radius:14px;
+    margin-bottom:25px;
     border:1px solid #e5e7eb;
 }
 
 .header h2{
     color:#0b1f3a;
-    margin-bottom:7px;
+    margin-bottom:8px;
+    font-size:28px;
 }
 
 .header p{
     color:#777;
+    line-height:1.5;
 }
 
-/* ANALYTICS CARDS */
+.refresh-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:18px;
+}
+
+.refresh-button{
+    border:none;
+    background:#0066ff;
+    color:white;
+    padding:11px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.refresh-button:hover{
+    background:#004ccc;
+}
+
+.refresh-button:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+/* =====================================================
+   ANALYTICS CARDS
+===================================================== */
 
 .analytics-grid{
     display:grid;
@@ -112,53 +155,79 @@ body{
 .card{
     background:white;
     padding:25px;
-    border-radius:12px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.07);
     border:1px solid #e5e7eb;
 }
 
 .card h3{
-    margin-bottom:15px;
+    margin-bottom:14px;
     color:#0b1f3a;
+    font-size:16px;
 }
 
 .number{
-    font-size:35px;
+    font-size:38px;
     font-weight:bold;
     color:#0066ff;
 }
 
-/* ACTIVITY */
+/* =====================================================
+   SUMMARY
+===================================================== */
 
-.activity{
-    margin-top:30px;
+.summary{
+    margin-top:25px;
     background:white;
     padding:25px;
-    border-radius:12px;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+}
+
+.summary h3{
+    color:#0b1f3a;
+    margin-bottom:15px;
+}
+
+.summary-text{
+    color:#555;
+    line-height:1.7;
+}
+
+/* =====================================================
+   ACTIVITY
+===================================================== */
+
+.activity{
+    margin-top:25px;
+    background:white;
+    padding:25px;
+    border-radius:14px;
     border:1px solid #e5e7eb;
 }
 
 .activity h3{
     color:#0b1f3a;
+    margin-bottom:15px;
 }
 
 .activity-item{
     background:#f4f7fb;
-    padding:15px;
+    padding:17px;
     margin-top:12px;
-    border-radius:8px;
+    border-radius:9px;
     border-left:4px solid #0066ff;
-    line-height:1.5;
+    line-height:1.6;
 }
 
 .activity-type{
     display:inline-block;
     background:#0066ff;
     color:white;
-    padding:4px 8px;
+    padding:5px 9px;
     border-radius:5px;
     font-size:11px;
-    margin-bottom:8px;
+    margin-bottom:9px;
 }
 
 .activity-date{
@@ -166,6 +235,13 @@ body{
     margin-top:12px;
     color:#777;
     font-size:12px;
+}
+
+.activity-message{
+    margin-top:8px;
+    color:#444;
+    white-space:pre-wrap;
+    word-break:break-word;
 }
 
 .loading{
@@ -178,6 +254,7 @@ body{
     color:#c62828;
     padding:15px;
     border-radius:8px;
+    line-height:1.5;
 }
 
 .empty{
@@ -185,32 +262,17 @@ body{
     padding:15px;
 }
 
-/* REFRESH */
+/* =====================================================
+   MOBILE
+===================================================== */
 
-.refresh-row{
-    display:flex;
-    justify-content:flex-end;
-    margin-top:15px;
+@media(max-width:1000px){
+
+    .analytics-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
 }
-
-.refresh-button{
-    border:none;
-    background:#0066ff;
-    color:white;
-    padding:9px 16px;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-.refresh-button:hover{
-    background:#004ccc;
-}
-
-.refresh-button:disabled{
-    background:#999;
-}
-
-/* MOBILE */
 
 @media(max-width:800px){
 
@@ -221,6 +283,7 @@ body{
 
     .logo{
         font-size:16px;
+        margin-bottom:20px;
     }
 
     .business-logo{
@@ -247,9 +310,14 @@ body{
     }
 
     .header{
-        padding:17px;
+        padding:18px;
     }
 
+    .header h2{
+        font-size:24px;
+    }
+
+    .summary,
     .activity{
         padding:18px;
     }
@@ -260,9 +328,15 @@ body{
 
 </head>
 
+
 <body>
 
 <script src="auth_guard.js"></script>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
 <div class="sidebar">
 
@@ -270,13 +344,18 @@ body{
         NexaFlow AI
     </div>
 
-    <div class="business-logo">
+    <div
+        class="business-logo"
+        id="businessLogo">
+
         📊
+
     </div>
 
     <h3 id="businessName">
         Your Business
     </h3>
+
 
     <a href="dashboard.html">
         Dashboard
@@ -290,8 +369,12 @@ body{
         Customers
     </a>
 
-    <a href="analytics.html" class="active">
+    <a
+        href="analytics.html"
+        class="active">
+
         Analytics
+
     </a>
 
     <a href="automation.html">
@@ -308,7 +391,15 @@ body{
 
 </div>
 
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
 <div class="main">
+
+
+    <!-- HEADER -->
 
     <div class="header">
 
@@ -317,8 +408,10 @@ body{
         </h2>
 
         <p>
-            Monitor your business performance using your real NexaFlow data.
+            Monitor your real NexaFlow business activity,
+            customers and AI conversations.
         </p>
+
 
         <div class="refresh-row">
 
@@ -336,7 +429,9 @@ body{
     </div>
 
 
-    <!-- ANALYTICS CARDS -->
+    <!-- =================================================
+         STATISTICS
+    ================================================= -->
 
     <div class="analytics-grid">
 
@@ -344,7 +439,7 @@ body{
         <div class="card">
 
             <h3>
-                Customers
+                👥 Customers
             </h3>
 
             <div
@@ -361,7 +456,7 @@ body{
         <div class="card">
 
             <h3>
-                AI Conversations
+                💬 AI Conversations
             </h3>
 
             <div
@@ -378,7 +473,7 @@ body{
         <div class="card">
 
             <h3>
-                Customer Messages
+                📨 Customer Messages
             </h3>
 
             <div
@@ -395,7 +490,7 @@ body{
         <div class="card">
 
             <h3>
-                AI Replies
+                🤖 AI Replies
             </h3>
 
             <div
@@ -412,29 +507,54 @@ body{
     </div>
 
 
-    <!-- RECENT ACTIVITY -->
+    <!-- =================================================
+         BUSINESS SUMMARY
+    ================================================= -->
 
-    <div class="activity">
+    <div class="summary">
 
         <h3>
-            Recent Customer Activity
+            📈 Business Summary
         </h3>
 
-        <div id="activityList">
+        <div
+            id="summaryText"
+            class="summary-text">
 
-            Loading activity...
+            Loading business summary...
 
         </div>
 
     </div>
 
 
-    <!-- AI ACTIVITY -->
+    <!-- =================================================
+         CUSTOMER ACTIVITY
+    ================================================= -->
 
     <div class="activity">
 
         <h3>
-            Recent AI Conversations
+            👥 Recent Customer Activity
+        </h3>
+
+        <div id="activityList">
+
+            Loading customer activity...
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         AI ACTIVITY
+    ================================================= -->
+
+    <div class="activity">
+
+        <h3>
+            🤖 Recent AI Conversations
         </h3>
 
         <div id="aiActivityList">
@@ -452,13 +572,90 @@ body{
 <script>
 
 /* =====================================================
-   LOAD BUSINESS NAME
+   AUTH TOKEN
+===================================================== */
+
+function getToken(){
+
+    return localStorage.getItem(
+        "access_token"
+    );
+
+}
+
+
+/* =====================================================
+   FORMAT DATE
+===================================================== */
+
+function formatDate(dateValue){
+
+    if(!dateValue){
+        return "Date unavailable";
+    }
+
+    const date =
+        new Date(dateValue);
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return String(dateValue);
+
+    }
+
+    return date.toLocaleString();
+
+}
+
+
+/* =====================================================
+   HTML SECURITY
+===================================================== */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   LOAD BUSINESS
 ===================================================== */
 
 async function loadBusiness(){
 
     const token =
-        localStorage.getItem("access_token");
+        getToken();
 
     if(!token){
         return;
@@ -467,16 +664,17 @@ async function loadBusiness(){
     try{
 
         const response =
-            await fetch("/api/business", {
+            await fetch(
+                "/api/business",
+                {
+                    method:"GET",
 
-                method:"GET",
-
-                headers:{
-                    "Authorization":
-                        "Bearer " + token
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
                 }
-
-            });
+            );
 
 
         if(response.status === 401){
@@ -489,6 +687,7 @@ async function loadBusiness(){
                 "login.html";
 
             return;
+
         }
 
 
@@ -497,17 +696,38 @@ async function loadBusiness(){
 
 
         if(
-            result.business &&
-            result.business.business_name
+            result.business
         ){
 
-            const businessName =
+            if(
+                result.business.business_name
+            ){
+
                 document.getElementById(
                     "businessName"
-                );
+                ).textContent =
+                    result.business.business_name;
 
-            businessName.textContent =
-                result.business.business_name;
+            }
+
+
+            if(
+                result.business.logo
+            ){
+
+                document.getElementById(
+                    "businessLogo"
+                ).innerHTML = `
+
+                    <img
+                        src="${escapeHtml(
+                            result.business.logo
+                        )}"
+                        alt="Business logo">
+
+                `;
+
+            }
 
         }
 
@@ -530,7 +750,7 @@ async function loadBusiness(){
 async function loadAnalytics(){
 
     const token =
-        localStorage.getItem("access_token");
+        getToken();
 
 
     const activity =
@@ -542,6 +762,12 @@ async function loadAnalytics(){
     const aiActivity =
         document.getElementById(
             "aiActivityList"
+        );
+
+
+    const summary =
+        document.getElementById(
+            "summaryText"
         );
 
 
@@ -559,12 +785,16 @@ async function loadAnalytics(){
         aiActivity.innerHTML =
             '<div class="error">Login session unavailable.</div>';
 
+        summary.innerHTML =
+            '<div class="error">Login session unavailable.</div>';
+
         return;
 
     }
 
 
-    refreshButton.disabled = true;
+    refreshButton.disabled =
+        true;
 
     refreshButton.textContent =
         "Loading...";
@@ -573,16 +803,18 @@ async function loadAnalytics(){
     activity.innerHTML =
         '<div class="loading">Loading customer analytics...</div>';
 
-
     aiActivity.innerHTML =
         '<div class="loading">Loading AI analytics...</div>';
+
+    summary.innerHTML =
+        "Calculating business activity...";
 
 
     try{
 
 
         /* =========================================
-           LOAD CUSTOMERS
+           CUSTOMERS
         ========================================= */
 
         const customersResponse =
@@ -629,7 +861,9 @@ async function loadAnalytics(){
         }
 
 
-        if(!customersResponse.ok){
+        if(
+            !customersResponse.ok
+        ){
 
             throw new Error(
                 customersResult.error ||
@@ -641,16 +875,10 @@ async function loadAnalytics(){
 
         const customers =
             Array.isArray(
-                customersResult
+                customersResult.customers
             )
-            ? customersResult
-            : (
-                Array.isArray(
-                    customersResult.customers
-                )
-                ? customersResult.customers
-                : []
-            );
+            ? customersResult.customers
+            : [];
 
 
         /* =========================================
@@ -667,25 +895,19 @@ async function loadAnalytics(){
            CUSTOMER MESSAGES
         ========================================= */
 
-        let messageCount = 0;
+        const messageCount =
+            customers.filter(
+                function(customer){
 
-
-        customers.forEach(
-            function(customer){
-
-                if(
-                    customer.message &&
-                    String(
-                        customer.message
-                    ).trim() !== ""
-                ){
-
-                    messageCount++;
+                    return (
+                        customer.message &&
+                        String(
+                            customer.message
+                        ).trim() !== ""
+                    );
 
                 }
-
-            }
-        );
+            ).length;
 
 
         document.getElementById(
@@ -698,10 +920,12 @@ async function loadAnalytics(){
            CUSTOMER ACTIVITY
         ========================================= */
 
-        if(customers.length === 0){
+        if(
+            customers.length === 0
+        ){
 
             activity.innerHTML =
-                '<div class="empty">No customer activity available.</div>';
+                '<div class="empty">No customer activity available yet.</div>';
 
         }else{
 
@@ -726,7 +950,7 @@ async function loadAnalytics(){
                                 <b>
                                     ${escapeHtml(
                                         customer.name ||
-                                        "Unknown"
+                                        "Unknown customer"
                                     )}
                                 </b>
 
@@ -738,6 +962,17 @@ async function loadAnalytics(){
 
                                 ${escapeHtml(
                                     customer.phone ||
+                                    "Not provided"
+                                )}
+
+                                <br>
+
+                                <b>
+                                    Email:
+                                </b>
+
+                                ${escapeHtml(
+                                    customer.email ||
                                     "Not provided"
                                 )}
 
@@ -758,18 +993,23 @@ async function loadAnalytics(){
                                     Message:
                                 </b>
 
-                                <br>
+                                <div class="activity-message">
 
-                                ${escapeHtml(
-                                    customer.message ||
-                                    "No message"
-                                )}
+                                    ${escapeHtml(
+                                        customer.message ||
+                                        "No message"
+                                    )}
+
+                                </div>
 
                                 <span class="activity-date">
+
                                     ${escapeHtml(
-                                        customer.created_at ||
-                                        ""
+                                        formatDate(
+                                            customer.created_at
+                                        )
                                     )}
+
                                 </span>
 
                             </div>
@@ -787,7 +1027,7 @@ async function loadAnalytics(){
 
 
         /* =========================================
-           LOAD AI CONVERSATIONS
+           AI CONVERSATIONS
         ========================================= */
 
         const aiResponse =
@@ -804,7 +1044,9 @@ async function loadAnalytics(){
             );
 
 
-        if(aiResponse.status === 401){
+        if(
+            aiResponse.status === 401
+        ){
 
             localStorage.removeItem(
                 "access_token"
@@ -832,7 +1074,9 @@ async function loadAnalytics(){
         }
 
 
-        if(!aiResponse.ok){
+        if(
+            !aiResponse.ok
+        ){
 
             throw new Error(
                 aiResult.error ||
@@ -851,7 +1095,7 @@ async function loadAnalytics(){
 
 
         /* =========================================
-           AI CONVERSATION COUNT
+           AI COUNT
         ========================================= */
 
         document.getElementById(
@@ -861,28 +1105,22 @@ async function loadAnalytics(){
 
 
         /* =========================================
-           AI REPLY COUNT
+           AI REPLIES
         ========================================= */
 
-        let replyCount = 0;
+        const replyCount =
+            conversations.filter(
+                function(conversation){
 
-
-        conversations.forEach(
-            function(conversation){
-
-                if(
-                    conversation.answer &&
-                    String(
-                        conversation.answer
-                    ).trim() !== ""
-                ){
-
-                    replyCount++;
+                    return (
+                        conversation.answer &&
+                        String(
+                            conversation.answer
+                        ).trim() !== ""
+                    );
 
                 }
-
-            }
-        );
+            ).length;
 
 
         document.getElementById(
@@ -895,10 +1133,12 @@ async function loadAnalytics(){
            AI ACTIVITY
         ========================================= */
 
-        if(conversations.length === 0){
+        if(
+            conversations.length === 0
+        ){
 
             aiActivity.innerHTML =
-                '<div class="empty">No AI conversations available yet.</div>';
+                '<div class="empty">No AI conversations have been recorded yet.</div>';
 
         }else{
 
@@ -924,31 +1164,38 @@ async function loadAnalytics(){
                                     User Question
                                 </b>
 
+                                <div class="activity-message">
+
+                                    ${escapeHtml(
+                                        conversation.question ||
+                                        "No question"
+                                    )}
+
+                                </div>
+
                                 <br>
-
-                                ${escapeHtml(
-                                    conversation.question ||
-                                    ""
-                                )}
-
-                                <br><br>
 
                                 <b>
                                     NexaFlow AI Reply
                                 </b>
 
-                                <br>
+                                <div class="activity-message">
 
-                                ${escapeHtml(
-                                    conversation.answer ||
-                                    "No reply"
-                                )}
+                                    ${escapeHtml(
+                                        conversation.answer ||
+                                        "No reply"
+                                    )}
+
+                                </div>
 
                                 <span class="activity-date">
+
                                     ${escapeHtml(
-                                        conversation.created_at ||
-                                        ""
+                                        formatDate(
+                                            conversation.created_at
+                                        )
                                     )}
+
                                 </span>
 
                             </div>
@@ -963,6 +1210,87 @@ async function loadAnalytics(){
                 aiHtml;
 
         }
+
+
+        /* =========================================
+           SUMMARY
+        ========================================= */
+
+        let summaryParts = [];
+
+
+        summaryParts.push(
+            "Your business currently has " +
+            customers.length +
+            " customer" +
+            (
+                customers.length === 1
+                ? ""
+                : "s"
+            ) +
+            " recorded."
+        );
+
+
+        summaryParts.push(
+            messageCount +
+            " customer" +
+            (
+                messageCount === 1
+                ? " message has"
+                : " messages have"
+            ) +
+            " been recorded."
+        );
+
+
+        if(
+            conversations.length > 0
+        ){
+
+            summaryParts.push(
+                "NexaFlow AI has recorded " +
+                conversations.length +
+                " AI conversation" +
+                (
+                    conversations.length === 1
+                    ? ""
+                    : "s"
+                ) +
+                ", with " +
+                replyCount +
+                " AI repl" +
+                (
+                    replyCount === 1
+                    ? "y"
+                    : "ies"
+                ) +
+                "."
+            );
+
+        }else{
+
+            summaryParts.push(
+                "No AI conversations have been recorded yet."
+            );
+
+        }
+
+
+        summary.innerHTML =
+            summaryParts
+                .map(
+                    function(part){
+
+                        return escapeHtml(
+                            part
+                        );
+
+                    }
+                )
+                .join(
+                    "<br>"
+                );
 
 
     }catch(error){
@@ -990,6 +1318,16 @@ async function loadAnalytics(){
             ) +
             '</div>';
 
+
+        summary.innerHTML =
+            '<div class="error">' +
+            escapeHtml(
+                error.message ||
+                "Unable to calculate business summary."
+            ) +
+            '</div>';
+
+
     }finally{
 
         refreshButton.disabled =
@@ -999,42 +1337,6 @@ async function loadAnalytics(){
             "🔄 Refresh Analytics";
 
     }
-
-}
-
-
-/* =====================================================
-   HTML SECURITY
-===================================================== */
-
-function escapeHtml(value){
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
 
 }
 
