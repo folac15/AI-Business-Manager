@@ -2875,12 +2875,9 @@ def delete_integration(
 # WHATSAPP - FIND BUSINESS FROM PHONE NUMBER ID
 # =========================================================
 
-def find_whatsapp_integration(
-    phone_number_id
-):
+def find_whatsapp_integration(phone_number_id):
 
     if not phone_number_id:
-
         return None
 
     try:
@@ -2892,41 +2889,56 @@ def find_whatsapp_integration(
             headers=supabase_headers(),
 
             params={
-
-                "select":
-                    "*",
-
-                "platform":
-                    "eq.whatsapp",
-
-                "settings":
-                    "cs.{"
-                    "\"phone_number_id\":\""
-                    + str(phone_number_id)
-                    + "\"}",
-
-                "limit":
-                    "1"
-
+                "select": "*",
+                "platform": "eq.whatsapp"
             },
 
             timeout=15
         )
 
+        print(
+            "WhatsApp integration lookup status:",
+            response.status_code
+        )
+
+        print(
+            "WhatsApp integration lookup response:",
+            response.text
+        )
+
         if response.status_code != 200:
-
-            print(
-                "WhatsApp integration lookup error:",
-                response.text
-            )
-
             return None
 
         integrations = response.json()
 
-        if integrations:
+        for integration in integrations:
 
-            return integrations[0]
+            settings = integration.get(
+                "settings"
+            ) or {}
+
+            stored_phone_number_id = str(
+                settings.get(
+                    "phone_number_id",
+                    ""
+                )
+            ).strip()
+
+            if stored_phone_number_id == str(
+                phone_number_id
+            ).strip():
+
+                print(
+                    "WhatsApp integration FOUND:",
+                    integration.get("id")
+                )
+
+                return integration
+
+        print(
+            "No integration matched phone_number_id:",
+            phone_number_id
+        )
 
         return None
 
