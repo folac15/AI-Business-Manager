@@ -4254,14 +4254,13 @@ def whatsapp_webhook_verify():
 # =========================================================
 # WHATSAPP - RECEIVE WEBHOOK
 # =========================================================
-
 @app.route(
     "/api/whatsapp/webhook",
     methods=["POST"]
 )
 def whatsapp_webhook():
 
-    print(
+    app.logger.warning(
         "========== WHATSAPP WEBHOOK START =========="
     )
 
@@ -4269,16 +4268,18 @@ def whatsapp_webhook():
         silent=True
     ) or {}
 
-    print(
-        "========== WHATSAPP PAYLOAD =========="
+    app.logger.warning(
+        "========== WHATSAPP PAYLOAD RECEIVED =========="
     )
 
-    print(payload)
+    app.logger.warning(
+        "WhatsApp payload: %s",
+        payload
+    )
 
-    print(
-        "========== WHATSAPP WEBHOOK RECEIVED =========="
-)
-
+    app.logger.warning(
+        "========== WHATSAPP WEBHOOK PROCESSING =========="
+    )
     if payload.get(
         "object"
     ) != "whatsapp_business_account":
