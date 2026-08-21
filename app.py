@@ -2875,9 +2875,25 @@ def delete_integration(
 # WHATSAPP - FIND BUSINESS FROM PHONE NUMBER ID
 # =========================================================
 
-def find_whatsapp_integration(phone_number_id):
+def find_whatsapp_integration(
+    phone_number_id
+):
+
+    app.logger.warning(
+        "========== WHATSAPP INTEGRATION LOOKUP =========="
+    )
+
+    app.logger.warning(
+        "Incoming phone_number_id: %s",
+        phone_number_id
+    )
 
     if not phone_number_id:
+
+        app.logger.warning(
+            "No phone_number_id received."
+        )
+
         return None
 
     try:
@@ -2889,33 +2905,47 @@ def find_whatsapp_integration(phone_number_id):
             headers=supabase_headers(),
 
             params={
-                "select": "*",
-                "platform": "eq.whatsapp"
+
+                "select":
+                    "*",
+
+                "platform":
+                    "eq.whatsapp"
+
             },
 
             timeout=15
         )
 
-        print(
-            "WhatsApp integration lookup status:",
+        app.logger.warning(
+            "Integration lookup HTTP status: %s",
             response.status_code
         )
 
-        print(
-            "WhatsApp integration lookup response:",
+        app.logger.warning(
+            "Integration lookup response: %s",
             response.text
         )
 
         if response.status_code != 200:
+
             return None
 
         integrations = response.json()
 
+        app.logger.warning(
+            "Number of WhatsApp integrations found: %s",
+            len(integrations)
+            if isinstance(integrations, list)
+            else 0
+        )
+
         for integration in integrations:
 
-            settings = integration.get(
-                "settings"
-            ) or {}
+            settings = (
+                integration.get("settings")
+                or {}
+            )
 
             stored_phone_number_id = str(
                 settings.get(
@@ -2924,28 +2954,42 @@ def find_whatsapp_integration(phone_number_id):
                 )
             ).strip()
 
-            if stored_phone_number_id == str(
-                phone_number_id
-            ).strip():
+            app.logger.warning(
+                "Checking stored phone_number_id: %s",
+                stored_phone_number_id
+            )
 
-                print(
-                    "WhatsApp integration FOUND:",
+            if (
+                stored_phone_number_id
+                == str(phone_number_id).strip()
+            ):
+
+                app.logger.warning(
+                    "========== MATCH FOUND =========="
+                )
+
+                app.logger.warning(
+                    "Integration ID: %s",
                     integration.get("id")
+                )
+
+                app.logger.warning(
+                    "User ID: %s",
+                    integration.get("user_id")
                 )
 
                 return integration
 
-        print(
-            "No integration matched phone_number_id:",
-            phone_number_id
+        app.logger.warning(
+            "========== NO MATCH FOUND =========="
         )
 
         return None
 
     except Exception as error:
 
-        print(
-            "WhatsApp integration lookup exception:",
+        app.logger.exception(
+            "WhatsApp integration lookup exception: %s",
             error
         )
 
