@@ -4261,14 +4261,23 @@ def whatsapp_webhook_verify():
 )
 def whatsapp_webhook():
 
+    print(
+        "========== WHATSAPP WEBHOOK START =========="
+    )
+
     payload = request.get_json(
         silent=True
     ) or {}
 
     print(
-        "WhatsApp webhook received:",
-        payload
+        "========== WHATSAPP PAYLOAD =========="
     )
+
+    print(payload)
+
+    print(
+        "========== WHATSAPP WEBHOOK RECEIVED =========="
+)
 
     if payload.get(
         "object"
