@@ -96,7 +96,6 @@ padding:25px;
 border-radius:12px;
 box-shadow:0 3px 10px rgba(0,0,0,.08);
 max-width:850px;
-margin-bottom:25px;
 }
 
 .settings-box h3{
@@ -167,15 +166,6 @@ background:#004ccc;
 min-width:150px;
 }
 
-.disconnect-button{
-background:#d32f2f;
-margin-left:10px;
-}
-
-.disconnect-button:hover{
-background:#a92323;
-}
-
 #saveMessage{
 margin-top:20px;
 font-weight:bold;
@@ -199,85 +189,94 @@ color:#008a45;
 background:#effff6;
 padding:12px;
 border-radius:8px;
-margin-top:15px;
 }
 
+/* WHATSAPP */
+
 .whatsapp-box{
-border:2px solid #e5e9ef;
+margin-top:30px;
+padding:25px;
+background:white;
+border-radius:12px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+border-top:4px solid #25D366;
 }
 
 .whatsapp-title{
-display:flex;
-align-items:center;
-gap:10px;
+font-size:26px;
+font-weight:bold;
 margin-bottom:10px;
 }
 
+.whatsapp-description{
+font-size:17px;
+line-height:1.7;
+color:#666;
+margin-bottom:20px;
+}
+
 .whatsapp-icon{
-font-size:30px;
+font-size:42px;
+margin-bottom:10px;
 }
 
-.connection-status{
+.whatsapp-status{
 display:inline-block;
-padding:7px 12px;
-border-radius:20px;
-font-size:13px;
+padding:10px 18px;
+border-radius:25px;
 font-weight:bold;
-margin-top:10px;
+margin-bottom:20px;
 }
 
-.status-connected{
-background:#eafff2;
-color:#008a45;
-}
-
-.status-disconnected{
+.whatsapp-disconnected{
 background:#fff0f0;
 color:#c62828;
 }
 
-.status-loading{
-background:#f1f3f5;
-color:#666;
-}
-
-.help-text{
-color:#666;
-font-size:14px;
-line-height:1.5;
-margin-top:8px;
-}
-
-.integration-message{
-margin-top:15px;
-padding:12px;
-border-radius:8px;
-display:none;
-}
-
-.integration-success{
-display:block;
+.whatsapp-connected{
 background:#effff6;
 color:#008a45;
 }
 
-.integration-error{
-display:block;
+.whatsapp-help{
+color:#666;
+line-height:1.6;
+margin-top:15px;
+}
+
+.whatsapp-connect-button{
+background:#0066ff;
+width:100%;
+}
+
+.whatsapp-connect-button:hover{
+background:#004ccc;
+}
+
+.whatsapp-disconnect-button{
+background:#d62828;
+width:250px;
+}
+
+.whatsapp-disconnect-button:hover{
+background:#b71c1c;
+}
+
+.whatsapp-message{
+margin-top:20px;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+}
+
+.whatsapp-success{
+background:#effff6;
+color:#008a45;
+}
+
+.whatsapp-error{
 background:#fff0f0;
 color:#c62828;
-}
-
-.integration-loading{
-display:block;
-background:#f4f7fb;
-color:#666;
-}
-
-.whatsapp-actions{
-display:flex;
-align-items:center;
-gap:10px;
-flex-wrap:wrap;
 }
 
 /* MOBILE */
@@ -320,8 +319,16 @@ padding:15px;
 padding:20px;
 }
 
-.disconnect-button{
-margin-left:0;
+.whatsapp-box{
+padding:20px;
+}
+
+.whatsapp-title{
+font-size:25px;
+}
+
+.whatsapp-disconnect-button{
+width:100%;
 }
 
 }
@@ -333,6 +340,9 @@ margin-left:0;
 <body>
 
 <script src="auth_guard.js"></script>
+
+
+<!-- SIDEBAR -->
 
 <div class="sidebar">
 
@@ -386,6 +396,9 @@ Settings
 
 </div>
 
+
+<!-- MAIN -->
+
 <div class="main">
 
 <div class="header">
@@ -401,9 +414,7 @@ Manage your business information, logo and integrations.
 </div>
 
 
-<!-- =====================================================
-     BUSINESS SETTINGS
-===================================================== -->
+<!-- BUSINESS SETTINGS -->
 
 <div class="settings-box">
 
@@ -414,6 +425,7 @@ class="loading-message">
 Loading business settings...
 
 </div>
+
 
 <div class="logo-preview">
 
@@ -431,6 +443,7 @@ class="logo-placeholder">
 
 </div>
 
+
 <label>
 Business Logo
 </label>
@@ -441,9 +454,11 @@ id="logoFile"
 accept="image/*"
 onchange="previewLogo(event)">
 
+
 <h3>
 Business Profile
 </h3>
+
 
 <label>
 Business Name
@@ -454,6 +469,7 @@ type="text"
 id="businessName"
 placeholder="Enter business name">
 
+
 <label>
 Owner Name
 </label>
@@ -462,6 +478,7 @@ Owner Name
 type="text"
 id="ownerName"
 placeholder="Enter owner name">
+
 
 <label>
 Phone Number
@@ -472,6 +489,7 @@ type="text"
 id="businessPhone"
 placeholder="Enter phone number">
 
+
 <label>
 Email Address
 </label>
@@ -480,6 +498,7 @@ Email Address
 type="email"
 id="businessEmail"
 placeholder="Enter email address">
+
 
 <label>
 Business Address
@@ -490,6 +509,7 @@ type="text"
 id="businessAddress"
 placeholder="Enter business address">
 
+
 <label>
 Business Description
 </label>
@@ -497,6 +517,7 @@ Business Description
 <textarea
 id="businessDescription"
 placeholder="Describe your business"></textarea>
+
 
 <button
 class="save-button"
@@ -506,6 +527,7 @@ Save Settings
 
 </button>
 
+
 <div
 id="saveMessage">
 </div>
@@ -513,38 +535,32 @@ id="saveMessage">
 </div>
 
 
-<!-- =====================================================
-     WHATSAPP INTEGRATION
-===================================================== -->
+<!-- WHATSAPP INTEGRATION -->
 
-<div class="settings-box whatsapp-box">
-
-<div class="whatsapp-title">
+<div class="whatsapp-box">
 
 <div class="whatsapp-icon">
 📱
 </div>
 
-<div>
-
-<h3>
+<div class="whatsapp-title">
 WhatsApp Integration
-</h3>
-
-<p class="help-text">
-Connect your WhatsApp Business account to NexaFlow AI so incoming customer messages can be received and automatically handled.
-</p>
-
 </div>
+
+<div class="whatsapp-description">
+
+Connect your WhatsApp Business account to
+NexaFlow AI so incoming customer messages
+can be received and automatically handled.
 
 </div>
 
 
 <div
 id="whatsappStatus"
-class="connection-status status-loading">
+class="whatsapp-status whatsapp-disconnected">
 
-Checking WhatsApp connection...
+WhatsApp is not connected
 
 </div>
 
@@ -565,7 +581,7 @@ WhatsApp Business Account ID
 
 <input
 type="text"
-id="whatsappAccountId"
+id="whatsappBusinessAccountId"
 placeholder="Enter WhatsApp Business Account ID">
 
 
@@ -599,37 +615,35 @@ id="whatsappAccessToken"
 placeholder="Enter WhatsApp Access Token">
 
 
-<p class="help-text">
+<div class="whatsapp-help">
 
-The Phone Number ID and Access Token are the credentials used by NexaFlow AI to communicate with your WhatsApp Business number.
+The Phone Number ID and Access Token are the
+credentials used by NexaFlow AI to communicate
+with your WhatsApp Business number.
 
-</p>
+</div>
 
-
-<div class="whatsapp-actions">
 
 <button
-class="save-button"
-onclick="saveWhatsAppIntegration()">
+class="whatsapp-connect-button"
+onclick="connectWhatsApp()">
 
 Connect WhatsApp
 
 </button>
 
+
 <button
-class="disconnect-button"
+class="whatsapp-disconnect-button"
 onclick="disconnectWhatsApp()">
 
 Disconnect
 
 </button>
 
-</div>
-
 
 <div
-id="whatsappMessage"
-class="integration-message">
+id="whatsappMessage">
 </div>
 
 </div>
@@ -795,6 +809,7 @@ console.log(
 result
 );
 
+
 if(
 response.status === 401
 ){
@@ -822,6 +837,7 @@ return;
 
 }
 
+
 if(!response.ok){
 
 loading.textContent =
@@ -830,6 +846,7 @@ loading.textContent =
 return;
 
 }
+
 
 if(
 !result.business
@@ -841,6 +858,7 @@ loading.textContent =
 return;
 
 }
+
 
 const business =
 result.business;
@@ -953,6 +971,15 @@ business.id
 
 loading.style.display =
 "none";
+
+
+/*
+=====================================================
+ LOAD WHATSAPP INTEGRATION
+=====================================================
+*/
+
+await loadWhatsApp();
 
 
 }catch(error){
@@ -1368,94 +1395,10 @@ error.message;
 
 
 /* =====================================================
-   WHATSAPP MESSAGE DISPLAY
+   WHATSAPP - LOAD
 ===================================================== */
 
-function showWhatsAppMessage(
-message,
-type
-){
-
-const element =
-document.getElementById(
-"whatsappMessage"
-);
-
-element.textContent =
-message;
-
-element.className =
-"integration-message";
-
-if(type === "success"){
-
-element.classList.add(
-"integration-success"
-);
-
-}
-
-else if(type === "error"){
-
-element.classList.add(
-"integration-error"
-);
-
-}
-
-else{
-
-element.classList.add(
-"integration-loading"
-);
-
-}
-
-}
-
-
-/* =====================================================
-   WHATSAPP STATUS
-===================================================== */
-
-function setWhatsAppStatus(
-connected,
-text
-){
-
-const status =
-document.getElementById(
-"whatsappStatus"
-);
-
-status.textContent =
-text;
-
-status.className =
-"connection-status";
-
-if(connected){
-
-status.classList.add(
-"status-connected"
-);
-
-}else{
-
-status.classList.add(
-"status-disconnected"
-);
-
-}
-
-}
-
-
-/* =====================================================
-   LOAD WHATSAPP INTEGRATION
-===================================================== */
-
-async function loadWhatsAppIntegration(){
+async function loadWhatsApp(){
 
 const token =
 getAccessToken();
@@ -1471,7 +1414,7 @@ try{
 const response =
 await fetch(
 
-"/api/integrations",
+"/api/integrations/whatsapp",
 
 {
 
@@ -1488,70 +1431,37 @@ headers:{
 
 );
 
+
+if(!response.ok){
+
+console.log(
+"WhatsApp integration not available yet:",
+response.status
+);
+
+return;
+
+}
+
+
 const result =
 await response.json();
 
 console.log(
-"WhatsApp integrations response:",
+"WhatsApp integration response:",
 result
 );
 
-if(
-response.status === 401
-){
 
-setWhatsAppStatus(
-false,
-"Login session expired"
-);
-
-return;
-
-}
-
-if(!response.ok){
-
-setWhatsAppStatus(
-false,
-"Unable to check connection"
-);
-
-showWhatsAppMessage(
-result.error ||
-"Unable to load WhatsApp integration.",
-"error"
-);
-
-return;
-
-}
-
-const integrations =
-Array.isArray(
-result.integrations
-)
-? result.integrations
-: [];
+const integration =
+result.integration ||
+result.whatsapp ||
+null;
 
 
-/* FIND WHATSAPP */
+if(!integration){
 
-const whatsapp =
-integrations.find(
-item =>
-String(
-item.platform || ""
-).toLowerCase()
-=== "whatsapp"
-);
-
-
-if(!whatsapp){
-
-setWhatsAppStatus(
-false,
-"WhatsApp is not connected"
-);
+setWhatsAppDisconnected();
 
 return;
 
@@ -1563,64 +1473,58 @@ return;
 document.getElementById(
 "whatsappAccountName"
 ).value =
-whatsapp.account_name || "";
+integration.account_name || "";
 
 
 /* BUSINESS ACCOUNT ID */
 
 document.getElementById(
-"whatsappAccountId"
+"whatsappBusinessAccountId"
 ).value =
-whatsapp.account_id || "";
+integration.account_id || "";
 
 
-/* PHONE */
+/* PHONE NUMBER */
 
 document.getElementById(
 "whatsappPhoneNumber"
 ).value =
-whatsapp.phone_number || "";
+integration.phone_number || "";
 
 
 /* PHONE NUMBER ID */
 
-const settings =
-whatsapp.settings || {};
-
 document.getElementById(
 "whatsappPhoneNumberId"
 ).value =
-settings.phone_number_id || "";
+integration.phone_number_id || "";
 
 
-/*
- IMPORTANT:
- Do not display the stored access token
- back to the browser.
-*/
+/* TOKEN */
 
 document.getElementById(
 "whatsappAccessToken"
 ).value =
-"";
+integration.access_token || "";
 
 
-setWhatsAppStatus(
-true,
-"WhatsApp is connected"
-);
+if(
+integration.status === "connected"
+){
 
+setWhatsAppConnected();
+
+}else{
+
+setWhatsAppDisconnected();
+
+}
 
 }catch(error){
 
 console.error(
-"WhatsApp integration loading error:",
+"WhatsApp load error:",
 error
-);
-
-setWhatsAppStatus(
-false,
-"Unable to check connection"
 );
 
 }
@@ -1629,20 +1533,26 @@ false,
 
 
 /* =====================================================
-   SAVE WHATSAPP INTEGRATION
+   WHATSAPP - CONNECT
 ===================================================== */
 
-async function saveWhatsAppIntegration(){
+async function connectWhatsApp(){
 
 const token =
 getAccessToken();
 
+const message =
+document.getElementById(
+"whatsappMessage"
+);
+
 if(!token){
 
-showWhatsAppMessage(
-"Login session unavailable. Please log in again.",
-"error"
-);
+message.className =
+"whatsapp-message whatsapp-error";
+
+message.innerHTML =
+"❌ Login session unavailable.";
 
 return;
 
@@ -1655,9 +1565,9 @@ document.getElementById(
 ).value.trim();
 
 
-const accountId =
+const businessAccountId =
 document.getElementById(
-"whatsappAccountId"
+"whatsappBusinessAccountId"
 ).value.trim();
 
 
@@ -1679,42 +1589,30 @@ document.getElementById(
 ).value.trim();
 
 
-if(!phoneNumberId){
+if(
+!accountName ||
+!businessAccountId ||
+!phoneNumber ||
+!phoneNumberId ||
+!accessToken
+){
 
-showWhatsAppMessage(
-"WhatsApp Phone Number ID is required.",
-"error"
-);
+message.className =
+"whatsapp-message whatsapp-error";
 
-return;
-
-}
-
-
-/*
- If an existing integration is already saved,
- the backend can keep its stored token only if the
- frontend sends it again.
-
- Therefore require the token when connecting/updating.
-*/
-
-if(!accessToken){
-
-showWhatsAppMessage(
-"Please enter the WhatsApp Access Token.",
-"error"
-);
+message.innerHTML =
+"❌ Please fill in all WhatsApp fields.";
 
 return;
 
 }
 
 
-showWhatsAppMessage(
-"Connecting WhatsApp...",
-"loading"
-);
+message.className =
+"whatsapp-message";
+
+message.innerHTML =
+"Connecting WhatsApp...";
 
 
 try{
@@ -1722,7 +1620,7 @@ try{
 const response =
 await fetch(
 
-"/api/integrations",
+"/api/integrations/whatsapp",
 
 {
 
@@ -1747,16 +1645,16 @@ account_name:
 accountName,
 
 account_id:
-accountId,
-
-access_token:
-accessToken,
+businessAccountId,
 
 phone_number:
 phoneNumber,
 
 phone_number_id:
-phoneNumberId
+phoneNumberId,
+
+access_token:
+accessToken
 
 })
 
@@ -1768,9 +1666,8 @@ phoneNumberId
 const result =
 await response.json();
 
-
 console.log(
-"WhatsApp save response:",
+"WhatsApp connect response:",
 result
 );
 
@@ -1779,10 +1676,11 @@ if(
 response.status === 401
 ){
 
-showWhatsAppMessage(
-"Login session expired. Please log in again.",
-"error"
-);
+message.className =
+"whatsapp-message whatsapp-error";
+
+message.innerHTML =
+"❌ Login session expired. Please log in again.";
 
 return;
 
@@ -1791,13 +1689,14 @@ return;
 
 if(!response.ok){
 
-showWhatsAppMessage(
+message.className =
+"whatsapp-message whatsapp-error";
 
+message.innerHTML =
+"❌ " +
+(
 result.error ||
-"Unable to connect WhatsApp.",
-
-"error"
-
+"Unable to connect WhatsApp."
 );
 
 return;
@@ -1805,43 +1704,28 @@ return;
 }
 
 
-setWhatsAppStatus(
-true,
-"WhatsApp is connected"
-);
+message.className =
+"whatsapp-message whatsapp-success";
 
+message.innerHTML =
+"✅ WhatsApp connected successfully.";
 
-showWhatsAppMessage(
-
-"✅ WhatsApp integration saved successfully.",
-
-"success"
-
-);
-
-
-/*
- Do not leave the access token visible
- in the input after saving.
-*/
-
-document.getElementById(
-"whatsappAccessToken"
-).value =
-"";
+setWhatsAppConnected();
 
 
 }catch(error){
 
 console.error(
-"WhatsApp save error:",
+"WhatsApp connection error:",
 error
 );
 
-showWhatsAppMessage(
-"Connection error: " + error.message,
-"error"
-);
+message.className =
+"whatsapp-message whatsapp-error";
+
+message.innerHTML =
+"❌ Connection error: " +
+error.message;
 
 }
 
@@ -1849,7 +1733,7 @@ showWhatsAppMessage(
 
 
 /* =====================================================
-   DISCONNECT WHATSAPP
+   WHATSAPP - DISCONNECT
 ===================================================== */
 
 async function disconnectWhatsApp(){
@@ -1857,152 +1741,31 @@ async function disconnectWhatsApp(){
 const token =
 getAccessToken();
 
+const message =
+document.getElementById(
+"whatsappMessage"
+);
+
 if(!token){
 
-showWhatsAppMessage(
-"Login session unavailable.",
-"error"
-);
-
 return;
 
 }
 
 
-if(
-!confirm(
-"Are you sure you want to disconnect WhatsApp?"
-)
-){
+message.className =
+"whatsapp-message";
 
-return;
-
-}
-
-
-showWhatsAppMessage(
-"Disconnecting WhatsApp...",
-"loading"
-);
+message.innerHTML =
+"Disconnecting WhatsApp...";
 
 
 try{
 
-/* GET CURRENT INTEGRATIONS */
-
 const response =
 await fetch(
 
-"/api/integrations",
-
-{
-
-method:"GET",
-
-headers:{
-
-"Authorization":
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-const result =
-await response.json();
-
-
-if(
-response.status === 401
-){
-
-showWhatsAppMessage(
-"Login session expired.",
-"error"
-);
-
-return;
-
-}
-
-
-if(!response.ok){
-
-showWhatsAppMessage(
-result.error ||
-"Unable to find WhatsApp integration.",
-"error"
-);
-
-return;
-
-}
-
-
-const integrations =
-Array.isArray(
-result.integrations
-)
-? result.integrations
-: [];
-
-
-const whatsapp =
-integrations.find(
-item =>
-String(
-item.platform || ""
-).toLowerCase()
-=== "whatsapp"
-);
-
-
-if(!whatsapp){
-
-setWhatsAppStatus(
-false,
-"WhatsApp is not connected"
-);
-
-showWhatsAppMessage(
-"No WhatsApp integration is currently connected.",
-"error"
-);
-
-return;
-
-}
-
-
-const integrationId =
-whatsapp.id;
-
-
-if(!integrationId){
-
-showWhatsAppMessage(
-"WhatsApp integration ID was not found.",
-"error"
-);
-
-return;
-
-}
-
-
-/* DELETE */
-
-const deleteResponse =
-await fetch(
-
-"/api/integrations/"
-+
-encodeURIComponent(
-integrationId
-),
+"/api/integrations/whatsapp",
 
 {
 
@@ -2020,75 +1783,61 @@ headers:{
 );
 
 
-const deleteResult =
-await deleteResponse.json();
+const result =
+await response.json();
+
+console.log(
+"WhatsApp disconnect response:",
+result
+);
 
 
-if(
-deleteResponse.status === 401
-){
+if(!response.ok){
 
-showWhatsAppMessage(
-"Login session expired.",
-"error"
+message.className =
+"whatsapp-message whatsapp-error";
+
+message.innerHTML =
+"❌ " +
+(
+result.error ||
+"Unable to disconnect WhatsApp."
 );
 
 return;
 
 }
 
-
-if(!deleteResponse.ok){
-
-showWhatsAppMessage(
-deleteResult.error ||
-"Unable to disconnect WhatsApp.",
-"error"
-);
-
-return;
-
-}
-
-
-/* CLEAR FORM */
 
 document.getElementById(
 "whatsappAccountName"
-).value =
-"";
+).value = "";
 
 document.getElementById(
-"whatsappAccountId"
-).value =
-"";
+"whatsappBusinessAccountId"
+).value = "";
 
 document.getElementById(
 "whatsappPhoneNumber"
-).value =
-"";
+).value = "";
 
 document.getElementById(
 "whatsappPhoneNumberId"
-).value =
-"";
+).value = "";
 
 document.getElementById(
 "whatsappAccessToken"
-).value =
-"";
+).value = "";
 
 
-setWhatsAppStatus(
-false,
-"WhatsApp is not connected"
-);
+setWhatsAppDisconnected();
 
 
-showWhatsAppMessage(
-"WhatsApp disconnected successfully.",
-"success"
-);
+message.className =
+"whatsapp-message whatsapp-success";
+
+message.innerHTML =
+"✅ WhatsApp disconnected successfully.";
 
 
 }catch(error){
@@ -2098,12 +1847,50 @@ console.error(
 error
 );
 
-showWhatsAppMessage(
-"Connection error: " + error.message,
-"error"
-);
+message.className =
+"whatsapp-message whatsapp-error";
+
+message.innerHTML =
+"❌ Connection error: " +
+error.message;
 
 }
+
+}
+
+
+/* =====================================================
+   WHATSAPP STATUS
+===================================================== */
+
+function setWhatsAppConnected(){
+
+const status =
+document.getElementById(
+"whatsappStatus"
+);
+
+status.className =
+"whatsapp-status whatsapp-connected";
+
+status.textContent =
+"WhatsApp is connected";
+
+}
+
+
+function setWhatsAppDisconnected(){
+
+const status =
+document.getElementById(
+"whatsappStatus"
+);
+
+status.className =
+"whatsapp-status whatsapp-disconnected";
+
+status.textContent =
+"WhatsApp is not connected";
 
 }
 
@@ -2117,8 +1904,6 @@ window.addEventListener(
 function(){
 
 loadSettings();
-
-loadWhatsAppIntegration();
 
 }
 );
