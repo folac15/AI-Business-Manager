@@ -18,6 +18,7 @@ SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 SUPABASE_PROJECT_URL = (
     "https://xfjroysinifwncfjvrsg.supabase.co"
 )
+
 WHATSAPP_VERIFY_TOKEN = os.environ.get(
     "WHATSAPP_VERIFY_TOKEN"
 )
@@ -1147,6 +1148,69 @@ def dashboard_stats():
 
             businesses = []
 
+        # -------------------------------------------------
+        # WHATSAPP STATISTICS
+        # -------------------------------------------------
+
+        whatsapp_messages = []
+
+        whatsapp_response = requests.get(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "id,direction,status",
+
+                "user_id":
+                    "eq." + user_id,
+
+                "platform":
+                    "eq.whatsapp"
+
+            },
+
+            timeout=15
+        )
+
+        if whatsapp_response.status_code == 200:
+
+            whatsapp_messages = (
+                whatsapp_response.json()
+            )
+
+        else:
+
+            print(
+                "Dashboard WhatsApp error:",
+                whatsapp_response.text
+            )
+
+        whatsapp_incoming = len([
+
+            item
+
+            for item in whatsapp_messages
+
+            if item.get("direction")
+            == "inbound"
+
+        ])
+
+        whatsapp_outgoing = len([
+
+            item
+
+            for item in whatsapp_messages
+
+            if item.get("direction")
+            == "outbound"
+
+        ])
+
         return jsonify({
 
             "success":
@@ -1159,6 +1223,15 @@ def dashboard_stats():
 
                 "ai_conversations":
                     len(conversations),
+
+                "whatsapp_messages":
+                    len(whatsapp_messages),
+
+                "whatsapp_incoming":
+                    whatsapp_incoming,
+
+                "whatsapp_outgoing":
+                    whatsapp_outgoing,
 
                 "reports":
                     len(customers)
@@ -2449,27 +2522,6 @@ def upload_business_logo():
 
 
 # =========================================================
-# WHATSAPP ENVIRONMENT VARIABLES
-# =========================================================
-
-WHATSAPP_VERIFY_TOKEN = os.environ.get(
-    "WHATSAPP_VERIFY_TOKEN"
-)
-
-WHATSAPP_ACCESS_TOKEN = os.environ.get(
-    "WHATSAPP_ACCESS_TOKEN"
-)
-
-WHATSAPP_PHONE_NUMBER_ID = os.environ.get(
-    "WHATSAPP_PHONE_NUMBER_ID"
-)
-
-WHATSAPP_BUSINESS_ACCOUNT_ID = os.environ.get(
-    "WHATSAPP_BUSINESS_ACCOUNT_ID"
-)
-
-
-# =========================================================
 # WHATSAPP - GET INTEGRATIONS
 # =========================================================
 
@@ -3076,9 +3128,6 @@ def find_or_create_whatsapp_customer(
                 "",
 
             "created_at":
-                now_iso(),
-
-            "updated_at":
                 now_iso()
 
         }
@@ -3307,6 +3356,390 @@ def store_whatsapp_message(
 
         return None
 
+
+# =========================================================
+# WHATSAPP - GET MESSAGES
+# =========================================================
+
+@app.route(
+    "/api/messages",
+    methods=["GET"]
+)
+def get_messages():
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    user_id = user["id"]
+
+    customer_id = request.args.get(
+        "customer_id",
+        ""
+    ).strip()
+
+    limit = request.args.get(
+        "limit",
+        "100"
+    ).strip()
+
+    try:
+
+        limit_number = int(limit)
+
+    except ValueError:
+
+        limit_number = 100
+
+    limit_number = max(
+        1,
+        min(
+            limit_number,
+            500
+        )
+    )
+
+    params = {
+
+        "select":
+            "*",
+
+        "user_id":
+            "eq." + user_id,
+
+        "platform":
+            "eq.whatsapp",
+
+        "order":
+            "created_at.desc",
+
+        "limit":
+            str(limit_number)
+
+    }
+
+    if customer_id:
+
+        params["customer_id"] = (
+            "eq." + customer_id
+        )
+
+    try:
+
+        response = requests.get(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(),
+
+            params=params,
+
+            timeout=15
+        )
+
+        print(
+            "WhatsApp messages GET status:",
+            response.status_code
+        )
+
+        print(
+            "WhatsApp messages GET response:",
+            response.text
+        )
+
+        if response.status_code != 200:
+
+            return jsonify({
+
+                "success":
+                    False,
+
+                "error":
+                    "Unable to load WhatsApp messages: "
+                    + response.text
+
+            }), response.status_code
+
+        messages = response.json()
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "messages":
+                messages,
+
+            "count":
+                len(messages)
+
+        })
+
+    except Exception as error:
+
+        print(
+            "WhatsApp messages GET exception:",
+            error
+        )
+
+        return jsonify({
+
+            "success":
+                False,
+
+            "error":
+                "Unable to load WhatsApp messages: "
+                + str(error)
+
+        }), 500
+
+
+# =========================================================
+# WHATSAPP - GET SINGLE MESSAGE
+# =========================================================
+
+@app.route(
+    "/api/messages/<int:message_id>",
+    methods=["GET"]
+)
+def get_single_message(message_id):
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    try:
+
+        response = requests.get(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "id":
+                    "eq." + str(
+                        message_id
+                    ),
+
+                "user_id":
+                    "eq." + user["id"],
+
+                "platform":
+                    "eq.whatsapp",
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            return jsonify({
+
+                "error":
+                    response.text
+
+            }), response.status_code
+
+        messages = response.json()
+
+        if not messages:
+
+            return jsonify({
+
+                "error":
+                    "WhatsApp message not found."
+
+            }), 404
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "message":
+                messages[0]
+
+        })
+
+    except Exception as error:
+
+        print(
+            "Single WhatsApp message exception:",
+            error
+        )
+
+        return jsonify({
+
+            "error":
+                str(error)
+
+        }), 500
+
+
+# =========================================================
+# WHATSAPP - GET CUSTOMER CONVERSATION
+# =========================================================
+
+@app.route(
+    "/api/messages/conversation/<int:customer_id>",
+    methods=["GET"]
+)
+def get_whatsapp_customer_conversation(
+    customer_id
+):
+
+    user = get_authenticated_user()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    user_id = user["id"]
+
+    try:
+
+        customer_response = requests.get(
+
+            CUSTOMERS_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "id":
+                    "eq." + str(
+                        customer_id
+                    ),
+
+                "user_id":
+                    "eq." + user_id,
+
+                "limit":
+                    "1"
+
+            },
+
+            timeout=15
+        )
+
+        if customer_response.status_code != 200:
+
+            return jsonify({
+
+                "error":
+                    customer_response.text
+
+            }), customer_response.status_code
+
+        customers = customer_response.json()
+
+        if not customers:
+
+            return jsonify({
+
+                "error":
+                    "Customer not found."
+
+            }), 404
+
+        message_response = requests.get(
+
+            MESSAGES_URL,
+
+            headers=supabase_headers(),
+
+            params={
+
+                "select":
+                    "*",
+
+                "customer_id":
+                    "eq." + str(
+                        customer_id
+                    ),
+
+                "user_id":
+                    "eq." + user_id,
+
+                "platform":
+                    "eq.whatsapp",
+
+                "order":
+                    "created_at.asc"
+
+            },
+
+            timeout=15
+        )
+
+        if message_response.status_code != 200:
+
+            return jsonify({
+
+                "error":
+                    "Unable to load conversation: "
+                    + message_response.text
+
+            }), message_response.status_code
+
+        messages = message_response.json()
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "customer":
+                customers[0],
+
+            "messages":
+                messages,
+
+            "count":
+                len(messages)
+
+        })
+
+    except Exception as error:
+
+        print(
+            "WhatsApp conversation exception:",
+            error
+        )
+
+        return jsonify({
+
+            "error":
+                str(error)
+
+        }), 500
+
+
 # =========================================================
 # WHATSAPP - AI AUTOMATION
 # =========================================================
@@ -3408,6 +3841,9 @@ def get_whatsapp_conversation_history(
 
                 "customer_id":
                     "eq." + str(customer_id),
+
+                "platform":
+                    "eq.whatsapp",
 
                 "order":
                     "created_at.desc",
@@ -4261,6 +4697,8 @@ def process_whatsapp_ai_reply(
     )
 
     return True
+
+
 # =========================================================
 # WHATSAPP - WEBHOOK VERIFICATION
 # =========================================================
@@ -4298,6 +4736,7 @@ def whatsapp_webhook_verify():
 # =========================================================
 # WHATSAPP - RECEIVE WEBHOOK
 # =========================================================
+
 @app.route(
     "/api/whatsapp/webhook",
     methods=["POST"]
@@ -4321,9 +4760,6 @@ def whatsapp_webhook():
         payload
     )
 
-    app.logger.warning(
-        "========== WHATSAPP WEBHOOK PROCESSING =========="
-    )
     if payload.get(
         "object"
     ) != "whatsapp_business_account":
@@ -4478,7 +4914,7 @@ def whatsapp_webhook():
             processed
 
     }), 200
-    
+
 
 # =========================================================
 # APPLICATION START
