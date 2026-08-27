@@ -7,7 +7,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-
 # =========================================================
 # ENVIRONMENT VARIABLES
 # =========================================================
@@ -15,55 +14,25 @@ CORS(app)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
-SUPABASE_PROJECT_URL = (
-    "https://xfjroysinifwncfjvrsg.supabase.co"
-)
+SUPABASE_PROJECT_URL = "https://xfjroysinifwncfjvrsg.supabase.co"
 
-WHATSAPP_VERIFY_TOKEN = os.environ.get(
-    "WHATSAPP_VERIFY_TOKEN"
-)
-
-WHATSAPP_ACCESS_TOKEN = os.environ.get(
-    "WHATSAPP_ACCESS_TOKEN"
-)
-
-WHATSAPP_PHONE_NUMBER_ID = os.environ.get(
-    "WHATSAPP_PHONE_NUMBER_ID"
-)
-
+WHATSAPP_VERIFY_TOKEN = os.environ.get("WHATSAPP_VERIFY_TOKEN")
+WHATSAPP_ACCESS_TOKEN = os.environ.get("WHATSAPP_ACCESS_TOKEN")
+WHATSAPP_PHONE_NUMBER_ID = os.environ.get("WHATSAPP_PHONE_NUMBER_ID")
 WHATSAPP_BUSINESS_ACCOUNT_ID = os.environ.get(
     "WHATSAPP_BUSINESS_ACCOUNT_ID"
 )
-
 
 # =========================================================
 # SUPABASE TABLE URLS
 # =========================================================
 
-CUSTOMERS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/customers"
-)
-
-BUSINESS_ACCOUNTS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
-)
-
-AUTOMATION_SETTINGS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
-)
-
-AI_CONVERSATIONS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
-)
-
-INTEGRATIONS_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/integrations"
-)
-
-MESSAGES_URL = (
-    SUPABASE_PROJECT_URL + "/rest/v1/messages"
-)
-
+CUSTOMERS_URL = SUPABASE_PROJECT_URL + "/rest/v1/customers"
+BUSINESS_ACCOUNTS_URL = SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
+AUTOMATION_SETTINGS_URL = SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
+AI_CONVERSATIONS_URL = SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
+INTEGRATIONS_URL = SUPABASE_PROJECT_URL + "/rest/v1/integrations"
+MESSAGES_URL = SUPABASE_PROJECT_URL + "/rest/v1/messages"
 
 # =========================================================
 # TIME
@@ -72,19 +41,14 @@ MESSAGES_URL = (
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
-
 # =========================================================
-# SUPABASE ADMIN HEADERS
+# SUPABASE HEADERS
 # =========================================================
 
 def supabase_headers(prefer=None):
-
     headers = {
         "apikey": str(SUPABASE_SECRET_KEY or ""),
-        "Authorization": (
-            "Bearer "
-            + str(SUPABASE_SECRET_KEY or "")
-        ),
+        "Authorization": "Bearer " + str(SUPABASE_SECRET_KEY or ""),
         "Content-Type": "application/json"
     }
 
@@ -93,43 +57,26 @@ def supabase_headers(prefer=None):
 
     return headers
 
-
 # =========================================================
 # WEBSITE
 # =========================================================
 
 @app.route("/")
 def home():
-
-    return send_from_directory(
-        ".",
-        "index.html"
-    )
+    return send_from_directory(".", "index.html")
 
 
 @app.route("/index.html")
 def index_page():
-
-    return send_from_directory(
-        ".",
-        "index.html"
-    )
+    return send_from_directory(".", "index.html")
 
 
 @app.route("/<path:filename>")
 def serve_files(filename):
-
-    if filename.endswith(
-        (".html", ".css", ".js")
-    ):
-
-        return send_from_directory(
-            ".",
-            filename
-        )
+    if filename.endswith((".html", ".css", ".js")):
+        return send_from_directory(".", filename)
 
     return "File not found", 404
-
 
 # =========================================================
 # API STATUS
@@ -137,64 +84,43 @@ def serve_files(filename):
 
 @app.route("/api/status")
 def status():
-
     return jsonify({
         "status": "online",
         "message": "NexaFlow AI API is working"
     })
 
-
 # =========================================================
-# AUTHENTICATED SUPABASE USER
+# AUTHENTICATED USER
 # =========================================================
 
 def get_authenticated_user():
 
-    authorization = request.headers.get(
-        "Authorization"
-    )
+    authorization = request.headers.get("Authorization")
 
     if not authorization:
         return None
 
-    if not authorization.startswith(
-        "Bearer "
-    ):
+    if not authorization.startswith("Bearer "):
         return None
 
     access_token = authorization.replace(
-        "Bearer ",
-        "",
-        1
+        "Bearer ", "", 1
     ).strip()
 
     if not access_token:
         return None
 
     if not SUPABASE_SECRET_KEY:
-
-        print(
-            "SUPABASE_SECRET_KEY is not configured."
-        )
-
+        print("SUPABASE_SECRET_KEY is not configured.")
         return None
 
     try:
-
         response = requests.get(
-
-            SUPABASE_PROJECT_URL
-            + "/auth/v1/user",
-
+            SUPABASE_PROJECT_URL + "/auth/v1/user",
             headers={
-                "apikey":
-                    SUPABASE_SECRET_KEY,
-
-                "Authorization":
-                    "Bearer "
-                    + access_token
+                "apikey": SUPABASE_SECRET_KEY,
+                "Authorization": "Bearer " + access_token
             },
-
             timeout=15
         )
 
@@ -204,12 +130,10 @@ def get_authenticated_user():
         )
 
         if response.status_code != 200:
-
             print(
                 "Supabase authentication error:",
                 response.text
             )
-
             return None
 
         user = response.json()
@@ -220,17 +144,11 @@ def get_authenticated_user():
         return user
 
     except Exception as error:
-
-        print(
-            "Authentication exception:",
-            error
-        )
-
+        print("Authentication exception:", error)
         return None
 
-
 # =========================================================
-# NEXAFLOW AI SYSTEM PROMPT
+# SYSTEM PROMPT
 # =========================================================
 
 NEXAFLOW_SYSTEM_PROMPT = """
@@ -238,7 +156,6 @@ You are NexaFlow AI, the intelligent conversational assistant
 inside the NexaFlow Business Management Platform.
 
 Help with:
-
 - Business management
 - Customer service
 - Marketing
@@ -254,229 +171,258 @@ Help with:
 - Communication
 - Problem solving
 
-CONVERSATION:
-
-Always use the conversation history supplied by the application.
+Always use conversation history when supplied.
 
 Understand short follow-up messages from context.
 
-If the user says "give me an example", give an example of the
-current topic.
+If the user says "give me an example", give an example of
+the current topic.
 
-If the user says "another one" or "give me another example",
-give a different example of the current topic.
+If the user says "another one", give a different example.
 
-If the user says "solve it", identify the most recent relevant
-exercise or problem and solve it.
+If the user says "solve it", solve the most recent relevant
+problem.
 
-If the user says "why", explain the previous statement or result.
+If the user says "why", explain the previous statement.
 
-If the user says "make it easier", explain the previous answer
-using simpler English.
+If the user says "make it easier", simplify the previous answer.
 
 If the user says "continue" or "go on", continue the current topic.
 
-MATHEMATICS AND PHYSICS:
-
-- Explain concepts clearly.
+For mathematics and physics:
+- Explain clearly.
 - Give formulas when useful.
 - Define variables when useful.
 - Show reasoning.
 - Give examples when requested.
-- Create exercises when requested.
-- Solve exercises step by step when requested.
-- Make another example different from the previous one.
-- Use simple English unless advanced detail is requested.
-- Use practical Cameroon-related contexts when appropriate.
+- Solve step by step when requested.
 
-EDUCATION:
-
-- Explain before giving an example when appropriate.
-- Do not give an exercise's answer unless the student asks.
+For education:
+- Explain before giving examples when appropriate.
+- Do not give an exercise answer unless requested.
 - Correct mistakes politely.
 
-BUSINESS:
-
+For business:
 - Give practical recommendations.
-- Consider small and medium businesses.
-- Consider African and Cameroonian realities when relevant.
-- Do not invent prices, statistics, regulations or market data.
-
-Do not ask unnecessary clarification questions.
-
-When a reasonable interpretation is available, answer directly.
-
-Be accurate, natural, helpful and conversational.
-
-Do not fabricate information.
+- Consider African and Cameroonian realities where relevant.
+- Do not invent prices, statistics or regulations.
 
 Do not claim to have performed an action that you did not perform.
 
-Do not repeatedly say that you are an AI.
+Be accurate, natural, helpful and conversational.
 """
 
+# =========================================================
+# SUPABASE GENERIC HELPERS
+# =========================================================
+
+def supabase_get(url, params):
+    return requests.get(
+        url,
+        headers=supabase_headers(),
+        params=params,
+        timeout=15
+    )
+
+
+def supabase_insert(url, data):
+    return requests.post(
+        url,
+        headers=supabase_headers("return=representation"),
+        json=data,
+        timeout=15
+    )
+
+
+def supabase_update(url, params, data):
+    return requests.patch(
+        url,
+        headers=supabase_headers("return=representation"),
+        params=params,
+        json=data,
+        timeout=15
+    )
+
+
+def supabase_delete(url, params):
+    return requests.delete(
+        url,
+        headers=supabase_headers(),
+        params=params,
+        timeout=15
+    )
+
+
+def first_row(response):
+    try:
+        data = response.json()
+    except Exception:
+        return None
+
+    if isinstance(data, list) and data:
+        return data[0]
+
+    return None
 
 # =========================================================
 # AI CONVERSATION SAVE
 # =========================================================
 
-def save_ai_conversation(
-    user_id,
-    question,
-    answer
-):
+def save_ai_conversation(user_id, question, answer):
 
     if not user_id:
-
-        print(
-            "AI conversation not saved: "
-            "no authenticated user."
-        )
-
         return False
 
-    conversation_data = {
-
-        "user_id":
-            user_id,
-
-        "question":
-            question,
-
-        "answer":
-            answer,
-
-        "created_at":
-            now_iso()
+    data = {
+        "user_id": user_id,
+        "question": question,
+        "answer": answer,
+        "created_at": now_iso()
     }
 
     try:
-
-        response = requests.post(
-
+        response = supabase_insert(
             AI_CONVERSATIONS_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=conversation_data,
-
-            timeout=15
+            data
         )
 
         print(
-            "AI conversation SAVE status:",
-            response.status_code
-        )
-
-        print(
-            "AI conversation SAVE response:",
+            "AI conversation SAVE:",
+            response.status_code,
             response.text
         )
 
-        if response.status_code not in (
-            200,
-            201
-        ):
-
-            return False
-
-        return True
+        return response.status_code in (200, 201)
 
     except Exception as error:
-
         print(
             "AI conversation SAVE exception:",
             error
         )
-
         return False
 
+# =========================================================
+# OPENROUTER AI
+# =========================================================
+
+def call_openrouter(messages, title="NexaFlow AI"):
+
+    if not OPENROUTER_API_KEY:
+        return None, "OPENROUTER_API_KEY is not configured."
+
+    try:
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization":
+                    "Bearer " + OPENROUTER_API_KEY,
+                "Content-Type":
+                    "application/json",
+                "HTTP-Referer":
+                    SUPABASE_PROJECT_URL,
+                "X-Title":
+                    title
+            },
+            json={
+                "model":
+                    "openai/gpt-oss-20b:free",
+                "messages":
+                    messages
+            },
+            timeout=60
+        )
+
+        print(
+            title,
+            "OpenRouter status:",
+            response.status_code
+        )
+
+        try:
+            result = response.json()
+        except Exception:
+            result = {}
+
+        if response.status_code != 200:
+            print(
+                title,
+                "OpenRouter error:",
+                result
+            )
+            return None, str(
+                result.get("error", result)
+            )
+
+        choices = result.get("choices", [])
+
+        if not choices:
+            return None, "No AI response was returned."
+
+        answer = str(
+            choices[0]
+            .get("message", {})
+            .get("content", "")
+        ).strip()
+
+        if not answer:
+            return None, "AI returned an empty response."
+
+        return answer, None
+
+    except Exception as error:
+        print(
+            title,
+            "OpenRouter exception:",
+            error
+        )
+        return None, str(error)
 
 # =========================================================
 # AI ASSISTANT
 # =========================================================
 
-@app.route(
-    "/api/ai",
-    methods=["POST"]
-)
+@app.route("/api/ai", methods=["POST"])
 def ai_reply():
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     question = str(
-        data.get(
-            "question",
-            ""
-        )
+        data.get("question", "")
     ).strip()
 
-    conversation = data.get(
-        "conversation",
-        []
-    )
+    conversation = data.get("conversation", [])
 
     if not question:
-
         return jsonify({
-            "answer":
-                "Please enter your question."
+            "answer": "Please enter your question."
         }), 400
-
-    if not OPENROUTER_API_KEY:
-
-        return jsonify({
-            "answer":
-                "OpenRouter API key is not configured."
-        }), 500
 
     user = get_authenticated_user()
 
-    user_id = None
+    user_id = user.get("id") if user else None
 
-    if user:
-        user_id = user.get("id")
+    messages = [{
+        "role": "system",
+        "content": NEXAFLOW_SYSTEM_PROMPT
+    }]
 
-    messages = [
-        {
-            "role": "system",
-            "content":
-                NEXAFLOW_SYSTEM_PROMPT
-        }
-    ]
-
-    if isinstance(
-        conversation,
-        list
-    ):
+    if isinstance(conversation, list):
 
         for item in conversation:
 
-            if not isinstance(
-                item,
-                dict
-            ):
+            if not isinstance(item, dict):
                 continue
 
             role = item.get("role")
             content = item.get("content")
 
-            if role not in (
-                "user",
-                "assistant"
-            ):
+            if role not in ("user", "assistant"):
                 continue
 
             if content is None:
                 continue
 
-            content = str(
-                content
-            ).strip()
+            content = str(content).strip()
 
             if not content:
                 continue
@@ -492,226 +438,73 @@ def ai_reply():
     })
 
     if len(messages) > 21:
+        messages = [messages[0]] + messages[-20:]
 
-        messages = (
-            [messages[0]]
-            +
-            messages[-20:]
-        )
+    answer, error = call_openrouter(
+        messages,
+        "NexaFlow AI"
+    )
 
-    try:
-
-        response = requests.post(
-
-            "https://openrouter.ai/api/v1/chat/completions",
-
-            headers={
-                "Authorization":
-                    "Bearer "
-                    + OPENROUTER_API_KEY,
-
-                "Content-Type":
-                    "application/json",
-
-                "HTTP-Referer":
-                    SUPABASE_PROJECT_URL,
-
-                "X-Title":
-                    "NexaFlow AI"
-            },
-
-            json={
-
-                "model":
-                    "openai/gpt-oss-20b:free",
-
-                "messages":
-                    messages
-            },
-
-            timeout=60
-        )
-
-        print(
-            "OpenRouter status:",
-            response.status_code
-        )
-
-        try:
-
-            result = response.json()
-
-        except ValueError:
-
-            result = {}
-
-        if response.status_code != 200:
-
-            print(
-                "OpenRouter error:",
-                result
-            )
-
-            error_info = result.get(
-                "error",
-                result
-            )
-
-            return jsonify({
-
-                "answer":
-                    "AI service error: "
-                    + str(error_info)
-
-            }), 500
-
-        choices = result.get(
-            "choices",
-            []
-        )
-
-        answer = ""
-
-        if choices:
-
-            message = choices[0].get(
-                "message",
-                {}
-            )
-
-            answer = str(
-                message.get(
-                    "content",
-                    ""
-                )
-            ).strip()
-
-        if not answer:
-
-            answer = (
-                "The AI did not return an answer."
-            )
-
-        saved = save_ai_conversation(
-            user_id,
-            question,
-            answer
-        )
-
-        print(
-            "AI conversation saved:",
-            saved
-        )
+    if not answer:
 
         return jsonify({
-
-            "success":
-                True,
-
             "answer":
-                answer,
-
-            "conversation_saved":
-                saved
-
-        })
-
-    except Exception as error:
-
-        print(
-            "AI service exception:",
-            error
-        )
-
-        return jsonify({
-
-            "answer":
-                "AI service connection error: "
-                + str(error)
-
+                "AI service error: " + str(error)
         }), 500
 
+    saved = save_ai_conversation(
+        user_id,
+        question,
+        answer
+    )
+
+    return jsonify({
+        "success": True,
+        "answer": answer,
+        "conversation_saved": saved
+    })
 
 # =========================================================
 # CUSTOMERS - GET
 # =========================================================
 
-@app.route(
-    "/api/customers",
-    methods=["GET"]
-)
+@app.route("/api/customers", methods=["GET"])
 def get_customers():
 
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
-
-    user_id = user["id"]
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             CUSTOMERS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "user_id":
-                    "eq." + user_id,
-
+                    "eq." + user["id"],
                 "order":
                     "created_at.desc"
-
-            },
-
-            timeout=15
-        )
-
-        print(
-            "Customers GET status:",
-            response.status_code
-        )
-
-        print(
-            "Customers GET response:",
-            response.text
+            }
         )
 
         if response.status_code != 200:
-
             return jsonify({
-
                 "error":
                     "Unable to load customers: "
                     + response.text
-
             }), response.status_code
 
         customers = response.json()
 
         return jsonify({
-
-            "success":
-                True,
-
-            "customers":
-                customers,
-
-            "count":
-                len(customers)
-
+            "success": True,
+            "customers": customers,
+            "count": len(customers)
         })
 
     except Exception as error:
@@ -722,203 +515,90 @@ def get_customers():
         )
 
         return jsonify({
-
             "error":
                 "Unable to load customers: "
                 + str(error)
-
         }), 500
-
 
 # =========================================================
 # CUSTOMERS - ADD
 # =========================================================
 
-@app.route(
-    "/api/customers",
-    methods=["POST"]
-)
+@app.route("/api/customers", methods=["POST"])
 def add_customer():
 
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
-    user_id = user["id"]
-
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     name = str(
         data.get(
             "name",
-            data.get(
-                "customer_name",
-                ""
-            )
-        )
-    ).strip()
-
-    phone = str(
-        data.get(
-            "phone",
-            data.get(
-                "phone_number",
-                ""
-            )
-        )
-    ).strip()
-
-    email = str(
-        data.get(
-            "email",
-            ""
-        )
-    ).strip()
-
-    location = str(
-        data.get(
-            "location",
-            ""
-        )
-    ).strip()
-
-    message = str(
-        data.get(
-            "message",
-            data.get(
-                "customer_message",
-                ""
-            )
-        )
-    ).strip()
-
-    ai_reply = str(
-        data.get(
-            "ai_reply",
-            ""
+            data.get("customer_name", "")
         )
     ).strip()
 
     if not name:
-
         return jsonify({
-
             "error":
                 "Customer name is required."
-
         }), 400
 
     customer_data = {
-
-        "user_id":
-            user_id,
-
-        "name":
-            name,
-
-        "phone":
-            phone,
-
-        "email":
-            email,
-
-        "location":
-            location,
-
-        "message":
-            message,
-
-        "ai_reply":
-            ai_reply,
-
-        "created_at":
-            now_iso()
+        "user_id": user["id"],
+        "name": name,
+        "phone": str(
+            data.get(
+                "phone",
+                data.get("phone_number", "")
+            )
+        ).strip(),
+        "email": str(
+            data.get("email", "")
+        ).strip(),
+        "location": str(
+            data.get("location", "")
+        ).strip(),
+        "message": str(
+            data.get(
+                "message",
+                data.get("customer_message", "")
+            )
+        ).strip(),
+        "ai_reply": str(
+            data.get("ai_reply", "")
+        ).strip(),
+        "created_at": now_iso()
     }
 
     try:
 
-        response = requests.post(
-
+        response = supabase_insert(
             CUSTOMERS_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=customer_data,
-
-            timeout=15
+            customer_data
         )
 
-        print(
-            "Customer SAVE status:",
-            response.status_code
-        )
-
-        print(
-            "Customer SAVE response:",
-            response.text
-        )
-
-        if response.status_code not in (
-            200,
-            201
-        ):
-
+        if response.status_code not in (200, 201):
             return jsonify({
-
-                "success":
-                    False,
-
+                "success": False,
                 "error":
                     "Unable to save customer: "
                     + response.text
-
             }), response.status_code
 
-        try:
-
-            result = response.json()
-
-        except ValueError:
-
-            result = []
-
-        saved_customer = (
-
-            result[0]
-
-            if (
-                isinstance(
-                    result,
-                    list
-                )
-                and result
-            )
-
-            else customer_data
-        )
+        saved = first_row(response) or customer_data
 
         return jsonify({
-
-            "success":
-                True,
-
-            "customer":
-                saved_customer,
-
+            "success": True,
+            "customer": saved,
             "message":
                 "Customer saved successfully."
-
         })
 
     except Exception as error:
@@ -929,16 +609,115 @@ def add_customer():
         )
 
         return jsonify({
-
-            "success":
-                False,
-
-            "error":
-                "Unable to save customer: "
-                + str(error)
-
+            "success": False,
+            "error": str(error)
         }), 500
 
+# =========================================================
+# NEW IMPORTANT FIX:
+# UPDATE CUSTOMER FROM WHATSAPP
+# =========================================================
+
+def update_customer_whatsapp_message(
+    user_id,
+    customer_id,
+    message_text
+):
+
+    if not user_id or not customer_id or not message_text:
+        return False
+
+    try:
+
+        params = {
+            "id":
+                "eq." + str(customer_id),
+            "user_id":
+                "eq." + str(user_id)
+        }
+
+        data = {
+            "message":
+                message_text,
+            "updated_at":
+                now_iso()
+        }
+
+        response = supabase_update(
+            CUSTOMERS_URL,
+            params,
+            data
+        )
+
+        print(
+            "CUSTOMER INCOMING MESSAGE UPDATE:",
+            response.status_code,
+            response.text
+        )
+
+        return response.status_code in (200, 204)
+
+    except Exception as error:
+
+        print(
+            "Customer WhatsApp message update exception:",
+            error
+        )
+
+        return False
+
+# =========================================================
+# NEW IMPORTANT FIX:
+# UPDATE CUSTOMER AI REPLY
+# =========================================================
+
+def update_customer_ai_reply(
+    user_id,
+    customer_id,
+    ai_reply
+):
+
+    if not user_id or not customer_id or not ai_reply:
+        return False
+
+    try:
+
+        params = {
+            "id":
+                "eq." + str(customer_id),
+            "user_id":
+                "eq." + str(user_id)
+        }
+
+        data = {
+            "ai_reply":
+                ai_reply,
+            "updated_at":
+                now_iso()
+        }
+
+        response = supabase_update(
+            CUSTOMERS_URL,
+            params,
+            data
+        )
+
+        print(
+            "CUSTOMER AI REPLY UPDATE:",
+            response.status_code,
+            response.text
+        )
+
+        return response.status_code in (200, 204)
+
+    except Exception as error:
+
+        print(
+            "Customer AI reply update exception:",
+            error
+        )
+
+        return False
 
 # =========================================================
 # CUSTOMERS - DELETE
@@ -953,81 +732,43 @@ def delete_customer(customer_id):
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
     try:
 
-        response = requests.delete(
-
+        response = supabase_delete(
             CUSTOMERS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
+            {
                 "id":
-                    "eq." + str(
-                        customer_id
-                    ),
-
+                    "eq." + str(customer_id),
                 "user_id":
                     "eq." + user["id"]
-
-            },
-
-            timeout=15
+            }
         )
 
-        print(
-            "Customer DELETE status:",
-            response.status_code
-        )
-
-        if response.status_code not in (
-            200,
-            204
-        ):
-
+        if response.status_code not in (200, 204):
             return jsonify({
-
                 "error":
                     response.text
-
             }), response.status_code
 
         return jsonify({
-
-            "success":
-                True,
-
+            "success": True,
             "message":
                 "Customer deleted successfully."
-
         })
 
     except Exception as error:
 
-        print(
-            "Customer DELETE exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# DASHBOARD STATISTICS
+# DASHBOARD
 # =========================================================
 
 @app.route(
@@ -1039,229 +780,115 @@ def dashboard_stats():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
     user_id = user["id"]
 
     try:
 
-        customers_response = requests.get(
-
+        customers_response = supabase_get(
             CUSTOMERS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
-                "user_id":
-                    "eq." + user_id
-            },
-
-            timeout=15
+            {
+                "select": "id",
+                "user_id": "eq." + user_id
+            }
         )
 
-        if customers_response.status_code == 200:
-
-            customers = (
-                customers_response.json()
-            )
-
-        else:
-
-            print(
-                "Dashboard customer error:",
-                customers_response.text
-            )
-
-            customers = []
-
-        conversations_response = requests.get(
-
+        conversations_response = supabase_get(
             AI_CONVERSATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
-                "user_id":
-                    "eq." + user_id
-            },
-
-            timeout=15
+            {
+                "select": "id",
+                "user_id": "eq." + user_id
+            }
         )
 
-        if conversations_response.status_code == 200:
-
-            conversations = (
-                conversations_response.json()
-            )
-
-        else:
-
-            print(
-                "Dashboard AI error:",
-                conversations_response.text
-            )
-
-            conversations = []
-
-        business_response = requests.get(
-
+        business_response = supabase_get(
             BUSINESS_ACCOUNTS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "limit":
-                    "1"
-            },
-
-            timeout=15
+            {
+                "select": "id",
+                "user_id": "eq." + user_id,
+                "limit": "1"
+            }
         )
 
-        if business_response.status_code == 200:
-
-            businesses = (
-                business_response.json()
-            )
-
-        else:
-
-            businesses = []
-
-        # -------------------------------------------------
-        # WHATSAPP STATISTICS
-        # -------------------------------------------------
-
-        whatsapp_messages = []
-
-        whatsapp_response = requests.get(
-
+        messages_response = supabase_get(
             MESSAGES_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
+            {
                 "select":
                     "id,direction,status",
-
                 "user_id":
                     "eq." + user_id,
-
                 "platform":
                     "eq.whatsapp"
-
-            },
-
-            timeout=15
+            }
         )
 
-        if whatsapp_response.status_code == 200:
+        customers = (
+            customers_response.json()
+            if customers_response.status_code == 200
+            else []
+        )
 
-            whatsapp_messages = (
-                whatsapp_response.json()
-            )
+        conversations = (
+            conversations_response.json()
+            if conversations_response.status_code == 200
+            else []
+        )
 
-        else:
+        businesses = (
+            business_response.json()
+            if business_response.status_code == 200
+            else []
+        )
 
-            print(
-                "Dashboard WhatsApp error:",
-                whatsapp_response.text
-            )
+        whatsapp_messages = (
+            messages_response.json()
+            if messages_response.status_code == 200
+            else []
+        )
 
-        whatsapp_incoming = len([
-
-            item
-
-            for item in whatsapp_messages
-
-            if item.get("direction")
-            == "inbound"
-
+        incoming = len([
+            x for x in whatsapp_messages
+            if x.get("direction") == "inbound"
         ])
 
-        whatsapp_outgoing = len([
-
-            item
-
-            for item in whatsapp_messages
-
-            if item.get("direction")
-            == "outbound"
-
+        outgoing = len([
+            x for x in whatsapp_messages
+            if x.get("direction") == "outbound"
         ])
 
         return jsonify({
-
-            "success":
-                True,
-
+            "success": True,
             "stats": {
-
                 "customers":
                     len(customers),
-
                 "ai_conversations":
                     len(conversations),
-
                 "whatsapp_messages":
                     len(whatsapp_messages),
-
                 "whatsapp_incoming":
-                    whatsapp_incoming,
-
+                    incoming,
                 "whatsapp_outgoing":
-                    whatsapp_outgoing,
-
+                    outgoing,
                 "reports":
                     len(customers)
                     + len(conversations),
-
                 "business_account":
-                    1
-                    if businesses
-                    else 0
+                    1 if businesses else 0
             }
-
         })
 
     except Exception as error:
 
-        print(
-            "Dashboard statistics exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# AI CONVERSATION HISTORY
+# AI CONVERSATIONS
 # =========================================================
 
 @app.route(
@@ -1273,331 +900,48 @@ def get_ai_conversations():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             AI_CONVERSATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "user_id":
                     "eq." + user["id"],
-
                 "order":
                     "created_at.desc"
-            },
-
-            timeout=15
-        )
-
-        print(
-            "AI conversation HISTORY status:",
-            response.status_code
+            }
         )
 
         if response.status_code != 200:
-
             return jsonify({
-
                 "error":
-                    "Unable to load AI conversations: "
-                    + response.text
-
+                    response.text
             }), response.status_code
 
         conversations = response.json()
 
         return jsonify({
-
-            "success":
-                True,
-
+            "success": True,
             "conversations":
                 conversations,
-
             "count":
                 len(conversations)
-
         })
 
     except Exception as error:
 
-        print(
-            "AI conversation history exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# REPORTS
-# =========================================================
-
-@app.route(
-    "/api/reports",
-    methods=["GET"]
-)
-def get_reports():
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-
-            "error":
-                "Invalid or expired login session."
-
-        }), 401
-
-    user_id = user["id"]
-
-    try:
-
-        customer_response = requests.get(
-
-            CUSTOMERS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "order":
-                    "created_at.desc"
-            },
-
-            timeout=15
-        )
-
-        if customer_response.status_code != 200:
-
-            return jsonify({
-
-                "error":
-                    "Unable to load customer report: "
-                    + customer_response.text
-
-            }), customer_response.status_code
-
-        customers = customer_response.json()
-
-        ai_response = requests.get(
-
-            AI_CONVERSATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "order":
-                    "created_at.desc"
-            },
-
-            timeout=15
-        )
-
-        if ai_response.status_code == 200:
-
-            ai_conversations = (
-                ai_response.json()
-            )
-
-        else:
-
-            print(
-                "Reports AI error:",
-                ai_response.text
-            )
-
-            ai_conversations = []
-
-        business_response = requests.get(
-
-            BUSINESS_ACCOUNTS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "limit":
-                    "1"
-            },
-
-            timeout=15
-        )
-
-        if business_response.status_code == 200:
-
-            businesses = (
-                business_response.json()
-            )
-
-        else:
-
-            businesses = []
-
-        automation_response = requests.get(
-
-            AUTOMATION_SETTINGS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
-                "user_id":
-                    "eq." + user_id,
-
-                "limit":
-                    "1"
-            },
-
-            timeout=15
-        )
-
-        if automation_response.status_code == 200:
-
-            automation_rows = (
-                automation_response.json()
-            )
-
-        else:
-
-            automation_rows = []
-
-        automation = (
-
-            automation_rows[0]
-
-            if automation_rows
-
-            else {
-
-                "ai_replies":
-                    True,
-
-                "message_automation":
-                    True,
-
-                "task_automation":
-                    True
-            }
-        )
-
-        total_customers = len(
-            customers
-        )
-
-        total_conversations = len(
-            ai_conversations
-        )
-
-        total_ai_replies = len([
-
-            item
-
-            for item in ai_conversations
-
-            if str(
-                item.get(
-                    "answer",
-                    ""
-                )
-            ).strip()
-        ])
-
-        return jsonify({
-
-            "success":
-                True,
-
-            "report": {
-
-                "business":
-                    (
-                        businesses[0]
-                        if businesses
-                        else None
-                    ),
-
-                "total_customers":
-                    total_customers,
-
-                "total_ai_conversations":
-                    total_conversations,
-
-                "total_ai_replies":
-                    total_ai_replies,
-
-                "automation":
-                    automation,
-
-                "customers":
-                    customers,
-
-                "ai_conversations":
-                    ai_conversations
-            }
-        })
-
-    except Exception as error:
-
-        print(
-            "Reports GET exception:",
-            error
-        )
-
-        return jsonify({
-
-            "error":
-                "Unable to load reports: "
-                + str(error)
-
-        }), 500
-
-
-# =========================================================
-# AUTOMATION SETTINGS - GET
+# AUTOMATION
 # =========================================================
 
 @app.route(
@@ -1609,93 +953,52 @@ def get_automation_settings():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             AUTOMATION_SETTINGS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "user_id":
                     "eq." + user["id"],
-
-                "limit":
-                    "1"
-            },
-
-            timeout=15
+                "limit": "1"
+            }
         )
 
         if response.status_code != 200:
-
             return jsonify({
-
                 "error":
                     response.text
-
             }), response.status_code
 
-        settings = response.json()
+        rows = response.json()
 
-        if settings:
-
+        if rows:
             return jsonify({
-
-                "automation":
-                    settings[0]
-
+                "automation": rows[0]
             })
 
         return jsonify({
-
             "automation": {
-
                 "user_id":
                     user["id"],
-
-                "ai_replies":
-                    True,
-
-                "message_automation":
-                    True,
-
-                "task_automation":
-                    True
+                "ai_replies": True,
+                "message_automation": True,
+                "task_automation": True
             }
         })
 
     except Exception as error:
 
-        print(
-            "Automation GET exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
-# =========================================================
-# AUTOMATION SETTINGS - SAVE
-# =========================================================
 
 @app.route(
     "/api/automation",
@@ -1706,133 +1009,86 @@ def save_automation_settings():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
-    automation = {
-
+    settings = {
         "user_id":
             user["id"],
-
         "ai_replies":
-            bool(
-                data.get(
-                    "ai_replies",
-                    True
-                )
-            ),
-
+            bool(data.get("ai_replies", True)),
         "message_automation":
-            bool(
-                data.get(
-                    "message_automation",
-                    True
-                )
-            ),
-
+            bool(data.get("message_automation", True)),
         "task_automation":
-            bool(
-                data.get(
-                    "task_automation",
-                    True
-                )
-            ),
-
+            bool(data.get("task_automation", True)),
         "updated_at":
             now_iso()
     }
 
     try:
 
-        response = requests.post(
-
+        existing_response = supabase_get(
             AUTOMATION_SETTINGS_URL,
-
-            headers=supabase_headers(
-                "resolution=merge-duplicates,"
-                "return=representation"
-            ),
-
-            json=automation,
-
-            timeout=15
+            {
+                "select": "id",
+                "user_id":
+                    "eq." + user["id"],
+                "limit": "1"
+            }
         )
 
-        if response.status_code not in (
-            200,
-            201
-        ):
+        existing = (
+            existing_response.json()
+            if existing_response.status_code == 200
+            else []
+        )
 
-            return jsonify({
+        if existing:
 
-                "error":
-                    response.text
-
-            }), response.status_code
-
-        try:
-
-            result = response.json()
-
-        except ValueError:
-
-            result = []
-
-        saved = (
-
-            result[0]
-
-            if (
-                isinstance(
-                    result,
-                    list
-                )
-                and result
+            response = supabase_update(
+                AUTOMATION_SETTINGS_URL,
+                {
+                    "user_id":
+                        "eq." + user["id"]
+                },
+                settings
             )
 
-            else automation
-        )
+        else:
+
+            response = supabase_insert(
+                AUTOMATION_SETTINGS_URL,
+                settings
+            )
+
+        if response.status_code not in (
+            200, 201, 204
+        ):
+            return jsonify({
+                "error":
+                    response.text
+            }), response.status_code
 
         return jsonify({
-
-            "success":
-                True,
-
+            "success": True,
+            "automation": (
+                first_row(response)
+                or settings
+            ),
             "message":
-                "Automation settings saved successfully.",
-
-            "automation":
-                saved
-
+                "Automation settings saved successfully."
         })
 
     except Exception as error:
 
-        print(
-            "Automation SAVE exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
-# =========================================================
-# AUTOMATION TOGGLE
-# =========================================================
 
 @app.route(
     "/api/automation/toggle",
@@ -1843,224 +1099,112 @@ def toggle_automation():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     setting = str(
-        data.get(
-            "setting",
-            ""
-        )
+        data.get("setting", "")
     ).strip()
 
     value = data.get("value")
 
-    allowed_settings = {
-
+    allowed = {
         "ai_replies",
-
         "message_automation",
-
         "task_automation"
     }
 
-    if setting not in allowed_settings:
-
+    if setting not in allowed:
         return jsonify({
-
             "error":
                 "Invalid automation setting."
-
         }), 400
 
-    if not isinstance(
-        value,
-        bool
-    ):
-
+    if not isinstance(value, bool):
         return jsonify({
-
             "error":
                 "Automation value must be true or false."
-
         }), 400
-
-    update_data = {
-
-        setting:
-            value,
-
-        "updated_at":
-            now_iso()
-    }
 
     try:
 
-        check = requests.get(
-
+        check = supabase_get(
             AUTOMATION_SETTINGS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
+            {
+                "select": "id",
                 "user_id":
                     "eq." + user["id"],
-
-                "limit":
-                    "1"
-            },
-
-            timeout=15
+                "limit": "1"
+            }
         )
 
-        if check.status_code != 200:
-
-            return jsonify({
-
-                "error":
-                    check.text
-
-            }), check.status_code
-
-        existing = check.json()
+        existing = (
+            check.json()
+            if check.status_code == 200
+            else []
+        )
 
         if existing:
 
-            response = requests.patch(
-
+            response = supabase_update(
                 AUTOMATION_SETTINGS_URL,
-
-                headers=supabase_headers(
-                    "return=representation"
-                ),
-
-                params={
-
+                {
                     "user_id":
                         "eq." + user["id"]
                 },
-
-                json=update_data,
-
-                timeout=15
+                {
+                    setting: value,
+                    "updated_at": now_iso()
+                }
             )
 
         else:
 
-            new_settings = {
-
+            settings = {
                 "user_id":
                     user["id"],
-
-                "ai_replies":
-                    True,
-
-                "message_automation":
-                    True,
-
-                "task_automation":
-                    True,
-
+                "ai_replies": True,
+                "message_automation": True,
+                "task_automation": True,
                 "updated_at":
                     now_iso()
             }
 
-            new_settings[setting] = value
+            settings[setting] = value
 
-            response = requests.post(
-
+            response = supabase_insert(
                 AUTOMATION_SETTINGS_URL,
-
-                headers=supabase_headers(
-                    "return=representation"
-                ),
-
-                json=new_settings,
-
-                timeout=15
+                settings
             )
 
         if response.status_code not in (
-            200,
-            201,
-            204
+            200, 201, 204
         ):
-
             return jsonify({
-
                 "error":
                     response.text
-
             }), response.status_code
 
-        try:
-
-            result = response.json()
-
-        except ValueError:
-
-            result = []
-
         return jsonify({
-
-            "success":
-                True,
-
-            "message":
-                "Automation setting updated successfully.",
-
-            "setting":
-                setting,
-
-            "value":
-                value,
-
-            "automation": (
-
-                result[0]
-
-                if (
-                    isinstance(
-                        result,
-                        list
-                    )
-                    and result
-                )
-
-                else None
-            )
+            "success": True,
+            "setting": setting,
+            "value": value,
+            "automation":
+                first_row(response)
         })
 
     except Exception as error:
 
-        print(
-            "Automation TOGGLE exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# BUSINESS ACCOUNT - GET / SAVE
+# BUSINESS
 # =========================================================
 
 @app.route(
@@ -2072,12 +1216,9 @@ def business_account():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
     user_id = user["id"]
@@ -2086,243 +1227,112 @@ def business_account():
 
         try:
 
-            response = requests.get(
-
+            response = supabase_get(
                 BUSINESS_ACCOUNTS_URL,
-
-                headers=supabase_headers(),
-
-                params={
-
-                    "select":
-                        "*",
-
+                {
+                    "select": "*",
                     "user_id":
                         "eq." + user_id,
-
-                    "limit":
-                        "1"
-                },
-
-                timeout=15
+                    "limit": "1"
+                }
             )
 
             if response.status_code != 200:
-
                 return jsonify({
-
                     "error":
                         response.text
-
                 }), response.status_code
 
-            businesses = response.json()
+            rows = response.json()
 
             return jsonify({
-
                 "business":
-                    (
-                        businesses[0]
-                        if businesses
-                        else None
-                    )
+                    rows[0]
+                    if rows
+                    else None
             })
 
         except Exception as error:
 
             return jsonify({
-
-                "error":
-                    str(error)
-
+                "error": str(error)
             }), 500
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     business_data = {
-
-        "user_id":
-            user_id,
-
+        "user_id": user_id,
         "business_name":
-            str(
-                data.get(
-                    "business_name",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("business_name", "")).strip(),
         "owner_name":
-            str(
-                data.get(
-                    "owner_name",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("owner_name", "")).strip(),
         "phone":
-            str(
-                data.get(
-                    "phone",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("phone", "")).strip(),
         "email":
-            str(
-                data.get(
-                    "email",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("email", "")).strip(),
         "address":
-            str(
-                data.get(
-                    "address",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("address", "")).strip(),
         "description":
-            str(
-                data.get(
-                    "description",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("description", "")).strip(),
         "logo":
-            str(
-                data.get(
-                    "logo",
-                    ""
-                )
-            ).strip(),
-
+            str(data.get("logo", "")).strip(),
         "updated_at":
             now_iso()
     }
 
     try:
 
-        check = requests.get(
-
+        check = supabase_get(
             BUSINESS_ACCOUNTS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
+            {
+                "select": "id",
                 "user_id":
                     "eq." + user_id,
-
-                "limit":
-                    "1"
-            },
-
-            timeout=15
+                "limit": "1"
+            }
         )
 
-        if check.status_code != 200:
-
-            return jsonify({
-
-                "error":
-                    check.text
-
-            }), check.status_code
-
-        existing = check.json()
+        existing = (
+            check.json()
+            if check.status_code == 200
+            else []
+        )
 
         if existing:
 
-            business_id = existing[0]["id"]
-
-            response = requests.patch(
-
+            response = supabase_update(
                 BUSINESS_ACCOUNTS_URL,
-
-                headers=supabase_headers(
-                    "return=representation"
-                ),
-
-                params={
-
+                {
                     "id":
                         "eq." + str(
-                            business_id
+                            existing[0]["id"]
                         ),
-
                     "user_id":
                         "eq." + user_id
                 },
-
-                json=business_data,
-
-                timeout=15
+                business_data
             )
 
         else:
 
-            response = requests.post(
-
+            response = supabase_insert(
                 BUSINESS_ACCOUNTS_URL,
-
-                headers=supabase_headers(
-                    "return=representation"
-                ),
-
-                json=business_data,
-
-                timeout=15
+                business_data
             )
 
         if response.status_code not in (
-            200,
-            201
+            200, 201
         ):
-
             return jsonify({
-
                 "error":
                     response.text
-
             }), response.status_code
 
-        try:
-
-            saved = response.json()
-
-        except ValueError:
-
-            saved = []
-
         return jsonify({
-
-            "success":
-                True,
-
-            "business": (
-
-                saved[0]
-
-                if (
-                    isinstance(
-                        saved,
-                        list
-                    )
-                    and saved
-                )
-
-                else business_data
-            ),
-
+            "success": True,
+            "business":
+                first_row(response)
+                or business_data,
             "message":
                 "Business settings saved successfully."
         })
@@ -2330,15 +1340,11 @@ def business_account():
     except Exception as error:
 
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# BUSINESS LOGO UPLOAD
+# BUSINESS LOGO
 # =========================================================
 
 @app.route(
@@ -2350,35 +1356,37 @@ def upload_business_logo():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
-
             "error":
                 "Invalid or expired login session."
-
         }), 401
 
     if "logo" not in request.files:
-
         return jsonify({
-
             "error":
                 "No logo file was provided."
-
         }), 400
 
     logo_file = request.files["logo"]
 
-    if (
-        not logo_file
-        or not logo_file.filename
-    ):
-
+    if not logo_file.filename:
         return jsonify({
-
             "error":
                 "No logo file was selected."
+        }), 400
 
+    allowed = (
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".webp"
+    )
+
+    if not logo_file.filename.lower().endswith(allowed):
+        return jsonify({
+            "error":
+                "Unsupported logo format."
         }), 400
 
     try:
@@ -2386,45 +1394,19 @@ def upload_business_logo():
         file_bytes = logo_file.read()
 
         if not file_bytes:
-
             return jsonify({
-
                 "error":
                     "The selected logo file is empty."
-
             }), 400
 
-        filename = logo_file.filename
-
-        allowed_extensions = (
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".webp"
-        )
-
-        if not filename.lower().endswith(
-            allowed_extensions
-        ):
-
-            return jsonify({
-
-                "error":
-                    "Unsupported logo format."
-
-            }), 400
-
-        bucket_name = "business-logos"
-
-        user_id = user["id"]
+        bucket = "business-logos"
 
         extension = os.path.splitext(
-            filename
+            logo_file.filename
         )[1].lower()
 
-        storage_path = (
-            user_id
+        path = (
+            user["id"]
             + "/business-logo"
             + extension
         )
@@ -2432,97 +1414,58 @@ def upload_business_logo():
         storage_url = (
             SUPABASE_PROJECT_URL
             + "/storage/v1/object/"
-            + bucket_name
+            + bucket
             + "/"
-            + storage_path
+            + path
         )
 
-        upload_headers = {
-
-            "Authorization":
-                "Bearer "
-                + str(
-                    SUPABASE_SECRET_KEY
-                ),
-
-            "apikey":
-                SUPABASE_SECRET_KEY,
-
-            "Content-Type":
-                logo_file.content_type
-                or "application/octet-stream",
-
-            "x-upsert":
-                "true"
-        }
-
-        upload_response = requests.post(
-
+        response = requests.post(
             storage_url,
-
-            headers=upload_headers,
-
+            headers={
+                "Authorization":
+                    "Bearer "
+                    + str(SUPABASE_SECRET_KEY),
+                "apikey":
+                    SUPABASE_SECRET_KEY,
+                "Content-Type":
+                    logo_file.content_type
+                    or "application/octet-stream",
+                "x-upsert":
+                    "true"
+            },
             data=file_bytes,
-
             timeout=30
         )
 
-        print(
-            "Logo upload status:",
-            upload_response.status_code
-        )
-
-        if upload_response.status_code not in (
-            200,
-            201
-        ):
-
+        if response.status_code not in (200, 201):
             return jsonify({
-
                 "error":
-                    "Logo upload failed: "
-                    + upload_response.text
-
-            }), upload_response.status_code
+                    response.text
+            }), response.status_code
 
         logo_url = (
             SUPABASE_PROJECT_URL
             + "/storage/v1/object/public/"
-            + bucket_name
+            + bucket
             + "/"
-            + storage_path
+            + path
         )
 
         return jsonify({
-
-            "success":
-                True,
-
-            "logo":
-                logo_url,
-
+            "success": True,
+            "logo": logo_url,
             "message":
                 "Business logo uploaded successfully."
         })
 
     except Exception as error:
 
-        print(
-            "Logo upload exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                "Logo upload error: "
-                + str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# WHATSAPP - GET INTEGRATIONS
+# WHATSAPP INTEGRATIONS
 # =========================================================
 
 @app.route(
@@ -2534,7 +1477,6 @@ def get_integrations():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
             "error":
                 "Invalid or expired login session."
@@ -2542,59 +1484,37 @@ def get_integrations():
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             INTEGRATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
+            {
                 "select": "*",
                 "user_id":
                     "eq." + user["id"],
                 "order":
                     "created_at.desc"
-            },
-
-            timeout=15
+            }
         )
 
         if response.status_code != 200:
-
             return jsonify({
                 "error":
                     response.text
             }), response.status_code
 
-        integrations = response.json()
+        rows = response.json()
 
         return jsonify({
-
             "success": True,
-
-            "integrations":
-                integrations,
-
-            "count":
-                len(integrations)
-
+            "integrations": rows,
+            "count": len(rows)
         })
 
     except Exception as error:
-
-        print(
-            "Integrations GET exception:",
-            error
-        )
 
         return jsonify({
             "error": str(error)
         }), 500
 
-
-# =========================================================
-# WHATSAPP - CREATE / UPDATE INTEGRATION
-# =========================================================
 
 @app.route(
     "/api/integrations",
@@ -2605,15 +1525,12 @@ def save_integration():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
             "error":
                 "Invalid or expired login session."
         }), 401
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     platform = str(
         data.get(
@@ -2623,17 +1540,13 @@ def save_integration():
     ).strip().lower()
 
     if platform != "whatsapp":
-
         return jsonify({
             "error":
                 "This endpoint currently supports WhatsApp only."
         }), 400
 
     account_name = str(
-        data.get(
-            "account_name",
-            ""
-        )
+        data.get("account_name", "")
     ).strip()
 
     account_id = str(
@@ -2651,10 +1564,7 @@ def save_integration():
     ).strip()
 
     phone_number = str(
-        data.get(
-            "phone_number",
-            ""
-        )
+        data.get("phone_number", "")
     ).strip()
 
     phone_number_id = str(
@@ -2665,208 +1575,113 @@ def save_integration():
     ).strip()
 
     if not phone_number_id:
-
         return jsonify({
             "error":
                 "WhatsApp phone number ID is required."
         }), 400
 
-    integration_data = {
-
+    integration = {
         "user_id":
             user["id"],
-
         "platform":
             "whatsapp",
-
         "account_name":
             account_name,
-
         "account_id":
             account_id,
-
         "access_token":
             access_token,
-
         "phone_number":
             phone_number,
-
         "status":
             "connected",
-
         "settings": {
-
             "phone_number_id":
                 phone_number_id
-
         },
-
         "connected_at":
             now_iso(),
-
         "updated_at":
             now_iso()
-
     }
 
     try:
 
-        check = requests.get(
-
+        check = supabase_get(
             INTEGRATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
+            {
+                "select": "id",
                 "user_id":
                     "eq." + user["id"],
-
                 "platform":
                     "eq.whatsapp",
-
                 "account_id":
                     "eq." + account_id,
-
-                "limit":
-                    "1"
-
-            },
-
-            timeout=15
+                "limit": "1"
+            }
         )
 
-        if check.status_code != 200:
-
-            return jsonify({
-                "error":
-                    check.text
-            }), check.status_code
-
-        existing = check.json()
+        existing = (
+            check.json()
+            if check.status_code == 200
+            else []
+        )
 
         if existing:
 
-            integration_id = existing[0]["id"]
-
-            response = requests.patch(
-
+            response = supabase_update(
                 INTEGRATIONS_URL,
-
-                headers=supabase_headers(
-                    "return=representation"
-                ),
-
-                params={
-
+                {
                     "id":
-                        "eq."
-                        + str(integration_id),
-
+                        "eq." + str(
+                            existing[0]["id"]
+                        ),
                     "user_id":
-                        "eq."
-                        + user["id"]
-
+                        "eq." + user["id"]
                 },
-
-                json=integration_data,
-
-                timeout=15
+                integration
             )
 
         else:
 
-            response = requests.post(
-
+            response = supabase_insert(
                 INTEGRATIONS_URL,
-
-                headers=supabase_headers(
-                    "return=representation"
-                ),
-
-                json=integration_data,
-
-                timeout=15
+                integration
             )
 
         if response.status_code not in (
-            200,
-            201
+            200, 201
         ):
-
             return jsonify({
                 "error":
                     response.text
             }), response.status_code
 
-        try:
-
-            result = response.json()
-
-        except ValueError:
-
-            result = []
-
-        saved = (
-
-            result[0]
-
-            if (
-                isinstance(
-                    result,
-                    list
-                )
-                and result
-            )
-
-            else integration_data
-        )
-
         return jsonify({
-
-            "success":
-                True,
-
+            "success": True,
             "integration":
-                saved,
-
+                first_row(response)
+                or integration,
             "message":
                 "WhatsApp integration saved successfully."
-
         })
 
     except Exception as error:
 
-        print(
-            "Integration SAVE exception:",
-            error
-        )
-
         return jsonify({
-            "error":
-                str(error)
+            "error": str(error)
         }), 500
 
-
-# =========================================================
-# WHATSAPP - DELETE INTEGRATION
-# =========================================================
 
 @app.route(
     "/api/integrations/<int:integration_id>",
     methods=["DELETE"]
 )
-def delete_integration(
-    integration_id
-):
+def delete_integration(integration_id):
 
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
             "error":
                 "Invalid or expired login session."
@@ -2874,123 +1689,77 @@ def delete_integration(
 
     try:
 
-        response = requests.delete(
-
+        response = supabase_delete(
             INTEGRATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
+            {
                 "id":
-                    "eq."
-                    + str(integration_id),
-
+                    "eq." + str(integration_id),
                 "user_id":
-                    "eq."
-                    + user["id"]
-
-            },
-
-            timeout=15
+                    "eq." + user["id"]
+            }
         )
 
-        if response.status_code not in (
-            200,
-            204
-        ):
-
+        if response.status_code not in (200, 204):
             return jsonify({
                 "error":
                     response.text
             }), response.status_code
 
         return jsonify({
-
-            "success":
-                True,
-
+            "success": True,
             "message":
                 "Integration deleted successfully."
-
         })
 
     except Exception as error:
 
         return jsonify({
-            "error":
-                str(error)
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# WHATSAPP - FIND BUSINESS FROM PHONE NUMBER ID
+# WHATSAPP FIND INTEGRATION
 # =========================================================
 
-def find_whatsapp_integration(
-    phone_number_id
-):
+def find_whatsapp_integration(phone_number_id):
 
-    app.logger.warning(
+    print(
         "========== WHATSAPP INTEGRATION LOOKUP =========="
     )
 
-    app.logger.warning(
-        "Incoming phone_number_id: %s",
+    print(
+        "Incoming phone_number_id:",
         phone_number_id
     )
 
     if not phone_number_id:
-
-        app.logger.warning(
-            "No phone_number_id received."
-        )
-
         return None
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             INTEGRATIONS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "platform":
                     "eq.whatsapp"
-
-            },
-
-            timeout=15
+            }
         )
 
-        app.logger.warning(
-            "Integration lookup HTTP status: %s",
+        print(
+            "Integration lookup status:",
             response.status_code
         )
 
-        app.logger.warning(
-            "Integration lookup response: %s",
+        print(
+            "Integration lookup response:",
             response.text
         )
 
         if response.status_code != 200:
-
             return None
 
         integrations = response.json()
-
-        app.logger.warning(
-            "Number of WhatsApp integrations found: %s",
-            len(integrations)
-            if isinstance(integrations, list)
-            else 0
-        )
 
         for integration in integrations:
 
@@ -2999,40 +1768,41 @@ def find_whatsapp_integration(
                 or {}
             )
 
-            stored_phone_number_id = str(
+            stored_phone_id = str(
                 settings.get(
                     "phone_number_id",
                     ""
                 )
             ).strip()
 
-            app.logger.warning(
-                "Checking stored phone_number_id: %s",
-                stored_phone_number_id
+            print(
+                "Checking integration:",
+                integration.get("id"),
+                "stored phone ID:",
+                stored_phone_id
             )
 
-            if (
-                stored_phone_number_id
-                == str(phone_number_id).strip()
-            ):
+            if stored_phone_id == str(
+                phone_number_id
+            ).strip():
 
-                app.logger.warning(
+                print(
                     "========== MATCH FOUND =========="
                 )
 
-                app.logger.warning(
-                    "Integration ID: %s",
+                print(
+                    "Integration ID:",
                     integration.get("id")
                 )
 
-                app.logger.warning(
-                    "User ID: %s",
+                print(
+                    "User ID:",
                     integration.get("user_id")
                 )
 
                 return integration
 
-        app.logger.warning(
+        print(
             "========== NO MATCH FOUND =========="
         )
 
@@ -3040,16 +1810,15 @@ def find_whatsapp_integration(
 
     except Exception as error:
 
-        app.logger.exception(
-            "WhatsApp integration lookup exception: %s",
+        print(
+            "Integration lookup exception:",
             error
         )
 
         return None
 
-
 # =========================================================
-# WHATSAPP - FIND OR CREATE CUSTOMER
+# WHATSAPP FIND / CREATE CUSTOMER
 # =========================================================
 
 def find_or_create_whatsapp_customer(
@@ -3058,112 +1827,79 @@ def find_or_create_whatsapp_customer(
     name=""
 ):
 
-    if not phone:
-
+    if not user_id or not phone:
         return None
+
+    phone = str(phone).strip()
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             CUSTOMERS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "user_id":
                     "eq." + user_id,
-
                 "phone":
                     "eq." + phone,
-
                 "limit":
                     "1"
+            }
+        )
 
-            },
-
-            timeout=15
+        print(
+            "WhatsApp customer lookup:",
+            response.status_code,
+            response.text
         )
 
         if response.status_code != 200:
-
-            print(
-                "WhatsApp customer lookup error:",
-                response.text
-            )
-
             return None
 
         customers = response.json()
 
         if customers:
-
             return customers[0]
 
         customer_data = {
-
             "user_id":
                 user_id,
-
             "name":
                 name or phone,
-
             "phone":
                 phone,
-
             "email":
                 "",
-
             "location":
                 "",
-
             "message":
                 "",
-
             "ai_reply":
                 "",
-
             "created_at":
                 now_iso()
-
         }
 
-        create_response = requests.post(
-
+        create_response = supabase_insert(
             CUSTOMERS_URL,
+            customer_data
+        )
 
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=customer_data,
-
-            timeout=15
+        print(
+            "WhatsApp customer CREATE:",
+            create_response.status_code,
+            create_response.text
         )
 
         if create_response.status_code not in (
-            200,
-            201
+            200, 201
         ):
-
-            print(
-                "WhatsApp customer creation error:",
-                create_response.text
-            )
-
             return None
 
-        created = create_response.json()
-
-        if created:
-
-            return created[0]
-
-        return customer_data
+        return (
+            first_row(create_response)
+            or customer_data
+        )
 
     except Exception as error:
 
@@ -3174,59 +1910,38 @@ def find_or_create_whatsapp_customer(
 
         return None
 
-
 # =========================================================
-# WHATSAPP - CHECK DUPLICATE MESSAGE
+# WHATSAPP DUPLICATE CHECK
 # =========================================================
 
-def whatsapp_message_exists(
-    external_message_id
-):
+def whatsapp_message_exists(external_message_id):
 
     if not external_message_id:
-
         return False
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             MESSAGES_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "id",
-
+            {
+                "select": "id",
                 "external_message_id":
-                    "eq."
-                    + external_message_id,
-
+                    "eq." + external_message_id,
                 "limit":
                     "1"
-
-            },
-
-            timeout=15
+            }
         )
 
         if response.status_code != 200:
-
             return False
 
-        messages = response.json()
-
-        return bool(messages)
+        return bool(response.json())
 
     except Exception:
-
         return False
 
-
 # =========================================================
-# WHATSAPP - STORE INCOMING MESSAGE
+# WHATSAPP STORE INCOMING
 # =========================================================
 
 def store_whatsapp_message(
@@ -3238,10 +1953,9 @@ def store_whatsapp_message(
 ):
 
     if not integration:
-
         return None
 
-    user_id = integration["user_id"]
+    user_id = integration.get("user_id")
 
     customer = find_or_create_whatsapp_customer(
         user_id,
@@ -3249,103 +1963,87 @@ def store_whatsapp_message(
         sender_name
     )
 
-    customer_id = None
+    customer_id = (
+        customer.get("id")
+        if customer
+        else None
+    )
 
-    if customer:
+    # -----------------------------------------------------
+    # IMPORTANT FIX:
+    # SAVE THE INCOMING MESSAGE DIRECTLY TO CUSTOMER
+    # -----------------------------------------------------
 
-        customer_id = customer.get("id")
+    if customer_id and message_text:
+
+        updated = update_customer_whatsapp_message(
+            user_id,
+            customer_id,
+            message_text
+        )
+
+        print(
+            "Customer message field updated:",
+            updated
+        )
 
     message_data = {
-
         "user_id":
             user_id,
-
         "integration_id":
             integration.get("id"),
-
         "customer_id":
             customer_id,
-
         "platform":
             "whatsapp",
-
         "external_message_id":
             external_message_id or "",
-
         "direction":
             "inbound",
-
         "sender_name":
             sender_name or "",
-
         "sender_phone":
             sender_phone or "",
-
         "message":
             message_text or "",
-
         "ai_generated":
             False,
-
         "ai_reply":
             "",
-
         "status":
             "received",
-
-        "metadata":
-            {
-                "source":
-                    "whatsapp_webhook"
-            },
-
+        "metadata": {
+            "source":
+                "whatsapp_webhook"
+        },
         "created_at":
             now_iso(),
-
         "updated_at":
             now_iso()
-
     }
 
     try:
 
-        response = requests.post(
-
+        response = supabase_insert(
             MESSAGES_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=message_data,
-
-            timeout=15
+            message_data
         )
 
         print(
-            "WhatsApp message SAVE status:",
-            response.status_code
-        )
-
-        print(
-            "WhatsApp message SAVE response:",
+            "WhatsApp message SAVE:",
+            response.status_code,
             response.text
         )
 
         if response.status_code not in (
-            200,
-            201
+            200, 201
         ):
-
             return None
 
-        result = response.json()
-
-        if result:
-
-            return result[0]
-
-        return message_data
+        return (
+            first_row(response)
+            or message_data
+        )
 
     except Exception as error:
 
@@ -3356,9 +2054,8 @@ def store_whatsapp_message(
 
         return None
 
-
 # =========================================================
-# WHATSAPP - GET MESSAGES
+# WHATSAPP MESSAGES GET
 # =========================================================
 
 @app.route(
@@ -3370,233 +2067,82 @@ def get_messages():
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
             "error":
                 "Invalid or expired login session."
         }), 401
-
-    user_id = user["id"]
 
     customer_id = request.args.get(
         "customer_id",
         ""
     ).strip()
 
-    limit = request.args.get(
-        "limit",
-        "100"
-    ).strip()
-
     try:
 
-        limit_number = int(limit)
+        limit = int(
+            request.args.get(
+                "limit",
+                "100"
+            )
+        )
 
     except ValueError:
 
-        limit_number = 100
+        limit = 100
 
-    limit_number = max(
+    limit = max(
         1,
-        min(
-            limit_number,
-            500
-        )
+        min(limit, 500)
     )
 
     params = {
-
-        "select":
-            "*",
-
+        "select": "*",
         "user_id":
-            "eq." + user_id,
-
+            "eq." + user["id"],
         "platform":
             "eq.whatsapp",
-
         "order":
             "created_at.desc",
-
         "limit":
-            str(limit_number)
-
+            str(limit)
     }
 
     if customer_id:
-
         params["customer_id"] = (
             "eq." + customer_id
         )
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             MESSAGES_URL,
-
-            headers=supabase_headers(),
-
-            params=params,
-
-            timeout=15
-        )
-
-        print(
-            "WhatsApp messages GET status:",
-            response.status_code
-        )
-
-        print(
-            "WhatsApp messages GET response:",
-            response.text
+            params
         )
 
         if response.status_code != 200:
-
             return jsonify({
-
-                "success":
-                    False,
-
-                "error":
-                    "Unable to load WhatsApp messages: "
-                    + response.text
-
-            }), response.status_code
-
-        messages = response.json()
-
-        return jsonify({
-
-            "success":
-                True,
-
-            "messages":
-                messages,
-
-            "count":
-                len(messages)
-
-        })
-
-    except Exception as error:
-
-        print(
-            "WhatsApp messages GET exception:",
-            error
-        )
-
-        return jsonify({
-
-            "success":
-                False,
-
-            "error":
-                "Unable to load WhatsApp messages: "
-                + str(error)
-
-        }), 500
-
-
-# =========================================================
-# WHATSAPP - GET SINGLE MESSAGE
-# =========================================================
-
-@app.route(
-    "/api/messages/<int:message_id>",
-    methods=["GET"]
-)
-def get_single_message(message_id):
-
-    user = get_authenticated_user()
-
-    if not user:
-
-        return jsonify({
-            "error":
-                "Invalid or expired login session."
-        }), 401
-
-    try:
-
-        response = requests.get(
-
-            MESSAGES_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
-                "id":
-                    "eq." + str(
-                        message_id
-                    ),
-
-                "user_id":
-                    "eq." + user["id"],
-
-                "platform":
-                    "eq.whatsapp",
-
-                "limit":
-                    "1"
-
-            },
-
-            timeout=15
-        )
-
-        if response.status_code != 200:
-
-            return jsonify({
-
+                "success": False,
                 "error":
                     response.text
-
             }), response.status_code
 
         messages = response.json()
 
-        if not messages:
-
-            return jsonify({
-
-                "error":
-                    "WhatsApp message not found."
-
-            }), 404
-
         return jsonify({
-
-            "success":
-                True,
-
-            "message":
-                messages[0]
-
+            "success": True,
+            "messages": messages,
+            "count": len(messages)
         })
 
     except Exception as error:
 
-        print(
-            "Single WhatsApp message exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "success": False,
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# WHATSAPP - GET CUSTOMER CONVERSATION
+# WHATSAPP CONVERSATION
 # =========================================================
 
 @app.route(
@@ -3610,7 +2156,6 @@ def get_whatsapp_customer_conversation(
     user = get_authenticated_user()
 
     if not user:
-
         return jsonify({
             "error":
                 "Invalid or expired login session."
@@ -3620,187 +2165,109 @@ def get_whatsapp_customer_conversation(
 
     try:
 
-        customer_response = requests.get(
-
+        customer_response = supabase_get(
             CUSTOMERS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "id":
-                    "eq." + str(
-                        customer_id
-                    ),
-
+                    "eq." + str(customer_id),
                 "user_id":
                     "eq." + user_id,
-
                 "limit":
                     "1"
-
-            },
-
-            timeout=15
+            }
         )
 
         if customer_response.status_code != 200:
-
             return jsonify({
-
                 "error":
                     customer_response.text
-
             }), customer_response.status_code
 
         customers = customer_response.json()
 
         if not customers:
-
             return jsonify({
-
                 "error":
                     "Customer not found."
-
             }), 404
 
-        message_response = requests.get(
-
+        message_response = supabase_get(
             MESSAGES_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
-                "select":
-                    "*",
-
+            {
+                "select": "*",
                 "customer_id":
-                    "eq." + str(
-                        customer_id
-                    ),
-
+                    "eq." + str(customer_id),
                 "user_id":
                     "eq." + user_id,
-
                 "platform":
                     "eq.whatsapp",
-
                 "order":
                     "created_at.asc"
-
-            },
-
-            timeout=15
+            }
         )
 
         if message_response.status_code != 200:
-
             return jsonify({
-
                 "error":
-                    "Unable to load conversation: "
-                    + message_response.text
-
+                    message_response.text
             }), message_response.status_code
 
         messages = message_response.json()
 
         return jsonify({
-
-            "success":
-                True,
-
-            "customer":
-                customers[0],
-
-            "messages":
-                messages,
-
-            "count":
-                len(messages)
-
+            "success": True,
+            "customer": customers[0],
+            "messages": messages,
+            "count": len(messages)
         })
 
     except Exception as error:
 
-        print(
-            "WhatsApp conversation exception:",
-            error
-        )
-
         return jsonify({
-
-            "error":
-                str(error)
-
+            "error": str(error)
         }), 500
 
-
 # =========================================================
-# WHATSAPP - AI AUTOMATION
+# WHATSAPP AUTOMATION CHECK
 # =========================================================
 
 def whatsapp_automation_enabled(user_id):
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             AUTOMATION_SETTINGS_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
+            {
                 "select":
                     "ai_replies,message_automation",
-
                 "user_id":
                     "eq." + user_id,
-
                 "limit":
                     "1"
-
-            },
-
-            timeout=15
+            }
         )
 
         if response.status_code != 200:
-
-            print(
-                "Automation lookup error:",
-                response.text
-            )
-
             return False
 
         rows = response.json()
 
         if not rows:
-
             return True
 
         settings = rows[0]
 
         return bool(
-
             settings.get(
                 "ai_replies",
                 True
             )
-
             and
-
             settings.get(
                 "message_automation",
                 True
             )
-
         )
 
     except Exception as error:
@@ -3812,6 +2279,9 @@ def whatsapp_automation_enabled(user_id):
 
         return False
 
+# =========================================================
+# WHATSAPP HISTORY
+# =========================================================
 
 def get_whatsapp_conversation_history(
     user_id,
@@ -3820,49 +2290,29 @@ def get_whatsapp_conversation_history(
 ):
 
     if not customer_id:
-
         return []
 
     try:
 
-        response = requests.get(
-
+        response = supabase_get(
             MESSAGES_URL,
-
-            headers=supabase_headers(),
-
-            params={
-
+            {
                 "select":
                     "direction,message,ai_reply,created_at",
-
                 "user_id":
                     "eq." + user_id,
-
                 "customer_id":
                     "eq." + str(customer_id),
-
                 "platform":
                     "eq.whatsapp",
-
                 "order":
                     "created_at.desc",
-
                 "limit":
                     str(limit)
-
-            },
-
-            timeout=15
+            }
         )
 
         if response.status_code != 200:
-
-            print(
-                "WhatsApp history lookup error:",
-                response.text
-            )
-
             return []
 
         rows = response.json()
@@ -3874,48 +2324,30 @@ def get_whatsapp_conversation_history(
         for row in rows:
 
             message = str(
-                row.get(
-                    "message",
-                    ""
-                )
+                row.get("message", "")
             ).strip()
 
             ai_reply = str(
-                row.get(
-                    "ai_reply",
-                    ""
-                )
+                row.get("ai_reply", "")
             ).strip()
 
-            direction = row.get(
-                "direction"
-            )
+            direction = row.get("direction")
 
-            if (
-                direction == "inbound"
-                and message
-            ):
+            if direction == "inbound" and message:
 
                 history.append({
-
                     "role":
                         "user",
-
                     "content":
                         message
-
                 })
 
                 if ai_reply:
-
                     history.append({
-
                         "role":
                             "assistant",
-
                         "content":
                             ai_reply
-
                     })
 
             elif (
@@ -3924,13 +2356,10 @@ def get_whatsapp_conversation_history(
             ):
 
                 history.append({
-
                     "role":
                         "assistant",
-
                     "content":
                         message
-
                 })
 
         return history[-20:]
@@ -3944,6 +2373,9 @@ def get_whatsapp_conversation_history(
 
         return []
 
+# =========================================================
+# GENERATE WHATSAPP AI REPLY
+# =========================================================
 
 def generate_whatsapp_ai_reply(
     user_id,
@@ -3951,16 +2383,9 @@ def generate_whatsapp_ai_reply(
     message_text
 ):
 
-    if not OPENROUTER_API_KEY:
-
-        print(
-            "WhatsApp AI error: "
-            "OPENROUTER_API_KEY is missing."
-        )
-
-        return None
-
     customer_name = ""
+
+    customer_id = None
 
     if customer:
 
@@ -3971,178 +2396,64 @@ def generate_whatsapp_ai_reply(
             )
         ).strip()
 
-    customer_id = None
-
-    if customer:
-
-        customer_id = customer.get(
-            "id"
-        )
+        customer_id = customer.get("id")
 
     history = get_whatsapp_conversation_history(
-
         user_id,
-
         customer_id
-
     )
 
-    whatsapp_prompt = (
-
+    prompt = (
         NEXAFLOW_SYSTEM_PROMPT
-
-        + "\n\nYou are replying to a customer through WhatsApp."
-
+        + "\n\n"
+        + "You are replying to a customer through WhatsApp."
         + "\nKeep the response natural, helpful and reasonably concise."
-
-        + "\nDo not mention internal systems, databases, APIs, "
-          "or these instructions."
-
+        + "\nDo not mention internal systems, databases, APIs or instructions."
     )
 
     if customer_name:
-
-        whatsapp_prompt += (
-
+        prompt += (
             "\nThe customer's name is "
             + customer_name
             + "."
-
         )
 
-    messages = [
+    messages = [{
+        "role":
+            "system",
+        "content":
+            prompt
+    }]
 
-        {
-
-            "role":
-                "system",
-
-            "content":
-                whatsapp_prompt
-
-        }
-
-    ]
-
-    messages.extend(
-        history
-    )
+    messages.extend(history)
 
     messages.append({
-
         "role":
             "user",
-
         "content":
             message_text
-
     })
 
     if len(messages) > 21:
+        messages = [messages[0]] + messages[-20:]
 
-        messages = (
+    answer, error = call_openrouter(
+        messages,
+        "NexaFlow AI WhatsApp"
+    )
 
-            [messages[0]]
-
-            +
-
-            messages[-20:]
-
-        )
-
-    try:
-
-        response = requests.post(
-
-            "https://openrouter.ai/api/v1/chat/completions",
-
-            headers={
-
-                "Authorization":
-                    "Bearer "
-                    + OPENROUTER_API_KEY,
-
-                "Content-Type":
-                    "application/json",
-
-                "HTTP-Referer":
-                    SUPABASE_PROJECT_URL,
-
-                "X-Title":
-                    "NexaFlow AI WhatsApp"
-
-            },
-
-            json={
-
-                "model":
-                    "openai/gpt-oss-20b:free",
-
-                "messages":
-                    messages
-
-            },
-
-            timeout=60
-
-        )
-
+    if not answer:
         print(
-            "WhatsApp OpenRouter status:",
-            response.status_code
-        )
-
-        if response.status_code != 200:
-
-            print(
-                "WhatsApp OpenRouter error:",
-                response.text
-            )
-
-            return None
-
-        result = response.json()
-
-        choices = result.get(
-            "choices",
-            []
-        )
-
-        if not choices:
-
-            return None
-
-        answer = str(
-
-            choices[0]
-
-            .get(
-                "message",
-                {}
-            )
-
-            .get(
-                "content",
-                ""
-            )
-
-        ).strip()
-
-        if not answer:
-
-            return None
-
-        return answer
-
-    except Exception as error:
-
-        print(
-            "WhatsApp AI generation exception:",
+            "WhatsApp AI error:",
             error
         )
-
         return None
 
+    return answer
+
+# =========================================================
+# SEND WHATSAPP MESSAGE THROUGH META
+# =========================================================
 
 def send_whatsapp_message(
     integration,
@@ -4155,7 +2466,6 @@ def send_whatsapp_message(
         or not recipient_phone
         or not message_text
     ):
-
         return None
 
     settings = integration.get(
@@ -4163,118 +2473,73 @@ def send_whatsapp_message(
     ) or {}
 
     phone_number_id = str(
-
         settings.get(
-
             "phone_number_id",
-
-            WHATSAPP_PHONE_NUMBER_ID
-            or ""
-
+            WHATSAPP_PHONE_NUMBER_ID or ""
         )
-
     ).strip()
 
     access_token = str(
-
         integration.get(
-
             "access_token",
-
-            WHATSAPP_ACCESS_TOKEN
-            or ""
-
+            WHATSAPP_ACCESS_TOKEN or ""
         )
-
     ).strip()
 
     if not phone_number_id:
-
         print(
-            "WhatsApp send error: "
-            "phone number ID missing."
+            "WhatsApp send error: phone number ID missing."
         )
-
         return None
 
     if not access_token:
-
         print(
-            "WhatsApp send error: "
-            "access token missing."
+            "WhatsApp send error: access token missing."
         )
-
         return None
 
-    send_url = (
-
+    url = (
         "https://graph.facebook.com/v23.0/"
-
         + phone_number_id
-
         + "/messages"
-
     )
 
     try:
 
         response = requests.post(
-
-            send_url,
-
+            url,
             headers={
-
                 "Authorization":
-                    "Bearer "
-                    + access_token,
-
+                    "Bearer " + access_token,
                 "Content-Type":
                     "application/json"
-
             },
-
             json={
-
                 "messaging_product":
                     "whatsapp",
-
                 "to":
                     recipient_phone,
-
                 "type":
                     "text",
-
                 "text": {
-
                     "preview_url":
                         False,
-
                     "body":
                         message_text
-
                 }
-
             },
-
             timeout=30
-
         )
 
         print(
-            "WhatsApp SEND status:",
-            response.status_code
-        )
-
-        print(
-            "WhatsApp SEND response:",
+            "WhatsApp SEND:",
+            response.status_code,
             response.text
         )
 
         if response.status_code not in (
-            200,
-            201
+            200, 201
         ):
-
             return None
 
         return response.json()
@@ -4288,6 +2553,9 @@ def send_whatsapp_message(
 
         return None
 
+# =========================================================
+# STORE OUTGOING WHATSAPP MESSAGE
+# =========================================================
 
 def store_whatsapp_outgoing_message(
     integration,
@@ -4298,262 +2566,172 @@ def store_whatsapp_outgoing_message(
 ):
 
     if not integration:
-
         return None
 
-    user_id = integration.get(
-        "user_id"
-    )
+    user_id = integration.get("user_id")
 
     customer_id = (
-
         customer.get("id")
-
         if customer
-
         else None
-
     )
 
     response_messages = (
-
         whatsapp_response.get(
             "messages",
             []
         )
-
         if isinstance(
             whatsapp_response,
             dict
         )
-
         else []
-
     )
 
     external_message_id = ""
 
     if response_messages:
-
         external_message_id = str(
-
             response_messages[0].get(
                 "id",
                 ""
             )
-
         )
 
-    message_data = {
-
+    data = {
         "user_id":
             user_id,
-
         "integration_id":
             integration.get("id"),
-
         "customer_id":
             customer_id,
-
         "platform":
             "whatsapp",
-
         "external_message_id":
             external_message_id,
-
         "direction":
             "outbound",
-
         "sender_name":
             "NexaFlow AI",
-
         "sender_phone":
             recipient_phone,
-
         "message":
             message_text,
-
         "ai_generated":
             True,
-
         "ai_reply":
             message_text,
-
         "status":
             "sent",
-
         "metadata": {
-
             "source":
                 "nexaflow_ai"
-
         },
-
         "created_at":
             now_iso(),
-
         "updated_at":
             now_iso()
-
     }
 
     try:
 
-        response = requests.post(
-
+        response = supabase_insert(
             MESSAGES_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            json=message_data,
-
-            timeout=15
-
+            data
         )
 
         print(
-            "WhatsApp outgoing SAVE status:",
-            response.status_code
+            "Outgoing WhatsApp SAVE:",
+            response.status_code,
+            response.text
         )
 
         if response.status_code not in (
-            200,
-            201
+            200, 201
         ):
-
-            print(
-                "WhatsApp outgoing SAVE error:",
-                response.text
-            )
-
             return None
 
-        result = response.json()
-
-        if (
-            isinstance(
-                result,
-                list
-            )
-            and result
-        ):
-
-            return result[0]
-
-        return message_data
+        return (
+            first_row(response)
+            or data
+        )
 
     except Exception as error:
 
         print(
-            "WhatsApp outgoing SAVE exception:",
+            "Outgoing WhatsApp SAVE exception:",
             error
         )
 
         return None
 
+# =========================================================
+# UPDATE INCOMING MESSAGE
+# =========================================================
 
 def update_incoming_message_with_ai_reply(
     message_id,
     ai_reply
 ):
 
-    if (
-        not message_id
-        or not ai_reply
-    ):
-
+    if not message_id or not ai_reply:
         return False
 
     try:
 
-        response = requests.patch(
-
+        response = supabase_update(
             MESSAGES_URL,
-
-            headers=supabase_headers(
-                "return=representation"
-            ),
-
-            params={
-
+            {
                 "id":
-                    "eq." + str(
-                        message_id
-                    )
-
+                    "eq." + str(message_id)
             },
-
-            json={
-
+            {
                 "ai_reply":
                     ai_reply,
-
                 "status":
                     "replied",
-
                 "updated_at":
                     now_iso()
-
-            },
-
-            timeout=15
-
+            }
         )
 
         print(
-            "Incoming WhatsApp update status:",
-            response.status_code
+            "Incoming message AI update:",
+            response.status_code,
+            response.text
         )
 
-        if response.status_code not in (
-            200,
-            204
-        ):
-
-            print(
-                "Incoming WhatsApp update error:",
-                response.text
-            )
-
-            return False
-
-        return True
+        return response.status_code in (
+            200, 204
+        )
 
     except Exception as error:
 
         print(
-            "Incoming WhatsApp update exception:",
+            "Incoming message update exception:",
             error
         )
 
         return False
 
+# =========================================================
+# PROCESS WHATSAPP AI
+# =========================================================
 
 def process_whatsapp_ai_reply(
     integration,
     stored_message
 ):
 
-    if (
-        not integration
-        or not stored_message
-    ):
-
+    if not integration or not stored_message:
         return False
 
-    user_id = integration.get(
-        "user_id"
-    )
+    user_id = integration.get("user_id")
 
     if not user_id:
-
         return False
 
-    if not whatsapp_automation_enabled(
-        user_id
-    ):
+    if not whatsapp_automation_enabled(user_id):
 
         print(
             "WhatsApp AI automation is disabled."
@@ -4562,28 +2740,20 @@ def process_whatsapp_ai_reply(
         return False
 
     message_text = str(
-
         stored_message.get(
             "message",
             ""
         )
-
     ).strip()
 
     recipient_phone = str(
-
         stored_message.get(
             "sender_phone",
             ""
         )
-
     ).strip()
 
-    if (
-        not message_text
-        or not recipient_phone
-    ):
-
+    if not message_text or not recipient_phone:
         return False
 
     customer_id = stored_message.get(
@@ -4596,31 +2766,17 @@ def process_whatsapp_ai_reply(
 
         try:
 
-            response = requests.get(
-
+            response = supabase_get(
                 CUSTOMERS_URL,
-
-                headers=supabase_headers(),
-
-                params={
-
-                    "select":
-                        "*",
-
+                {
+                    "select": "*",
                     "id":
-                        "eq."
-                        + str(customer_id),
-
+                        "eq." + str(customer_id),
                     "user_id":
                         "eq." + user_id,
-
                     "limit":
                         "1"
-
-                },
-
-                timeout=15
-
+                }
             )
 
             if response.status_code == 200:
@@ -4628,79 +2784,87 @@ def process_whatsapp_ai_reply(
                 rows = response.json()
 
                 if rows:
-
                     customer = rows[0]
 
         except Exception as error:
 
             print(
-                "WhatsApp customer retrieval exception:",
+                "Customer retrieval exception:",
                 error
             )
 
+    # -----------------------------------------------------
+    # GENERATE AI
+    # -----------------------------------------------------
+
     ai_reply = generate_whatsapp_ai_reply(
-
         user_id,
-
         customer,
-
         message_text
-
     )
 
     if not ai_reply:
-
-        print(
-            "WhatsApp AI did not generate a reply."
-        )
-
         return False
 
+    # -----------------------------------------------------
+    # SEND THROUGH META
+    # -----------------------------------------------------
+
     whatsapp_response = send_whatsapp_message(
-
         integration,
-
         recipient_phone,
-
         ai_reply
-
     )
 
     if not whatsapp_response:
-
         return False
 
+    # -----------------------------------------------------
+    # SAVE OUTGOING MESSAGE
+    # -----------------------------------------------------
+
     outgoing = store_whatsapp_outgoing_message(
-
         integration,
-
         customer,
-
         recipient_phone,
-
         ai_reply,
-
         whatsapp_response
-
     )
 
     if not outgoing:
-
         return False
 
+    # -----------------------------------------------------
+    # UPDATE messages TABLE
+    # -----------------------------------------------------
+
     update_incoming_message_with_ai_reply(
-
         stored_message.get("id"),
-
         ai_reply
-
     )
+
+    # -----------------------------------------------------
+    # IMPORTANT FIX:
+    # UPDATE CUSTOMER ai_reply FIELD
+    # -----------------------------------------------------
+
+    if customer_id:
+
+        updated = update_customer_ai_reply(
+            user_id,
+            customer_id,
+            ai_reply
+        )
+
+        print(
+            "Customer ai_reply field updated:",
+            updated
+        )
 
     return True
 
-
 # =========================================================
-# WHATSAPP - WEBHOOK VERIFICATION
+# WHATSAPP WEBHOOK VERIFY
 # =========================================================
 
 @app.route(
@@ -4709,17 +2873,9 @@ def process_whatsapp_ai_reply(
 )
 def whatsapp_webhook_verify():
 
-    mode = request.args.get(
-        "hub.mode"
-    )
-
-    token = request.args.get(
-        "hub.verify_token"
-    )
-
-    challenge = request.args.get(
-        "hub.challenge"
-    )
+    mode = request.args.get("hub.mode")
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
 
     if (
         mode == "subscribe"
@@ -4727,14 +2883,12 @@ def whatsapp_webhook_verify():
         and WHATSAPP_VERIFY_TOKEN
         and token == WHATSAPP_VERIFY_TOKEN
     ):
-
         return challenge or "", 200
 
     return "Forbidden", 403
 
-
 # =========================================================
-# WHATSAPP - RECEIVE WEBHOOK
+# WHATSAPP WEBHOOK
 # =========================================================
 
 @app.route(
@@ -4743,7 +2897,7 @@ def whatsapp_webhook_verify():
 )
 def whatsapp_webhook():
 
-    app.logger.warning(
+    print(
         "========== WHATSAPP WEBHOOK START =========="
     )
 
@@ -4751,22 +2905,17 @@ def whatsapp_webhook():
         silent=True
     ) or {}
 
-    app.logger.warning(
-        "========== WHATSAPP PAYLOAD RECEIVED =========="
+    print(
+        "========== WHATSAPP PAYLOAD =========="
     )
 
-    app.logger.warning(
-        "WhatsApp payload: %s",
-        payload
-    )
+    print(payload)
 
-    if payload.get(
-        "object"
-    ) != "whatsapp_business_account":
-
+    if payload.get("object") != (
+        "whatsapp_business_account"
+    ):
         return jsonify({
-            "success":
-                True
+            "success": True
         }), 200
 
     entries = payload.get(
@@ -4799,6 +2948,15 @@ def whatsapp_webhook():
                 "phone_number_id"
             )
 
+            print(
+                "META PHONE NUMBER ID:",
+                phone_number_id
+            )
+
+            # -------------------------------------------------
+            # FIND INTEGRATION
+            # -------------------------------------------------
+
             integration = find_whatsapp_integration(
                 phone_number_id
             )
@@ -4806,11 +2964,21 @@ def whatsapp_webhook():
             if not integration:
 
                 print(
-                    "No NexaFlow integration found for WhatsApp phone number:",
+                    "NO INTEGRATION FOUND FOR:",
                     phone_number_id
                 )
 
                 continue
+
+            print(
+                "MATCHED INTEGRATION:",
+                integration.get("id")
+            )
+
+            print(
+                "MATCHED USER:",
+                integration.get("user_id")
+            )
 
             messages = value.get(
                 "messages",
@@ -4831,34 +2999,42 @@ def whatsapp_webhook():
                     {}
                 )
 
-                contact_name = profile.get(
-                    "name",
-                    ""
-                )
+                contact_name = str(
+                    profile.get(
+                        "name",
+                        ""
+                    )
+                ).strip()
 
-            for whatsapp_message in messages:
+            for incoming in messages:
 
-                message_id = whatsapp_message.get(
+                external_message_id = incoming.get(
                     "id"
                 )
 
+                # -------------------------------------------------
+                # DUPLICATE PROTECTION
+                # -------------------------------------------------
+
                 if whatsapp_message_exists(
-                    message_id
+                    external_message_id
                 ):
 
                     print(
-                        "Duplicate WhatsApp message ignored:",
-                        message_id
+                        "DUPLICATE MESSAGE:",
+                        external_message_id
                     )
 
                     continue
 
-                sender_phone = whatsapp_message.get(
-                    "from",
-                    ""
-                )
+                sender_phone = str(
+                    incoming.get(
+                        "from",
+                        ""
+                    )
+                ).strip()
 
-                message_type = whatsapp_message.get(
+                message_type = incoming.get(
                     "type",
                     ""
                 )
@@ -4867,54 +3043,224 @@ def whatsapp_webhook():
 
                 if message_type == "text":
 
-                    message_text = whatsapp_message.get(
-                        "text",
-                        {}
-                    ).get(
-                        "body",
-                        ""
-                    )
+                    message_text = str(
+                        incoming.get(
+                            "text",
+                            {}
+                        ).get(
+                            "body",
+                            ""
+                        )
+                    ).strip()
 
                 else:
 
                     message_text = (
                         "["
-                        + message_type
+                        + str(message_type)
                         + " message]"
                     )
+
+                print(
+                    "SENDER:",
+                    sender_phone
+                )
+
+                print(
+                    "CUSTOMER NAME:",
+                    contact_name
+                )
+
+                print(
+                    "MESSAGE TEXT:",
+                    message_text
+                )
+
+                # -------------------------------------------------
+                # STORE INCOMING MESSAGE
+                # -------------------------------------------------
 
                 stored = store_whatsapp_message(
                     integration,
                     sender_phone,
                     contact_name,
                     message_text,
-                    message_id
+                    external_message_id
                 )
 
-                if stored:
-
-                    processed += 1
-
-                    ai_replied = process_whatsapp_ai_reply(
-                        integration,
-                        stored
-                    )
-
+                if not stored:
                     print(
-                        "WhatsApp AI automatic reply sent:",
-                        ai_replied
+                        "FAILED TO STORE INCOMING MESSAGE"
                     )
+                    continue
+
+                processed += 1
+
+                print(
+                    "STORED MESSAGE:",
+                    stored
+                )
+
+                # -------------------------------------------------
+                # AI AUTO REPLY
+                # -------------------------------------------------
+
+                ai_replied = process_whatsapp_ai_reply(
+                    integration,
+                    stored
+                )
+
+                print(
+                    "WHATSAPP AI REPLIED:",
+                    ai_replied
+                )
+
+    print(
+        "========== WHATSAPP WEBHOOK END =========="
+    )
 
     return jsonify({
-
         "success":
             True,
-
         "processed":
             processed
-
     }), 200
 
+# =========================================================
+# REPORTS
+# =========================================================
+
+@app.route(
+    "/api/reports",
+    methods=["GET"]
+)
+def get_reports():
+
+    user = get_authenticated_user()
+
+    if not user:
+        return jsonify({
+            "error":
+                "Invalid or expired login session."
+        }), 401
+
+    user_id = user["id"]
+
+    try:
+
+        customers_response = supabase_get(
+            CUSTOMERS_URL,
+            {
+                "select": "*",
+                "user_id":
+                    "eq." + user_id,
+                "order":
+                    "created_at.desc"
+            }
+        )
+
+        ai_response = supabase_get(
+            AI_CONVERSATIONS_URL,
+            {
+                "select": "*",
+                "user_id":
+                    "eq." + user_id,
+                "order":
+                    "created_at.desc"
+            }
+        )
+
+        business_response = supabase_get(
+            BUSINESS_ACCOUNTS_URL,
+            {
+                "select": "*",
+                "user_id":
+                    "eq." + user_id,
+                "limit":
+                    "1"
+            }
+        )
+
+        automation_response = supabase_get(
+            AUTOMATION_SETTINGS_URL,
+            {
+                "select": "*",
+                "user_id":
+                    "eq." + user_id,
+                "limit":
+                    "1"
+            }
+        )
+
+        customers = (
+            customers_response.json()
+            if customers_response.status_code == 200
+            else []
+        )
+
+        ai_conversations = (
+            ai_response.json()
+            if ai_response.status_code == 200
+            else []
+        )
+
+        businesses = (
+            business_response.json()
+            if business_response.status_code == 200
+            else []
+        )
+
+        automation_rows = (
+            automation_response.json()
+            if automation_response.status_code == 200
+            else []
+        )
+
+        automation = (
+            automation_rows[0]
+            if automation_rows
+            else {
+                "ai_replies": True,
+                "message_automation": True,
+                "task_automation": True
+            }
+        )
+
+        return jsonify({
+            "success": True,
+            "report": {
+                "business":
+                    businesses[0]
+                    if businesses
+                    else None,
+                "total_customers":
+                    len(customers),
+                "total_ai_conversations":
+                    len(ai_conversations),
+                "total_ai_replies":
+                    len([
+                        x for x in ai_conversations
+                        if str(
+                            x.get(
+                                "answer",
+                                ""
+                            )
+                        ).strip()
+                    ]),
+                "automation":
+                    automation,
+                "customers":
+                    customers,
+                "ai_conversations":
+                    ai_conversations
+            }
+        })
+
+    except Exception as error:
+
+        return jsonify({
+            "error": str(error)
+        }), 500
 
 # =========================================================
 # APPLICATION START
