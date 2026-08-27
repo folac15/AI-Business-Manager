@@ -7,6 +7,7 @@ import time
 import threading
 import traceback
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -42,11 +43,26 @@ OPENROUTER_FREE_ROUTER_MODEL = "openrouter/free"
 # =========================================================
 
 CUSTOMERS_URL = SUPABASE_PROJECT_URL + "/rest/v1/customers"
-BUSINESS_ACCOUNTS_URL = SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
-AUTOMATION_SETTINGS_URL = SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
-AI_CONVERSATIONS_URL = SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
-INTEGRATIONS_URL = SUPABASE_PROJECT_URL + "/rest/v1/integrations"
-MESSAGES_URL = SUPABASE_PROJECT_URL + "/rest/v1/messages"
+
+BUSINESS_ACCOUNTS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/business_accounts"
+)
+
+AUTOMATION_SETTINGS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/automation_settings"
+)
+
+AI_CONVERSATIONS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/ai_conversations"
+)
+
+INTEGRATIONS_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/integrations"
+)
+
+MESSAGES_URL = (
+    SUPABASE_PROJECT_URL + "/rest/v1/messages"
+)
 
 
 # =========================================================
@@ -62,6 +78,7 @@ def now_iso():
 # =========================================================
 
 def supabase_headers(prefer=None):
+
     headers = {
         "apikey": str(SUPABASE_SECRET_KEY or ""),
         "Authorization": "Bearer " + str(
@@ -92,6 +109,7 @@ def index_page():
 
 @app.route("/<path:filename>")
 def serve_files(filename):
+
     if filename.endswith((".html", ".css", ".js")):
         return send_from_directory(".", filename)
 
@@ -104,6 +122,7 @@ def serve_files(filename):
 
 @app.route("/api/status")
 def status():
+
     return jsonify({
         "status": "online",
         "message": "NexaFlow AI API is working"
@@ -134,7 +153,11 @@ def get_authenticated_user():
         return None
 
     if not SUPABASE_SECRET_KEY:
-        print("SUPABASE_SECRET_KEY is not configured.")
+
+        print(
+            "SUPABASE_SECRET_KEY is not configured."
+        )
+
         return None
 
     try:
@@ -143,7 +166,8 @@ def get_authenticated_user():
             SUPABASE_PROJECT_URL + "/auth/v1/user",
             headers={
                 "apikey": SUPABASE_SECRET_KEY,
-                "Authorization": "Bearer " + access_token
+                "Authorization":
+                    "Bearer " + access_token
             },
             timeout=15
         )
@@ -189,6 +213,7 @@ NEXAFLOW_SYSTEM_PROMPT = """
 You are NexaFlow AI, the intelligent conversational assistant inside the NexaFlow Business Management Platform.
 
 Help with:
+
 - Business management
 - Customer service
 - Marketing
@@ -221,6 +246,7 @@ If the user says "make it easier", simplify the previous answer.
 If the user says "continue" or "go on", continue the current topic.
 
 For mathematics and physics:
+
 - Explain clearly.
 - Give formulas when useful.
 - Define variables when useful.
@@ -229,11 +255,13 @@ For mathematics and physics:
 - Solve step by step when requested.
 
 For education:
+
 - Explain before giving examples when appropriate.
 - Do not give an exercise answer unless requested.
 - Correct mistakes politely.
 
 For business:
+
 - Give practical recommendations.
 - Consider African and Cameroonian realities where relevant.
 - Do not invent prices, statistics or regulations.
@@ -249,6 +277,7 @@ Be accurate, natural, helpful and conversational.
 # =========================================================
 
 def supabase_get(url, params):
+
     return requests.get(
         url,
         headers=supabase_headers(),
@@ -258,18 +287,24 @@ def supabase_get(url, params):
 
 
 def supabase_insert(url, data):
+
     return requests.post(
         url,
-        headers=supabase_headers("return=representation"),
+        headers=supabase_headers(
+            "return=representation"
+        ),
         json=data,
         timeout=15
     )
 
 
 def supabase_update(url, params, data):
+
     return requests.patch(
         url,
-        headers=supabase_headers("return=representation"),
+        headers=supabase_headers(
+            "return=representation"
+        ),
         params=params,
         json=data,
         timeout=15
@@ -277,6 +312,7 @@ def supabase_update(url, params, data):
 
 
 def supabase_delete(url, params):
+
     return requests.delete(
         url,
         headers=supabase_headers(),
@@ -286,6 +322,7 @@ def supabase_delete(url, params):
 
 
 def first_row(response):
+
     try:
         data = response.json()
     except Exception:
@@ -361,7 +398,8 @@ def call_openrouter_model(
 
         return None, {
             "type": "configuration",
-            "message": "OPENROUTER_API_KEY is not configured.",
+            "message":
+                "OPENROUTER_API_KEY is not configured.",
             "status_code": None,
             "model": model
         }
@@ -420,6 +458,7 @@ def call_openrouter_model(
         try:
             result = response.json()
         except Exception:
+
             result = {
                 "raw_response":
                     response.text
@@ -440,10 +479,14 @@ def call_openrouter_model(
 
             return None, {
                 "type": "openrouter",
-                "message": str(error_message),
-                "status_code": response.status_code,
-                "model": model,
-                "raw": result
+                "message":
+                    str(error_message),
+                "status_code":
+                    response.status_code,
+                "model":
+                    model,
+                "raw":
+                    result
             }
 
         choices = result.get(
@@ -557,6 +600,18 @@ def call_openrouter(
 
     last_error = None
 
+    retryable_status_codes = {
+        402,
+        404,
+        408,
+        409,
+        429,
+        500,
+        502,
+        503,
+        504
+    }
+
     for index, model in enumerate(
         models_to_try
     ):
@@ -598,16 +653,34 @@ def call_openrouter(
             "status_code"
         )
 
-        if index == 0:
+        print(
+            "AI MODEL FAILED:",
+            model,
+            "status:",
+            status_code
+        )
 
-            print(
-                "Primary free model failed.",
-                "Status:",
-                status_code
-            )
+        if (
+            index == 0
+            and status_code in retryable_status_codes
+        ):
 
             print(
                 "Trying OpenRouter free-model router..."
+            )
+
+            time.sleep(0.5)
+
+            continue
+
+        if index == 0:
+
+            print(
+                "Primary model failed."
+            )
+
+            print(
+                "Trying fallback model anyway..."
             )
 
             time.sleep(0.5)
@@ -805,8 +878,10 @@ def get_customers():
             {
                 "select":
                     "*",
+
                 "user_id":
                     "eq." + user["id"],
+
                 "order":
                     "created_at.desc"
             }
@@ -825,8 +900,10 @@ def get_customers():
         return jsonify({
             "success":
                 True,
+
             "customers":
                 customers,
+
             "count":
                 len(customers)
         })
@@ -959,6 +1036,7 @@ def add_customer():
             return jsonify({
                 "success":
                     False,
+
                 "error":
                     "Unable to save customer: "
                     + response.text
@@ -972,8 +1050,10 @@ def add_customer():
         return jsonify({
             "success":
                 True,
+
             "customer":
                 saved,
+
             "message":
                 "Customer saved successfully."
         })
@@ -990,6 +1070,7 @@ def add_customer():
         return jsonify({
             "success":
                 False,
+
             "error":
                 str(error)
         }), 500
@@ -1178,6 +1259,7 @@ def delete_customer(customer_id):
         return jsonify({
             "success":
                 True,
+
             "message":
                 "Customer deleted successfully."
         })
@@ -1225,6 +1307,7 @@ def dashboard_stats():
             {
                 "select":
                     "id",
+
                 "user_id":
                     "eq." + user_id
             }
@@ -1235,6 +1318,7 @@ def dashboard_stats():
             {
                 "select":
                     "id",
+
                 "user_id":
                     "eq." + user_id
             }
@@ -1245,8 +1329,10 @@ def dashboard_stats():
             {
                 "select":
                     "id",
+
                 "user_id":
                     "eq." + user_id,
+
                 "limit":
                     "1"
             }
@@ -1257,8 +1343,10 @@ def dashboard_stats():
             {
                 "select":
                     "id,direction,status",
+
                 "user_id":
                     "eq." + user_id,
+
                 "platform":
                     "eq.whatsapp"
             }
@@ -1303,6 +1391,7 @@ def dashboard_stats():
         ])
 
         return jsonify({
+
             "success":
                 True,
 
@@ -1393,6 +1482,7 @@ def get_ai_conversations():
         conversations = response.json()
 
         return jsonify({
+
             "success":
                 True,
 
@@ -1419,7 +1509,7 @@ def get_ai_conversations():
 
 
 # =========================================================
-# AUTOMATION
+# AUTOMATION - GET
 # =========================================================
 
 @app.route(
@@ -1470,7 +1560,9 @@ def get_automation_settings():
             })
 
         return jsonify({
+
             "automation": {
+
                 "user_id":
                     user["id"],
 
@@ -1499,6 +1591,10 @@ def get_automation_settings():
                 str(error)
         }), 500
 
+
+# =========================================================
+# AUTOMATION - SAVE
+# =========================================================
 
 @app.route(
     "/api/automation",
@@ -1604,6 +1700,7 @@ def save_automation_settings():
             }), response.status_code
 
         return jsonify({
+
             "success":
                 True,
 
@@ -1629,6 +1726,10 @@ def save_automation_settings():
                 str(error)
         }), 500
 
+
+# =========================================================
+# AUTOMATION TOGGLE
+# =========================================================
 
 @app.route(
     "/api/automation/toggle",
@@ -1761,6 +1862,7 @@ def toggle_automation():
             }), response.status_code
 
         return jsonify({
+
             "success":
                 True,
 
@@ -1838,6 +1940,7 @@ def business_account():
             rows = response.json()
 
             return jsonify({
+
                 "business":
                     rows[0]
                     if rows
@@ -1983,6 +2086,7 @@ def business_account():
             }), response.status_code
 
         return jsonify({
+
             "success":
                 True,
 
@@ -2135,6 +2239,7 @@ def upload_business_logo():
         )
 
         return jsonify({
+
             "success":
                 True,
 
@@ -2148,7 +2253,7 @@ def upload_business_logo():
     except Exception as error:
 
         print(
-            "Business logo upload exception:",
+            "Business logo exception:",
             error
         )
 
@@ -2161,7 +2266,7 @@ def upload_business_logo():
 
 
 # =========================================================
-# WHATSAPP INTEGRATIONS
+# WHATSAPP INTEGRATIONS - GET
 # =========================================================
 
 @app.route(
@@ -2205,6 +2310,7 @@ def get_integrations():
         rows = response.json()
 
         return jsonify({
+
             "success":
                 True,
 
@@ -2229,6 +2335,10 @@ def get_integrations():
                 str(error)
         }), 500
 
+
+# =========================================================
+# WHATSAPP INTEGRATIONS - SAVE
+# =========================================================
 
 @app.route(
     "/api/integrations",
@@ -2405,6 +2515,7 @@ def save_integration():
             }), response.status_code
 
         return jsonify({
+
             "success":
                 True,
 
@@ -2430,6 +2541,10 @@ def save_integration():
                 str(error)
         }), 500
 
+
+# =========================================================
+# WHATSAPP INTEGRATION DELETE
+# =========================================================
 
 @app.route(
     "/api/integrations/<int:integration_id>",
@@ -2472,6 +2587,7 @@ def delete_integration(integration_id):
             }), response.status_code
 
         return jsonify({
+
             "success":
                 True,
 
@@ -2651,7 +2767,56 @@ def find_or_create_whatsapp_customer(
         customers = response.json()
 
         if customers:
-            return customers[0]
+
+            customer = customers[0]
+
+            # Update the name when Meta gives us
+            # a better contact name.
+            if name and name != customer.get("name"):
+
+                try:
+
+                    update_response = supabase_update(
+                        CUSTOMERS_URL,
+                        {
+                            "id":
+                                "eq." + str(
+                                    customer.get("id")
+                                ),
+
+                            "user_id":
+                                "eq." + user_id
+                        },
+                        {
+                            "name":
+                                name,
+
+                            "updated_at":
+                                now_iso()
+                        }
+                    )
+
+                    print(
+                        "WhatsApp customer name update:",
+                        update_response.status_code,
+                        update_response.text
+                    )
+
+                    if update_response.status_code in (
+                        200,
+                        204
+                    ):
+
+                        customer["name"] = name
+
+                except Exception as error:
+
+                    print(
+                        "Customer name update error:",
+                        error
+                    )
+
+            return customer
 
         customer_data = {
 
@@ -2677,6 +2842,9 @@ def find_or_create_whatsapp_customer(
                 "",
 
             "created_at":
+                now_iso(),
+
+            "updated_at":
                 now_iso()
         }
 
@@ -2695,6 +2863,7 @@ def find_or_create_whatsapp_customer(
             200,
             201
         ):
+
             return None
 
         return (
@@ -2744,6 +2913,13 @@ def whatsapp_message_exists(
         )
 
         if response.status_code != 200:
+
+            print(
+                "Duplicate check failed:",
+                response.status_code,
+                response.text
+            )
+
             return False
 
         return bool(
@@ -2753,9 +2929,11 @@ def whatsapp_message_exists(
     except Exception as error:
 
         print(
-            "WhatsApp duplicate check exception:",
+            "Duplicate check exception:",
             error
         )
+
+        traceback.print_exc()
 
         return False
 
@@ -2875,6 +3053,7 @@ def store_whatsapp_message(
             200,
             201
         ):
+
             return None
 
         return (
@@ -2975,16 +3154,19 @@ def get_messages():
         if response.status_code != 200:
 
             return jsonify({
+
                 "success":
                     False,
 
                 "error":
                     response.text
+
             }), response.status_code
 
         messages = response.json()
 
         return jsonify({
+
             "success":
                 True,
 
@@ -3005,11 +3187,13 @@ def get_messages():
         traceback.print_exc()
 
         return jsonify({
+
             "success":
                 False,
 
             "error":
                 str(error)
+
         }), 500
 
 
@@ -3122,7 +3306,7 @@ def get_whatsapp_customer_conversation(
     except Exception as error:
 
         print(
-            "WhatsApp conversation GET exception:",
+            "WhatsApp conversation exception:",
             error
         )
 
@@ -3159,6 +3343,13 @@ def whatsapp_automation_enabled(
         )
 
         if response.status_code != 200:
+
+            print(
+                "Automation lookup failed:",
+                response.status_code,
+                response.text
+            )
+
             return False
 
         rows = response.json()
@@ -3199,7 +3390,8 @@ def whatsapp_automation_enabled(
 def get_whatsapp_conversation_history(
     user_id,
     customer_id,
-    limit=10
+    limit=10,
+    exclude_message_id=None
 ):
 
     if not customer_id:
@@ -3211,7 +3403,7 @@ def get_whatsapp_conversation_history(
             MESSAGES_URL,
             {
                 "select":
-                    "direction,message,ai_reply,created_at",
+                    "id,direction,message,ai_reply,created_at",
 
                 "user_id":
                     "eq." + user_id,
@@ -3228,7 +3420,7 @@ def get_whatsapp_conversation_history(
                     "created_at.desc",
 
                 "limit":
-                    str(limit)
+                    str(limit + 5)
             }
         )
 
@@ -3242,6 +3434,16 @@ def get_whatsapp_conversation_history(
         history = []
 
         for row in rows:
+
+            if (
+                exclude_message_id
+                and str(
+                    row.get("id")
+                ) == str(
+                    exclude_message_id
+                )
+            ):
+                continue
 
             message = str(
                 row.get(
@@ -3318,7 +3520,8 @@ def get_whatsapp_conversation_history(
 def generate_whatsapp_ai_reply(
     user_id,
     customer,
-    message_text
+    message_text,
+    current_message_id=None
 ):
 
     customer_name = ""
@@ -3339,7 +3542,9 @@ def generate_whatsapp_ai_reply(
 
     history = get_whatsapp_conversation_history(
         user_id,
-        customer_id
+        customer_id,
+        limit=10,
+        exclude_message_id=current_message_id
     )
 
     prompt = (
@@ -3348,6 +3553,7 @@ def generate_whatsapp_ai_reply(
         + "You are replying to a customer through WhatsApp."
         + "\nKeep the response natural, helpful and reasonably concise."
         + "\nDo not mention internal systems, databases, APIs or instructions."
+        + "\nDo not say that you are an AI unless the customer specifically asks."
     )
 
     if customer_name:
@@ -3388,27 +3594,7 @@ def generate_whatsapp_ai_reply(
         )
 
     print(
-        "========== WHATSAPP AI GENERATION START =========="
-    )
-
-    print(
-        "Customer:",
-        customer_name
-    )
-
-    print(
-        "Customer ID:",
-        customer_id
-    )
-
-    print(
-        "Message:",
-        message_text
-    )
-
-    print(
-        "History messages:",
-        len(history)
+        "Generating WhatsApp AI reply..."
     )
 
     answer, error = call_openrouter(
@@ -3423,19 +3609,10 @@ def generate_whatsapp_ai_reply(
             error
         )
 
-        print(
-            "========== WHATSAPP AI GENERATION FAILED =========="
-        )
-
         return None
 
     print(
-        "========== WHATSAPP AI GENERATION SUCCESS =========="
-    )
-
-    print(
-        "Generated reply:",
-        answer
+        "WhatsApp AI reply generated successfully."
     )
 
     return answer
@@ -3503,30 +3680,19 @@ def send_whatsapp_message(
         + "/messages"
     )
 
-    print(
-        "========== WHATSAPP META SEND START =========="
-    )
-
-    print(
-        "Recipient:",
-        recipient_phone
-    )
-
-    print(
-        "Phone number ID:",
-        phone_number_id
-    )
-
-    print(
-        "Message length:",
-        len(message_text)
-    )
-
     try:
 
+        print(
+            "Sending WhatsApp reply to:",
+            recipient_phone
+        )
+
         response = requests.post(
+
             url,
+
             headers={
+
                 "Authorization":
                     "Bearer "
                     + access_token,
@@ -3570,15 +3736,7 @@ def send_whatsapp_message(
             201
         ):
 
-            print(
-                "========== WHATSAPP META SEND FAILED =========="
-            )
-
             return None
-
-        print(
-            "========== WHATSAPP META SEND SUCCESS =========="
-        )
 
         return response.json()
 
@@ -3710,15 +3868,7 @@ def store_whatsapp_outgoing_message(
             201
         ):
 
-            print(
-                "Outgoing WhatsApp message failed to save."
-            )
-
             return None
-
-        print(
-            "Outgoing WhatsApp message saved successfully."
-        )
 
         return (
             first_row(
@@ -3757,13 +3907,16 @@ def update_incoming_message_with_ai_reply(
     try:
 
         response = supabase_update(
+
             MESSAGES_URL,
+
             {
                 "id":
                     "eq." + str(
                         message_id
                     )
             },
+
             {
                 "ai_reply":
                     ai_reply,
@@ -3801,6 +3954,10 @@ def update_incoming_message_with_ai_reply(
 
 # =========================================================
 # PROCESS WHATSAPP AI REPLY
+#
+# IMPORTANT:
+# This function runs in a BACKGROUND THREAD.
+# The webhook no longer waits for it.
 # =========================================================
 
 def process_whatsapp_ai_reply(
@@ -3808,29 +3965,12 @@ def process_whatsapp_ai_reply(
     stored_message
 ):
 
-    print(
-        "================================================"
-    )
-
-    print(
-        "BACKGROUND WHATSAPP AI PROCESS STARTED"
-    )
-
-    print(
-        "================================================"
-    )
-
     try:
 
         if (
             not integration
             or not stored_message
         ):
-
-            print(
-                "Missing integration or stored message."
-            )
-
             return False
 
         user_id = integration.get(
@@ -3838,12 +3978,29 @@ def process_whatsapp_ai_reply(
         )
 
         if not user_id:
-
-            print(
-                "WhatsApp AI error: integration has no user_id."
-            )
-
             return False
+
+        print(
+            "================================================"
+        )
+
+        print(
+            "BACKGROUND WHATSAPP AI PROCESS START"
+        )
+
+        print(
+            "User:",
+            user_id
+        )
+
+        print(
+            "Message ID:",
+            stored_message.get("id")
+        )
+
+        print(
+            "================================================"
+        )
 
         if not whatsapp_automation_enabled(
             user_id
@@ -3875,7 +4032,7 @@ def process_whatsapp_ai_reply(
         ):
 
             print(
-                "WhatsApp AI error: message or recipient phone missing."
+                "Missing message text or recipient phone."
             )
 
             return False
@@ -3891,7 +4048,9 @@ def process_whatsapp_ai_reply(
             try:
 
                 response = supabase_get(
+
                     CUSTOMERS_URL,
+
                     {
                         "select":
                             "*",
@@ -3907,12 +4066,6 @@ def process_whatsapp_ai_reply(
                         "limit":
                             "1"
                     }
-                )
-
-                print(
-                    "Customer retrieval:",
-                    response.status_code,
-                    response.text
                 )
 
                 if response.status_code == 200:
@@ -3936,25 +4089,35 @@ def process_whatsapp_ai_reply(
         # -------------------------------------------------
 
         print(
-            "STEP 1: GENERATING WHATSAPP AI REPLY"
+            "STEP 1: GENERATING AI RESPONSE"
         )
 
         ai_reply = generate_whatsapp_ai_reply(
+
             user_id,
+
             customer,
-            message_text
+
+            message_text,
+
+            current_message_id=
+                stored_message.get("id")
         )
 
         if not ai_reply:
 
             print(
-                "STEP 1 FAILED: AI did not generate a reply."
+                "STEP 1 FAILED: AI could not generate reply."
             )
 
             return False
 
         print(
-            "STEP 1 SUCCESS"
+            "STEP 1 SUCCESS: AI generated:"
+        )
+
+        print(
+            ai_reply
         )
 
         # -------------------------------------------------
@@ -3962,25 +4125,28 @@ def process_whatsapp_ai_reply(
         # -------------------------------------------------
 
         print(
-            "STEP 2: SENDING AI REPLY THROUGH META"
+            "STEP 2: SENDING AI RESPONSE THROUGH META"
         )
 
         whatsapp_response = send_whatsapp_message(
+
             integration,
+
             recipient_phone,
+
             ai_reply
         )
 
         if not whatsapp_response:
 
             print(
-                "STEP 2 FAILED: Meta did not send the message."
+                "STEP 2 FAILED: Meta failed to send reply."
             )
 
             return False
 
         print(
-            "STEP 2 SUCCESS"
+            "STEP 2 SUCCESS: WhatsApp reply sent."
         )
 
         # -------------------------------------------------
@@ -3992,24 +4158,31 @@ def process_whatsapp_ai_reply(
         )
 
         outgoing = store_whatsapp_outgoing_message(
+
             integration,
+
             customer,
+
             recipient_phone,
+
             ai_reply,
+
             whatsapp_response
         )
 
         if not outgoing:
 
             print(
-                "STEP 3 FAILED: outgoing message was not saved."
+                "STEP 3 FAILED: Could not save outgoing message."
             )
 
-            return False
+            # Message was sent even if database save failed.
+            # Continue to update incoming message.
+        else:
 
-        print(
-            "STEP 3 SUCCESS"
-        )
+            print(
+                "STEP 3 SUCCESS: Outgoing message saved."
+            )
 
         # -------------------------------------------------
         # UPDATE INCOMING MESSAGE
@@ -4021,7 +4194,9 @@ def process_whatsapp_ai_reply(
 
         incoming_updated = (
             update_incoming_message_with_ai_reply(
+
                 stored_message.get("id"),
+
                 ai_reply
             )
         )
@@ -4042,8 +4217,11 @@ def process_whatsapp_ai_reply(
             )
 
             updated = update_customer_ai_reply(
+
                 user_id,
+
                 customer_id,
+
                 ai_reply
             )
 
@@ -4057,7 +4235,7 @@ def process_whatsapp_ai_reply(
         )
 
         print(
-            "BACKGROUND WHATSAPP AI PROCESS SUCCESS"
+            "BACKGROUND WHATSAPP AI PROCESS COMPLETE"
         )
 
         print(
@@ -4069,75 +4247,68 @@ def process_whatsapp_ai_reply(
     except Exception as error:
 
         print(
-            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            "================================================"
         )
 
         print(
-            "BACKGROUND WHATSAPP AI PROCESS CRASHED"
+            "CRITICAL WHATSAPP AI THREAD ERROR"
         )
 
         print(
-            "ERROR:",
-            error
-        )
-
-        print(
-            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            str(error)
         )
 
         traceback.print_exc()
+
+        print(
+            "================================================"
+        )
 
         return False
 
 
 # =========================================================
-# BACKGROUND WHATSAPP AI THREAD
+# START WHATSAPP AI BACKGROUND THREAD
 # =========================================================
 
-def run_whatsapp_ai_background(
+def start_whatsapp_ai_thread(
     integration,
     stored_message
 ):
 
-    print(
-        "################################################"
-    )
-
-    print(
-        "STARTING BACKGROUND WHATSAPP AI THREAD"
-    )
-
-    print(
-        "Message ID:",
-        stored_message.get("id")
-        if stored_message
-        else None
-    )
-
-    print(
-        "################################################"
-    )
-
     try:
 
-        success = process_whatsapp_ai_reply(
-            integration,
-            stored_message
+        thread = threading.Thread(
+
+            target=process_whatsapp_ai_reply,
+
+            args=(
+                integration,
+                stored_message
+            ),
+
+            daemon=True
         )
 
+        thread.start()
+
         print(
-            "BACKGROUND WHATSAPP THREAD FINISHED:",
-            success
+            "WHATSAPP AI BACKGROUND THREAD STARTED:",
+            thread.name
         )
+
+        return True
 
     except Exception as error:
 
         print(
-            "BACKGROUND WHATSAPP THREAD EXCEPTION:",
+            "Failed to start WhatsApp AI thread:",
             error
         )
 
         traceback.print_exc()
+
+        return False
 
 
 # =========================================================
@@ -4184,6 +4355,12 @@ def whatsapp_webhook_verify():
 
 # =========================================================
 # WHATSAPP WEBHOOK
+#
+# IMPORTANT:
+# This endpoint now stores messages and immediately
+# returns 200.
+#
+# AI processing happens AFTER this through threading.
 # =========================================================
 
 @app.route(
@@ -4213,7 +4390,7 @@ def whatsapp_webhook():
     ) != "whatsapp_business_account":
 
         print(
-            "Webhook object is not WhatsApp Business Account."
+            "Not a WhatsApp Business Account webhook."
         )
 
         return jsonify({
@@ -4227,6 +4404,7 @@ def whatsapp_webhook():
     )
 
     processed = 0
+    threads_started = 0
 
     for entry in entries:
 
@@ -4311,11 +4489,6 @@ def whatsapp_webhook():
                     "id"
                 )
 
-                print(
-                    "INCOMING WHATSAPP MESSAGE ID:",
-                    external_message_id
-                )
-
                 if whatsapp_message_exists(
                     external_message_id
                 ):
@@ -4344,6 +4517,7 @@ def whatsapp_webhook():
                 if message_type == "text":
 
                     message_text = str(
+
                         incoming.get(
                             "text",
                             {}
@@ -4351,6 +4525,7 @@ def whatsapp_webhook():
                             "body",
                             ""
                         )
+
                     ).strip()
 
                 else:
@@ -4374,11 +4549,6 @@ def whatsapp_webhook():
                 )
 
                 print(
-                    "MESSAGE TYPE:",
-                    message_type
-                )
-
-                print(
                     "MESSAGE TEXT:",
                     message_text
                 )
@@ -4388,10 +4558,15 @@ def whatsapp_webhook():
                 # -------------------------------------------------
 
                 stored = store_whatsapp_message(
+
                     integration,
+
                     sender_phone,
+
                     contact_name,
+
                     message_text,
+
                     external_message_id
                 )
 
@@ -4406,74 +4581,52 @@ def whatsapp_webhook():
                 processed += 1
 
                 print(
-                    "STORED MESSAGE:",
+                    "INCOMING MESSAGE STORED:"
+                )
+
+                print(
                     stored
                 )
 
                 # -------------------------------------------------
                 # START AI IN BACKGROUND
+                #
+                # DO NOT WAIT FOR AI HERE.
                 # -------------------------------------------------
 
-                print(
-                    "STARTING BACKGROUND AI PROCESS FOR MESSAGE:",
-                    stored.get("id")
+                thread_started = (
+                    start_whatsapp_ai_thread(
+
+                        integration,
+
+                        stored
+                    )
                 )
 
-                try:
+                if thread_started:
 
-                    ai_thread = threading.Thread(
-                        target=run_whatsapp_ai_background,
-                        args=(
-                            integration,
-                            stored
-                        ),
-                        daemon=True
-                    )
+                    threads_started += 1
 
-                    ai_thread.start()
-
-                    print(
-                        "BACKGROUND AI THREAD STARTED:",
-                        ai_thread.name
-                    )
-
-                except Exception as error:
-
-                    print(
-                        "FAILED TO START BACKGROUND AI THREAD:",
-                        error
-                    )
-
-                    traceback.print_exc()
-
-    # ---------------------------------------------------------
-    # IMPORTANT:
-    # RETURN TO META IMMEDIATELY.
-    # AI CONTINUES IN THE BACKGROUND THREAD.
-    # ---------------------------------------------------------
+                print(
+                    "AI THREAD STARTED:",
+                    thread_started
+                )
 
     print(
         "========== WHATSAPP WEBHOOK END =========="
     )
 
-    print(
-        "Returning HTTP 200 to Meta."
-    )
-
-    print(
-        "Processed messages:",
-        processed
-    )
-
+    # Meta receives this immediately.
     return jsonify({
+
         "success":
             True,
 
         "processed":
             processed,
 
-        "message":
-            "WhatsApp messages received successfully."
+        "ai_threads_started":
+            threads_started
     }), 200
 
 
@@ -4581,9 +4734,13 @@ def get_reports():
         )
 
         automation = (
+
             automation_rows[0]
+
             if automation_rows
+
             else {
+
                 "ai_replies":
                     True,
 
@@ -4615,8 +4772,11 @@ def get_reports():
 
                 "total_ai_replies":
                     len([
+
                         x
+
                         for x in ai_conversations
+
                         if str(
                             x.get(
                                 "answer",
@@ -4639,7 +4799,7 @@ def get_reports():
     except Exception as error:
 
         print(
-            "Reports exception:",
+            "Reports GET exception:",
             error
         )
 
@@ -4662,6 +4822,27 @@ if __name__ == "__main__":
             "PORT",
             5000
         )
+    )
+
+    print(
+        "================================================"
+    )
+
+    print(
+        "NexaFlow AI starting..."
+    )
+
+    print(
+        "Port:",
+        port
+    )
+
+    print(
+        "WhatsApp AI background threading: ENABLED"
+    )
+
+    print(
+        "================================================"
     )
 
     app.run(
