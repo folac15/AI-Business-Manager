@@ -151,7 +151,7 @@ def supabase_request(method, endpoint, **kwargs):
 def home():
     return send_from_directory(".", "index.html")
    
-    @app.route("/<path:filename>")
+@app.route("/<path:filename>")
 def serve_frontend(filename):
     return send_from_directory(".", filename)
 
