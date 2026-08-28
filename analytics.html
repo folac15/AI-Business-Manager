@@ -11,6 +11,10 @@
 
 <style>
 
+/* =====================================================
+   GLOBAL
+===================================================== */
+
 *{
     margin:0;
     padding:0;
@@ -24,6 +28,7 @@ body{
     min-height:100vh;
     color:#222;
 }
+
 
 /* =====================================================
    SIDEBAR
@@ -83,6 +88,7 @@ body{
     background:#0066ff;
 }
 
+
 /* =====================================================
    MAIN
 ===================================================== */
@@ -92,6 +98,7 @@ body{
     padding:30px;
     min-width:0;
 }
+
 
 /* =====================================================
    HEADER
@@ -142,8 +149,9 @@ body{
     cursor:not-allowed;
 }
 
+
 /* =====================================================
-   ANALYTICS CARDS
+   STATISTICS GRID
 ===================================================== */
 
 .analytics-grid{
@@ -172,6 +180,7 @@ body{
     color:#0066ff;
 }
 
+
 /* =====================================================
    SUMMARY
 ===================================================== */
@@ -194,8 +203,9 @@ body{
     line-height:1.7;
 }
 
+
 /* =====================================================
-   ACTIVITY
+   ACTIVITY SECTIONS
 ===================================================== */
 
 .activity{
@@ -244,6 +254,52 @@ body{
     word-break:break-word;
 }
 
+
+/* =====================================================
+   WHATSAPP MESSAGE COLORS
+===================================================== */
+
+.incoming{
+    border-left-color:#008000;
+}
+
+.outgoing{
+    border-left-color:#0066ff;
+}
+
+.incoming .activity-type{
+    background:#008000;
+}
+
+.outgoing .activity-type{
+    background:#0066ff;
+}
+
+
+/* =====================================================
+   BADGES
+===================================================== */
+
+.stat-description{
+    color:#777;
+    font-size:13px;
+    margin-top:8px;
+}
+
+.customer-phone{
+    color:#555;
+    font-size:13px;
+}
+
+.direction-label{
+    font-weight:bold;
+}
+
+
+/* =====================================================
+   STATES
+===================================================== */
+
 .loading{
     color:#666;
     padding:15px;
@@ -262,11 +318,12 @@ body{
     padding:15px;
 }
 
+
 /* =====================================================
    MOBILE
 ===================================================== */
 
-@media(max-width:1000px){
+@media(max-width:1100px){
 
     .analytics-grid{
         grid-template-columns:repeat(2,1fr);
@@ -331,6 +388,7 @@ body{
 
 <body>
 
+
 <script src="auth_guard.js"></script>
 
 
@@ -344,6 +402,7 @@ body{
         NexaFlow AI
     </div>
 
+
     <div
         class="business-logo"
         id="businessLogo">
@@ -351,6 +410,7 @@ body{
         📊
 
     </div>
+
 
     <h3 id="businessName">
         Your Business
@@ -361,13 +421,16 @@ body{
         Dashboard
     </a>
 
+
     <a href="ai-assistant.html">
         AI Assistant
     </a>
 
+
     <a href="customers.html">
         Customers
     </a>
+
 
     <a
         href="analytics.html"
@@ -377,13 +440,16 @@ body{
 
     </a>
 
+
     <a href="automation.html">
         Automation
     </a>
 
+
     <a href="reports.html">
         Reports
     </a>
+
 
     <a href="settings.html">
         Settings
@@ -399,7 +465,9 @@ body{
 <div class="main">
 
 
-    <!-- HEADER -->
+    <!-- =================================================
+         HEADER
+    ================================================= -->
 
     <div class="header">
 
@@ -407,9 +475,10 @@ body{
             📊 Business Analytics
         </h2>
 
+
         <p>
             Monitor your real NexaFlow business activity,
-            customers and AI conversations.
+            customers, WhatsApp messages and AI conversations.
         </p>
 
 
@@ -429,6 +498,7 @@ body{
     </div>
 
 
+
     <!-- =================================================
          STATISTICS
     ================================================= -->
@@ -436,10 +506,12 @@ body{
     <div class="analytics-grid">
 
 
+        <!-- CUSTOMERS -->
+
         <div class="card">
 
             <h3>
-                👥 Customers
+                👥 Total Customers
             </h3>
 
             <div
@@ -450,13 +522,20 @@ body{
 
             </div>
 
+            <div class="stat-description">
+                Customers recorded in NexaFlow
+            </div>
+
         </div>
 
+
+
+        <!-- AI CONVERSATIONS -->
 
         <div class="card">
 
             <h3>
-                💬 AI Conversations
+                🤖 AI Conversations
             </h3>
 
             <div
@@ -467,30 +546,44 @@ body{
 
             </div>
 
-        </div>
-
-
-        <div class="card">
-
-            <h3>
-                📨 Customer Messages
-            </h3>
-
-            <div
-                class="number"
-                id="messageTotal">
-
-                0
-
+            <div class="stat-description">
+                AI conversations recorded
             </div>
 
         </div>
 
 
+
+        <!-- WHATSAPP MESSAGES -->
+
         <div class="card">
 
             <h3>
-                🤖 AI Replies
+                💬 WhatsApp Messages
+            </h3>
+
+            <div
+                class="number"
+                id="whatsappTotal">
+
+                0
+
+            </div>
+
+            <div class="stat-description">
+                Incoming + outgoing messages
+            </div>
+
+        </div>
+
+
+
+        <!-- AI REPLIES -->
+
+        <div class="card">
+
+            <h3>
+                📤 AI Replies Sent
             </h3>
 
             <div
@@ -501,10 +594,123 @@ body{
 
             </div>
 
+            <div class="stat-description">
+                WhatsApp responses sent by AI
+            </div>
+
         </div>
 
 
     </div>
+
+
+
+    <!-- =================================================
+         SECOND STATISTICS
+    ================================================= -->
+
+    <div
+        class="analytics-grid"
+        style="margin-top:20px;">
+
+
+        <!-- INCOMING -->
+
+        <div class="card">
+
+            <h3>
+                📥 Incoming Messages
+            </h3>
+
+            <div
+                class="number"
+                id="incomingTotal">
+
+                0
+
+            </div>
+
+            <div class="stat-description">
+                Messages received from customers
+            </div>
+
+        </div>
+
+
+
+        <!-- OUTGOING -->
+
+        <div class="card">
+
+            <h3>
+                📤 Outgoing Messages
+            </h3>
+
+            <div
+                class="number"
+                id="outgoingTotal">
+
+                0
+
+            </div>
+
+            <div class="stat-description">
+                Messages sent to customers
+            </div>
+
+        </div>
+
+
+
+        <!-- ACTIVE CUSTOMERS -->
+
+        <div class="card">
+
+            <h3>
+                👤 Active Customers
+            </h3>
+
+            <div
+                class="number"
+                id="activeCustomerTotal">
+
+                0
+
+            </div>
+
+            <div class="stat-description">
+                Customers with WhatsApp activity
+            </div>
+
+        </div>
+
+
+
+        <!-- RESPONSE RATE -->
+
+        <div class="card">
+
+            <h3>
+                ⚡ AI Response Rate
+            </h3>
+
+            <div
+                class="number"
+                id="responseRate">
+
+                0%
+
+            </div>
+
+            <div class="stat-description">
+                Incoming messages receiving replies
+            </div>
+
+        </div>
+
+
+    </div>
+
 
 
     <!-- =================================================
@@ -517,6 +723,7 @@ body{
             📈 Business Summary
         </h3>
 
+
         <div
             id="summaryText"
             class="summary-text">
@@ -526,6 +733,28 @@ body{
         </div>
 
     </div>
+
+
+
+    <!-- =================================================
+         WHATSAPP ACTIVITY
+    ================================================= -->
+
+    <div class="activity">
+
+        <h3>
+            💬 Recent WhatsApp Activity
+        </h3>
+
+
+        <div id="whatsappActivityList">
+
+            Loading WhatsApp activity...
+
+        </div>
+
+    </div>
+
 
 
     <!-- =================================================
@@ -538,6 +767,7 @@ body{
             👥 Recent Customer Activity
         </h3>
 
+
         <div id="activityList">
 
             Loading customer activity...
@@ -545,6 +775,7 @@ body{
         </div>
 
     </div>
+
 
 
     <!-- =================================================
@@ -556,6 +787,7 @@ body{
         <h3>
             🤖 Recent AI Conversations
         </h3>
+
 
         <div id="aiActivityList">
 
@@ -569,7 +801,9 @@ body{
 </div>
 
 
+
 <script>
+
 
 /* =====================================================
    AUTH TOKEN
@@ -591,11 +825,15 @@ function getToken(){
 function formatDate(dateValue){
 
     if(!dateValue){
+
         return "Date unavailable";
+
     }
+
 
     const date =
         new Date(dateValue);
+
 
     if(
         Number.isNaN(
@@ -606,6 +844,7 @@ function formatDate(dateValue){
         return String(dateValue);
 
     }
+
 
     return date.toLocaleString();
 
@@ -649,6 +888,73 @@ function escapeHtml(value){
 
 
 /* =====================================================
+   AUTHENTICATED FETCH
+===================================================== */
+
+async function authenticatedFetch(
+    url,
+    options = {}
+){
+
+    const token =
+        getToken();
+
+
+    if(!token){
+
+        throw new Error(
+            "Login session unavailable."
+        );
+
+    }
+
+
+    const headers =
+        options.headers || {};
+
+
+    headers["Authorization"] =
+        "Bearer " + token;
+
+
+    headers["Content-Type"] =
+        "application/json";
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                ...options,
+                headers:headers
+            }
+        );
+
+
+    if(
+        response.status === 401
+    ){
+
+        localStorage.removeItem(
+            "access_token"
+        );
+
+        window.location.href =
+            "login.html";
+
+        throw new Error(
+            "Your login session has expired."
+        );
+
+    }
+
+
+    return response;
+
+}
+
+
+/* =====================================================
    LOAD BUSINESS
 ===================================================== */
 
@@ -657,9 +963,13 @@ async function loadBusiness(){
     const token =
         getToken();
 
+
     if(!token){
+
         return;
+
     }
+
 
     try{
 
@@ -677,7 +987,9 @@ async function loadBusiness(){
             );
 
 
-        if(response.status === 401){
+        if(
+            response.status === 401
+        ){
 
             localStorage.removeItem(
                 "access_token"
@@ -749,13 +1061,15 @@ async function loadBusiness(){
 
 async function loadAnalytics(){
 
-    const token =
-        getToken();
-
-
     const activity =
         document.getElementById(
             "activityList"
+        );
+
+
+    const whatsappActivity =
+        document.getElementById(
+            "whatsappActivityList"
         );
 
 
@@ -777,9 +1091,20 @@ async function loadAnalytics(){
         );
 
 
+    const token =
+        getToken();
+
+
+    /* =================================================
+       SESSION CHECK
+    ================================================= */
+
     if(!token){
 
         activity.innerHTML =
+            '<div class="error">Login session unavailable.</div>';
+
+        whatsappActivity.innerHTML =
             '<div class="error">Login session unavailable.</div>';
 
         aiActivity.innerHTML =
@@ -793,6 +1118,10 @@ async function loadAnalytics(){
     }
 
 
+    /* =================================================
+       LOADING STATE
+    ================================================= */
+
     refreshButton.disabled =
         true;
 
@@ -803,8 +1132,14 @@ async function loadAnalytics(){
     activity.innerHTML =
         '<div class="loading">Loading customer analytics...</div>';
 
+
+    whatsappActivity.innerHTML =
+        '<div class="loading">Loading WhatsApp activity...</div>';
+
+
     aiActivity.innerHTML =
         '<div class="loading">Loading AI analytics...</div>';
+
 
     summary.innerHTML =
         "Calculating business activity...";
@@ -813,41 +1148,21 @@ async function loadAnalytics(){
     try{
 
 
-        /* =========================================
-           CUSTOMERS
-        ========================================= */
+        /* =================================================
+           LOAD CUSTOMERS
+        ================================================= */
 
         const customersResponse =
-            await fetch(
+            await authenticatedFetch(
                 "/api/customers",
                 {
-                    method:"GET",
-
-                    headers:{
-                        "Authorization":
-                            "Bearer " + token
-                    }
+                    method:"GET"
                 }
             );
 
 
-        if(
-            customersResponse.status === 401
-        ){
-
-            localStorage.removeItem(
-                "access_token"
-            );
-
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
-
-
         let customersResult = {};
+
 
         try{
 
@@ -881,9 +1196,9 @@ async function loadAnalytics(){
             : [];
 
 
-        /* =========================================
+        /* =================================================
            CUSTOMER COUNT
-        ========================================= */
+        ================================================= */
 
         document.getElementById(
             "customerTotal"
@@ -891,11 +1206,303 @@ async function loadAnalytics(){
             customers.length;
 
 
-        /* =========================================
-           CUSTOMER MESSAGES
-        ========================================= */
+        /* =================================================
+           LOAD REAL WHATSAPP MESSAGES
+        ================================================= */
 
-        const messageCount =
+        const messagesResponse =
+            await authenticatedFetch(
+                "/api/messages?limit=500",
+                {
+                    method:"GET"
+                }
+            );
+
+
+        let messagesResult = {};
+
+
+        try{
+
+            messagesResult =
+                await messagesResponse.json();
+
+        }catch(error){
+
+            messagesResult = {};
+
+        }
+
+
+        if(
+            !messagesResponse.ok
+        ){
+
+            throw new Error(
+                messagesResult.error ||
+                "Unable to load WhatsApp messages."
+            );
+
+        }
+
+
+        const messages =
+            Array.isArray(
+                messagesResult.messages
+            )
+            ? messagesResult.messages
+            : [];
+
+
+        /* =================================================
+           MESSAGE COUNTS
+        ================================================= */
+
+        const incomingMessages =
+            messages.filter(
+                function(message){
+
+                    return (
+                        message.direction ===
+                        "incoming"
+                    );
+
+                }
+            );
+
+
+        const outgoingMessages =
+            messages.filter(
+                function(message){
+
+                    return (
+                        message.direction ===
+                        "outgoing"
+                    );
+
+                }
+            );
+
+
+        document.getElementById(
+            "whatsappTotal"
+        ).textContent =
+            messages.length;
+
+
+        document.getElementById(
+            "incomingTotal"
+        ).textContent =
+            incomingMessages.length;
+
+
+        document.getElementById(
+            "outgoingTotal"
+        ).textContent =
+            outgoingMessages.length;
+
+
+        document.getElementById(
+            "replyTotal"
+        ).textContent =
+            outgoingMessages.length;
+
+
+        /* =================================================
+           ACTIVE CUSTOMERS
+        ================================================= */
+
+        const activePhones =
+            new Set();
+
+
+        messages.forEach(
+            function(message){
+
+                if(
+                    message.phone
+                ){
+
+                    activePhones.add(
+                        String(
+                            message.phone
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
+        document.getElementById(
+            "activeCustomerTotal"
+        ).textContent =
+            activePhones.size;
+
+
+        /* =================================================
+           RESPONSE RATE
+        ================================================= */
+
+        let responseRateValue = 0;
+
+
+        if(
+            incomingMessages.length > 0
+        ){
+
+            responseRateValue =
+                Math.round(
+                    (
+                        outgoingMessages.length /
+                        incomingMessages.length
+                    ) *
+                    100
+                );
+
+        }
+
+
+        if(
+            responseRateValue > 100
+        ){
+
+            responseRateValue = 100;
+
+        }
+
+
+        document.getElementById(
+            "responseRate"
+        ).textContent =
+            responseRateValue + "%";
+
+
+        /* =================================================
+           WHATSAPP ACTIVITY
+        ================================================= */
+
+        if(
+            messages.length === 0
+        ){
+
+            whatsappActivity.innerHTML =
+                '<div class="empty">No WhatsApp activity has been recorded yet.</div>';
+
+        }else{
+
+            let whatsappHtml = "";
+
+
+            messages
+                .slice(0,20)
+                .forEach(
+                    function(message){
+
+                        const incoming =
+                            message.direction ===
+                            "incoming";
+
+
+                        const type =
+                            incoming
+                            ? "INCOMING"
+                            : "OUTGOING";
+
+
+                        const senderName =
+                            message.name ||
+                            message.customer_name ||
+                            "WhatsApp customer";
+
+
+                        whatsappHtml += `
+
+                            <div
+                                class="activity-item ${
+                                    incoming
+                                    ? "incoming"
+                                    : "outgoing"
+                                }">
+
+                                <span class="activity-type">
+
+                                    ${type}
+
+                                </span>
+
+                                <br>
+
+
+                                <b>
+                                    ${escapeHtml(
+                                        senderName
+                                    )}
+                                </b>
+
+
+                                <br>
+
+
+                                <span class="customer-phone">
+
+                                    📱
+                                    ${escapeHtml(
+                                        message.phone ||
+                                        "Phone unavailable"
+                                    )}
+
+                                </span>
+
+
+                                <br><br>
+
+
+                                <b>
+                                    Message:
+                                </b>
+
+
+                                <div class="activity-message">
+
+                                    ${escapeHtml(
+                                        message.text ||
+                                        "No message text"
+                                    )}
+
+                                </div>
+
+
+                                <span class="activity-date">
+
+                                    ${escapeHtml(
+                                        formatDate(
+                                            message.created_at
+                                        )
+                                    )}
+
+                                </span>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+
+            whatsappActivity.innerHTML =
+                whatsappHtml;
+
+        }
+
+
+        /* =================================================
+           CUSTOMER ACTIVITY
+        ================================================= */
+
+        const customerMessageCount =
             customers.filter(
                 function(customer){
 
@@ -910,16 +1517,6 @@ async function loadAnalytics(){
             ).length;
 
 
-        document.getElementById(
-            "messageTotal"
-        ).textContent =
-            messageCount;
-
-
-        /* =========================================
-           CUSTOMER ACTIVITY
-        ========================================= */
-
         if(
             customers.length === 0
         ){
@@ -929,7 +1526,7 @@ async function loadAnalytics(){
 
         }else{
 
-            let html = "";
+            let customerHtml = "";
 
 
             customers
@@ -937,7 +1534,7 @@ async function loadAnalytics(){
                 .forEach(
                     function(customer){
 
-                        html += `
+                        customerHtml += `
 
                             <div class="activity-item">
 
@@ -947,6 +1544,7 @@ async function loadAnalytics(){
 
                                 <br>
 
+
                                 <b>
                                     ${escapeHtml(
                                         customer.name ||
@@ -954,7 +1552,9 @@ async function loadAnalytics(){
                                     )}
                                 </b>
 
+
                                 <br><br>
+
 
                                 <b>
                                     Phone:
@@ -965,7 +1565,9 @@ async function loadAnalytics(){
                                     "Not provided"
                                 )}
 
+
                                 <br>
+
 
                                 <b>
                                     Email:
@@ -976,7 +1578,9 @@ async function loadAnalytics(){
                                     "Not provided"
                                 )}
 
+
                                 <br>
+
 
                                 <b>
                                     Location:
@@ -987,11 +1591,14 @@ async function loadAnalytics(){
                                     "Not provided"
                                 )}
 
+
                                 <br><br>
+
 
                                 <b>
                                     Message:
                                 </b>
+
 
                                 <div class="activity-message">
 
@@ -1001,6 +1608,7 @@ async function loadAnalytics(){
                                     )}
 
                                 </div>
+
 
                                 <span class="activity-date">
 
@@ -1021,46 +1629,26 @@ async function loadAnalytics(){
 
 
             activity.innerHTML =
-                html;
+                customerHtml;
 
         }
 
 
-        /* =========================================
-           AI CONVERSATIONS
-        ========================================= */
+        /* =================================================
+           LOAD AI CONVERSATIONS
+        ================================================= */
 
         const aiResponse =
-            await fetch(
+            await authenticatedFetch(
                 "/api/ai/conversations",
                 {
-                    method:"GET",
-
-                    headers:{
-                        "Authorization":
-                            "Bearer " + token
-                    }
+                    method:"GET"
                 }
             );
 
 
-        if(
-            aiResponse.status === 401
-        ){
-
-            localStorage.removeItem(
-                "access_token"
-            );
-
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
-
-
         let aiResult = {};
+
 
         try{
 
@@ -1094,9 +1682,9 @@ async function loadAnalytics(){
             : [];
 
 
-        /* =========================================
+        /* =================================================
            AI COUNT
-        ========================================= */
+        ================================================= */
 
         document.getElementById(
             "aiTotal"
@@ -1104,11 +1692,19 @@ async function loadAnalytics(){
             conversations.length;
 
 
-        /* =========================================
+        /* =================================================
            AI REPLIES
-        ========================================= */
+        ================================================= */
 
-        const replyCount =
+        /*
+         * We count recorded AI conversations with
+         * an answer as AI replies.
+         *
+         * The WhatsApp outgoing count above shows
+         * actual WhatsApp messages sent.
+         */
+
+        const recordedAiReplies =
             conversations.filter(
                 function(conversation){
 
@@ -1123,15 +1719,9 @@ async function loadAnalytics(){
             ).length;
 
 
-        document.getElementById(
-            "replyTotal"
-        ).textContent =
-            replyCount;
-
-
-        /* =========================================
+        /* =================================================
            AI ACTIVITY
-        ========================================= */
+        ================================================= */
 
         if(
             conversations.length === 0
@@ -1146,7 +1736,7 @@ async function loadAnalytics(){
 
 
             conversations
-                .slice(0,10)
+                .slice(0,20)
                 .forEach(
                     function(conversation){
 
@@ -1158,11 +1748,14 @@ async function loadAnalytics(){
                                     AI CONVERSATION
                                 </span>
 
+
                                 <br>
+
 
                                 <b>
                                     User Question
                                 </b>
+
 
                                 <div class="activity-message">
 
@@ -1173,11 +1766,14 @@ async function loadAnalytics(){
 
                                 </div>
 
+
                                 <br>
+
 
                                 <b>
                                     NexaFlow AI Reply
                                 </b>
+
 
                                 <div class="activity-message">
 
@@ -1187,6 +1783,7 @@ async function loadAnalytics(){
                                     )}
 
                                 </div>
+
 
                                 <span class="activity-date">
 
@@ -1212,9 +1809,9 @@ async function loadAnalytics(){
         }
 
 
-        /* =========================================
-           SUMMARY
-        ========================================= */
+        /* =================================================
+           BUSINESS SUMMARY
+        ================================================= */
 
         let summaryParts = [];
 
@@ -1233,48 +1830,80 @@ async function loadAnalytics(){
 
 
         summaryParts.push(
-            messageCount +
-            " customer" +
+            "NexaFlow has recorded " +
+            messages.length +
+            " WhatsApp message" +
             (
-                messageCount === 1
-                ? " message has"
-                : " messages have"
+                messages.length === 1
+                ? ""
+                : "s"
             ) +
-            " been recorded."
+            " in total."
         );
 
 
-        if(
-            conversations.length > 0
-        ){
+        summaryParts.push(
+            incomingMessages.length +
+            " message" +
+            (
+                incomingMessages.length === 1
+                ? ""
+                : "s"
+            ) +
+            " came from customers."
+        );
 
-            summaryParts.push(
-                "NexaFlow AI has recorded " +
-                conversations.length +
-                " AI conversation" +
-                (
-                    conversations.length === 1
-                    ? ""
-                    : "s"
-                ) +
-                ", with " +
-                replyCount +
-                " AI repl" +
-                (
-                    replyCount === 1
-                    ? "y"
-                    : "ies"
-                ) +
-                "."
-            );
 
-        }else{
+        summaryParts.push(
+            outgoingMessages.length +
+            " outgoing WhatsApp message" +
+            (
+                outgoingMessages.length === 1
+                ? ""
+                : "s"
+            ) +
+            " " +
+            (
+                outgoingMessages.length === 1
+                ? "was"
+                : "were"
+            ) +
+            " sent."
+        );
 
-            summaryParts.push(
-                "No AI conversations have been recorded yet."
-            );
 
-        }
+        summaryParts.push(
+            "NexaFlow AI has recorded " +
+            conversations.length +
+            " AI conversation" +
+            (
+                conversations.length === 1
+                ? ""
+                : "s"
+            ) +
+            ", with " +
+            recordedAiReplies +
+            " recorded AI repl" +
+            (
+                recordedAiReplies === 1
+                ? "y"
+                : "ies"
+            ) +
+            "."
+        );
+
+
+        summaryParts.push(
+            "There are currently " +
+            activePhones.size +
+            " customer phone number" +
+            (
+                activePhones.size === 1
+                ? ""
+                : "s"
+            ) +
+            " with WhatsApp activity."
+        );
 
 
         summary.innerHTML =
@@ -1301,11 +1930,23 @@ async function loadAnalytics(){
         );
 
 
+        const errorMessage =
+            error.message ||
+            "Unable to load analytics data.";
+
+
         activity.innerHTML =
             '<div class="error">' +
             escapeHtml(
-                error.message ||
-                "Unable to load analytics data."
+                errorMessage
+            ) +
+            '</div>';
+
+
+        whatsappActivity.innerHTML =
+            '<div class="error">' +
+            escapeHtml(
+                errorMessage
             ) +
             '</div>';
 
@@ -1313,8 +1954,7 @@ async function loadAnalytics(){
         aiActivity.innerHTML =
             '<div class="error">' +
             escapeHtml(
-                error.message ||
-                "Unable to load AI analytics."
+                errorMessage
             ) +
             '</div>';
 
@@ -1322,11 +1962,9 @@ async function loadAnalytics(){
         summary.innerHTML =
             '<div class="error">' +
             escapeHtml(
-                error.message ||
-                "Unable to calculate business summary."
+                errorMessage
             ) +
             '</div>';
-
 
     }finally{
 
@@ -1357,6 +1995,7 @@ window.addEventListener(
 );
 
 </script>
+
 
 </body>
 
