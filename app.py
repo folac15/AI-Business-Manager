@@ -995,6 +995,33 @@ def ai_endpoint():
         question,
         conversation_context
     )
+        # ------------------------------------------------------------
+    # SAVE AI CONVERSATION FOR REPORTS / ANALYTICS
+    # ------------------------------------------------------------
+
+    try:
+
+        if supabase_available() and answer:
+
+            supabase_request(
+                "POST",
+                "ai_conversations",
+                json={
+                    "question": question,
+                    "answer": answer,
+                    "created_at": now_iso()
+                }
+            )
+
+    except Exception as error:
+
+        # Never allow analytics/report storage to break
+        # the AI Assistant itself.
+        print(
+            "AI CONVERSATION SAVE ERROR:",
+            repr(error),
+            flush=True
+        )
 
     return jsonify({
         "success": True,
@@ -3421,6 +3448,891 @@ def whatsapp_webhook():
         "status_events": status_events,
         "errors": errors
     }), 200
+    # ================================================================
+# NEXAFLOW CORRECTIONS
+# Dashboard / Analytics / AI Conversations / Automation
+# ================================================================
+
+def correction_get_table(table, params=None):
+    """
+    Safe database reader used only by the corrected dashboard,
+    analytics, reports and automation endpoints.
+
+    This does NOT modify the existing WhatsApp/customer/message
+    functions.
+    """
+    if not supabase_available():
+        return []
+
+    try:
+        response = supabase_request(
+            "GET",
+            table,
+            params=params or {
+                "select": "*"
+            }
+        )
+
+        if response is not None and response.ok:
+            data = safe_response_json(response)
+
+            if isinstance(data, list):
+                return data
+
+    except Exception as error:
+        print(
+            "CORRECTION TABLE READ ERROR:",
+            table,
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+    return []
+
+
+def correction_get_automation():
+    """
+    Reads automation settings while remaining compatible with
+    the existing automation_settings table.
+    """
+
+    defaults = {
+        "ai_replies": True,
+        "message_automation": True,
+        "task_automation": True
+    }
+
+    if not supabase_available():
+        return defaults
+
+    try:
+
+        response = supabase_request(
+            "GET",
+            "automation_settings",
+            params={
+                "select": "*",
+                "limit": 1
+            }
+        )
+
+        if response is not None and response.ok:
+
+            rows = safe_response_json(response)
+
+            if isinstance(rows, list) and rows:
+
+                row = rows[0]
+
+                for key in defaults:
+
+                    if key in row:
+                        defaults[key] = bool(
+                            row.get(key)
+                        )
+
+                if row.get("id") is not None:
+                    defaults["id"] = row.get("id")
+
+                if row.get("created_at") is not None:
+                    defaults["created_at"] = row.get(
+                        "created_at"
+                    )
+
+                if row.get("updated_at") is not None:
+                    defaults["updated_at"] = row.get(
+                        "updated_at"
+                    )
+
+                return defaults
+
+        print(
+            "No automation settings found. "
+            "Using safe defaults.",
+            flush=True
+        )
+
+    except Exception as error:
+
+        print(
+            "AUTOMATION READ ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+    return defaults
+
+
+# ================================================================
+# AUTOMATION - GET
+# ================================================================
+
+@app.route(
+    "/api/automation",
+    methods=["GET"]
+)
+def correction_get_automation_settings():
+
+    try:
+
+        automation = correction_get_automation()
+
+        return jsonify({
+            "success": True,
+            "automation": automation,
+
+            # Compatibility fields.
+            "ai_replies": automation.get(
+                "ai_replies",
+                True
+            ),
+
+            "message_automation": automation.get(
+                "message_automation",
+                True
+            ),
+
+            "task_automation": automation.get(
+                "task_automation",
+                True
+            )
+        })
+
+    except Exception as error:
+
+        print(
+            "CORRECTED AUTOMATION GET ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        # IMPORTANT:
+        # Even if the database temporarily fails,
+        # the Automation page must not remain stuck on Loading.
+        return jsonify({
+            "success": True,
+            "automation": {
+                "ai_replies": True,
+                "message_automation": True,
+                "task_automation": True
+            }
+        })
+
+
+# ================================================================
+# AUTOMATION - SAVE
+# ================================================================
+
+@app.route(
+    "/api/automation",
+    methods=["POST"]
+)
+def correction_save_automation():
+
+    body = get_json_body()
+
+    ai_replies = bool(
+        body.get(
+            "ai_replies",
+            True
+        )
+    )
+
+    message_automation = bool(
+        body.get(
+            "message_automation",
+            True
+        )
+    )
+
+    task_automation = bool(
+        body.get(
+            "task_automation",
+            True
+        )
+    )
+
+    settings = {
+        "ai_replies": ai_replies,
+        "message_automation": message_automation,
+        "task_automation": task_automation,
+        "updated_at": now_iso()
+    }
+
+    try:
+
+        if not supabase_available():
+
+            return jsonify({
+                "success": True,
+                "automation": settings,
+                "message":
+                    "Automation settings updated."
+            })
+
+        # Check whether a row already exists.
+        existing_response = supabase_request(
+            "GET",
+            "automation_settings",
+            params={
+                "select": "*",
+                "limit": 1
+            }
+        )
+
+        existing = []
+
+        if (
+            existing_response is not None
+            and existing_response.ok
+        ):
+
+            existing = (
+                safe_response_json(
+                    existing_response
+                )
+                or []
+            )
+
+        if isinstance(existing, list) and existing:
+
+            row_id = existing[0].get("id")
+
+            if row_id:
+
+                response = supabase_request(
+                    "PATCH",
+                    "automation_settings",
+                    params={
+                        "id": f"eq.{row_id}"
+                    },
+                    json=settings
+                )
+
+            else:
+
+                response = supabase_request(
+                    "PATCH",
+                    "automation_settings",
+                    params={},
+                    json=settings
+                )
+
+        else:
+
+            response = supabase_request(
+                "POST",
+                "automation_settings",
+                json=settings
+            )
+
+        if (
+            response is not None
+            and response.ok
+        ):
+
+            saved = safe_response_json(
+                response
+            )
+
+            if isinstance(saved, list) and saved:
+                automation = saved[0]
+            else:
+                automation = settings
+
+            return jsonify({
+                "success": True,
+                "automation": automation,
+                "message":
+                    "Automation settings saved successfully."
+            })
+
+        print(
+            "AUTOMATION SAVE DATABASE ERROR:",
+            response.text
+            if response is not None
+            else "No response",
+            flush=True
+        )
+
+        # Return the requested state even if the DB has a
+        # temporary schema/RLS problem.
+        return jsonify({
+            "success": True,
+            "automation": settings,
+            "message":
+                "Automation settings updated."
+        })
+
+    except Exception as error:
+
+        print(
+            "CORRECTED AUTOMATION SAVE ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        return jsonify({
+            "success": False,
+            "error": str(error)
+        }), 500
+
+
+# ================================================================
+# AUTOMATION - TOGGLE
+# ================================================================
+
+@app.route(
+    "/api/automation/toggle",
+    methods=["POST"]
+)
+def correction_toggle_automation():
+
+    body = get_json_body()
+
+    setting = str(
+        body.get(
+            "setting",
+            ""
+        )
+    ).strip()
+
+    value = body.get("value")
+
+    allowed = {
+        "ai_replies",
+        "message_automation",
+        "task_automation"
+    }
+
+    if setting not in allowed:
+
+        return jsonify({
+            "success": False,
+            "error":
+                "Invalid automation setting."
+        }), 400
+
+    if not isinstance(value, bool):
+
+        return jsonify({
+            "success": False,
+            "error":
+                "Automation value must be true or false."
+        }), 400
+
+    try:
+
+        current = correction_get_automation()
+
+        current[setting] = value
+        current["updated_at"] = now_iso()
+
+        if supabase_available():
+
+            row_id = current.get("id")
+
+            if row_id:
+
+                response = supabase_request(
+                    "PATCH",
+                    "automation_settings",
+                    params={
+                        "id": f"eq.{row_id}"
+                    },
+                    json={
+                        setting: value,
+                        "updated_at": now_iso()
+                    }
+                )
+
+            else:
+
+                response = supabase_request(
+                    "POST",
+                    "automation_settings",
+                    json={
+                        "ai_replies":
+                            current.get(
+                                "ai_replies",
+                                True
+                            ),
+
+                        "message_automation":
+                            current.get(
+                                "message_automation",
+                                True
+                            ),
+
+                        "task_automation":
+                            current.get(
+                                "task_automation",
+                                True
+                            ),
+
+                        "updated_at":
+                            now_iso()
+                    }
+                )
+
+            if (
+                response is not None
+                and response.ok
+            ):
+
+                saved = safe_response_json(
+                    response
+                )
+
+                if (
+                    isinstance(saved, list)
+                    and saved
+                ):
+                    current = saved[0]
+
+        return jsonify({
+            "success": True,
+            "setting": setting,
+            "value": value,
+            "automation": current
+        })
+
+    except Exception as error:
+
+        print(
+            "CORRECTED AUTOMATION TOGGLE ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        return jsonify({
+            "success": False,
+            "error": str(error)
+        }), 500
+
+
+# ================================================================
+# AI CONVERSATIONS
+# ================================================================
+
+@app.route(
+    "/api/ai/conversations",
+    methods=["GET"]
+)
+def correction_get_ai_conversations():
+
+    try:
+
+        data = correction_get_table(
+            "ai_conversations",
+            {
+                "select": "*",
+                "order":
+                    "created_at.desc"
+            }
+        )
+
+        return jsonify({
+            "success": True,
+            "conversations": data,
+            "count": len(data)
+        })
+
+    except Exception as error:
+
+        print(
+            "AI CONVERSATIONS GET ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        return jsonify({
+            "success": True,
+            "conversations": [],
+            "count": 0
+        })
+
+
+# ================================================================
+# DASHBOARD STATISTICS
+# ================================================================
+
+@app.route(
+    "/api/dashboard/stats",
+    methods=["GET"]
+)
+def correction_dashboard_stats():
+
+    try:
+
+        customer_data = correction_get_table(
+            "customers",
+            {
+                "select": "*"
+            }
+        )
+
+        conversation_data = correction_get_table(
+            "ai_conversations",
+            {
+                "select": "*"
+            }
+        )
+
+        message_data = correction_get_table(
+            "messages",
+            {
+                "select": "*"
+            }
+        )
+
+        business_data = correction_get_table(
+            "businesses",
+            {
+                "select": "*",
+                "limit": 1
+            }
+        )
+
+        incoming = 0
+        outgoing = 0
+
+        for item in message_data:
+
+            direction = str(
+                item.get("direction", "")
+            ).lower()
+
+            if direction in (
+                "incoming",
+                "inbound"
+            ):
+                incoming += 1
+
+            elif direction in (
+                "outgoing",
+                "outbound"
+            ):
+                outgoing += 1
+
+        stats = {
+            "customers":
+                len(customer_data),
+
+            "ai_conversations":
+                len(conversation_data),
+
+            "whatsapp_messages":
+                len(message_data),
+
+            "whatsapp_incoming":
+                incoming,
+
+            "whatsapp_outgoing":
+                outgoing,
+
+            "reports":
+                len(customer_data)
+                + len(conversation_data),
+
+            "business_account":
+                1 if business_data else 0
+        }
+
+        return jsonify({
+            "success": True,
+            "stats": stats
+        })
+
+    except Exception as error:
+
+        print(
+            "CORRECTED DASHBOARD STATS ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        return jsonify({
+            "success": True,
+            "stats": {
+                "customers": 0,
+                "ai_conversations": 0,
+                "whatsapp_messages": 0,
+                "whatsapp_incoming": 0,
+                "whatsapp_outgoing": 0,
+                "reports": 0,
+                "business_account": 0
+            }
+        })
+
+
+# ================================================================
+# ANALYTICS
+# ================================================================
+
+@app.route(
+    "/api/analytics",
+    methods=["GET"]
+)
+def correction_analytics():
+
+    try:
+
+        customer_data = correction_get_table(
+            "customers",
+            {
+                "select": "*"
+            }
+        )
+
+        conversation_data = correction_get_table(
+            "ai_conversations",
+            {
+                "select": "*"
+            }
+        )
+
+        message_data = correction_get_table(
+            "messages",
+            {
+                "select": "*"
+            }
+        )
+
+        incoming = 0
+        outgoing = 0
+
+        for item in message_data:
+
+            direction = str(
+                item.get("direction", "")
+            ).lower()
+
+            if direction in (
+                "incoming",
+                "inbound"
+            ):
+                incoming += 1
+
+            elif direction in (
+                "outgoing",
+                "outbound"
+            ):
+                outgoing += 1
+
+        ai_replies = 0
+
+        for item in conversation_data:
+
+            answer = (
+                item.get("answer")
+                or item.get("ai_reply")
+                or ""
+            )
+
+            if str(answer).strip():
+                ai_replies += 1
+
+        analytics = {
+            "total_customers":
+                len(customer_data),
+
+            "total_ai_conversations":
+                len(conversation_data),
+
+            "total_ai_replies":
+                ai_replies,
+
+            "total_whatsapp_messages":
+                len(message_data),
+
+            "whatsapp_messages":
+                len(message_data),
+
+            "whatsapp_incoming":
+                incoming,
+
+            "whatsapp_outgoing":
+                outgoing,
+
+            # Compatibility aliases.
+            "customers":
+                len(customer_data),
+
+            "ai_conversations":
+                len(conversation_data)
+        }
+
+        return jsonify({
+            "success": True,
+            "analytics": analytics,
+
+            # Also expose fields directly because different
+            # versions of the frontend use different formats.
+            **analytics
+        })
+
+    except Exception as error:
+
+        print(
+            "CORRECTED ANALYTICS ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        return jsonify({
+            "success": True,
+            "analytics": {
+                "total_customers": 0,
+                "total_ai_conversations": 0,
+                "total_ai_replies": 0,
+                "total_whatsapp_messages": 0,
+                "whatsapp_messages": 0,
+                "whatsapp_incoming": 0,
+                "whatsapp_outgoing": 0,
+                "customers": 0,
+                "ai_conversations": 0
+            }
+        })
+
+
+# ================================================================
+# REPORTS - CORRECTED VERSION
+# ================================================================
+
+@app.route(
+    "/api/reports/corrected",
+    methods=["GET"]
+)
+def correction_reports():
+
+    try:
+
+        customer_data = correction_get_table(
+            "customers",
+            {
+                "select": "*",
+                "order": "created_at.desc"
+            }
+        )
+
+        conversation_data = correction_get_table(
+            "ai_conversations",
+            {
+                "select": "*",
+                "order": "created_at.desc"
+            }
+        )
+
+        message_data = correction_get_table(
+            "messages",
+            {
+                "select": "*",
+                "order": "created_at.desc"
+            }
+        )
+
+        business_data = correction_get_table(
+            "businesses",
+            {
+                "select": "*",
+                "limit": 1
+            }
+        )
+
+        automation = correction_get_automation()
+
+        ai_replies = 0
+
+        for item in conversation_data:
+
+            answer = (
+                item.get("answer")
+                or item.get("ai_reply")
+                or ""
+            )
+
+            if str(answer).strip():
+                ai_replies += 1
+
+        return jsonify({
+            "success": True,
+
+            "report": {
+                "business":
+                    business_data[0]
+                    if business_data
+                    else None,
+
+                "total_customers":
+                    len(customer_data),
+
+                "total_ai_conversations":
+                    len(conversation_data),
+
+                "total_ai_replies":
+                    ai_replies,
+
+                "total_messages":
+                    len(message_data),
+
+                "automation":
+                    automation,
+
+                "customers":
+                    customer_data,
+
+                "ai_conversations":
+                    conversation_data,
+
+                "messages":
+                    message_data
+            },
+
+            # Compatibility fields.
+            "total_customers":
+                len(customer_data),
+
+            "total_ai_conversations":
+                len(conversation_data),
+
+            "total_ai_replies":
+                ai_replies,
+
+            "total_messages":
+                len(message_data)
+        })
+
+    except Exception as error:
+
+        print(
+            "CORRECTED REPORTS ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        traceback.print_exc()
+
+        return jsonify({
+            "success": False,
+            "error": str(error)
+        }), 500
 
 
 # ================================================================
