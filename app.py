@@ -782,21 +782,13 @@ def save_business():
         "business": business
     })
 
-
 # ================================================================
 # BUSINESS LOGO UPLOAD
 # ================================================================
 
-@app.route(
-    "/api/business/logo",
-    methods=["POST"]
-)
+@app.route("/api/business/logo", methods=["POST"])
 def upload_business_logo():
-
-    print(
-        "BUSINESS LOGO UPLOAD START",
-        flush=True
-    )
+    print("BUSINESS LOGO UPLOAD START", flush=True)
 
     uploaded_file = request.files.get("logo")
 
@@ -813,6 +805,9 @@ def upload_business_logo():
         }), 400
 
     try:
+        # ------------------------------------------------------------
+        # READ AND VALIDATE LOGO
+        # ------------------------------------------------------------
 
         file_bytes = uploaded_file.read()
 
@@ -846,15 +841,17 @@ def upload_business_logo():
             flush=True
         )
 
-        # --------------------------------------------------------
-        # CHECK FOR EXISTING BUSINESS
-        # --------------------------------------------------------
+        # ------------------------------------------------------------
+        # GET EXISTING BUSINESS PROFILE
+        # ------------------------------------------------------------
 
         existing = get_business_record_from_supabase()
 
-        # --------------------------------------------------------
-        # EXISTING BUSINESS
-        # --------------------------------------------------------
+        # ------------------------------------------------------------
+        # IMPORTANT:
+        # If a business profile already exists, ONLY update
+        # the logo. Do NOT overwrite the business information.
+        # ------------------------------------------------------------
 
         if existing and existing.get("id"):
 
@@ -879,42 +876,65 @@ def upload_business_logo():
 
             if response is not None and response.ok:
 
+                saved_data = safe_response_json(response)
+
+                if (
+                    isinstance(saved_data, list)
+                    and saved_data
+                ):
+                    saved_business = (
+                        saved_data[0]
+                    )
+                else:
+                    saved_business = dict(existing)
+                    saved_business["logo"] = logo_url
+
                 print(
-                    "BUSINESS LOGO SAVED TO EXISTING BUSINESS.",
+                    "BUSINESS LOGO UPDATED SUCCESSFULLY.",
                     flush=True
                 )
 
                 return jsonify({
                     "success": True,
                     "logo": logo_url,
-                    "message": "Business logo uploaded successfully."
+                    "business": normalize_business_record(
+                        saved_business
+                    ),
+                    "message":
+                        "Business logo uploaded successfully."
                 })
 
-            error_text = ""
-
-            if response is not None:
-                error_text = response.text[:2000]
+            error_text = (
+                response.text[:3000]
+                if response is not None
+                else "No response from Supabase."
+            )
 
             print(
-                "EXISTING BUSINESS LOGO UPDATE FAILED:",
+                "BUSINESS LOGO UPDATE FAILED:",
                 error_text,
                 flush=True
             )
 
             return jsonify({
                 "success": False,
-                "error": (
-                    "Unable to save the logo to your business profile. "
-                    "Supabase response: "
-                    + (error_text or "Unknown database error.")
-                )
+                "error":
+                    "Unable to update the business logo. "
+                    + error_text
             }), 500
 
-        # --------------------------------------------------------
-        # NO BUSINESS EXISTS
+        # ------------------------------------------------------------
+        # NO BUSINESS PROFILE EXISTS
         #
-        # Create the business profile together with the logo.
-        # --------------------------------------------------------
+        # IMPORTANT:
+        # Use the same business information structure as the
+        # normal /api/business POST endpoint.
+        # ------------------------------------------------------------
+
+        print(
+            "NO BUSINESS PROFILE FOUND.",
+            flush=True
+        )
 
         business_name = str(
             os.environ.get(
@@ -930,17 +950,6 @@ def upload_business_logo():
             )
         ).strip()
 
-        print(
-            "NO BUSINESS PROFILE FOUND.",
-            flush=True
-        )
-
-        print(
-            "CREATING BUSINESS PROFILE WITH LOGO.",
-            flush=True
-        )
-
-        # First attempt: current schema.
         payload = {
             "business_name": business_name,
             "owner_name": owner_name,
@@ -951,6 +960,15 @@ def upload_business_logo():
             "logo": logo_url
         }
 
+        print(
+            "ATTEMPTING BUSINESS PROFILE CREATION.",
+            flush=True
+        )
+
+        # ------------------------------------------------------------
+        # FIRST ATTEMPT
+        # ------------------------------------------------------------
+
         response = supabase_request(
             "POST",
             "businesses",
@@ -958,6 +976,16 @@ def upload_business_logo():
         )
 
         if response is not None and response.ok:
+
+            saved_data = safe_response_json(response)
+
+            if (
+                isinstance(saved_data, list)
+                and saved_data
+            ):
+                saved_business = saved_data[0]
+            else:
+                saved_business = dict(payload)
 
             print(
                 "BUSINESS PROFILE CREATED WITH LOGO.",
@@ -967,24 +995,36 @@ def upload_business_logo():
             return jsonify({
                 "success": True,
                 "logo": logo_url,
-                "message": "Business logo uploaded successfully."
+                "business": normalize_business_record(
+                    saved_business
+                ),
+                "message":
+                    "Business logo uploaded successfully."
             })
 
-        first_error = ""
+        # ------------------------------------------------------------
+        # CAPTURE THE REAL SUPABASE ERROR
+        # ------------------------------------------------------------
 
-        if response is not None:
-            first_error = response.text[:2000]
+        first_error = (
+            response.text[:5000]
+            if response is not None
+            else "No response from Supabase."
+        )
 
         print(
-            "FIRST BUSINESS INSERT FAILED:",
+            "BUSINESS PROFILE CREATION FAILED:",
             first_error,
             flush=True
         )
 
-        # --------------------------------------------------------
-        # SECOND ATTEMPT:
-        # Older schema using "name".
-        # --------------------------------------------------------
+        # ------------------------------------------------------------
+        # IMPORTANT FALLBACK
+        #
+        # If the businesses table rejects the logo because the
+        # existing schema does not contain business_name, try
+        # the older "name" column structure.
+        # ------------------------------------------------------------
 
         compatibility_payload = {
             "name": business_name,
@@ -996,6 +1036,11 @@ def upload_business_logo():
             "logo": logo_url
         }
 
+        print(
+            "TRYING COMPATIBILITY BUSINESS SCHEMA.",
+            flush=True
+        )
+
         response2 = supabase_request(
             "POST",
             "businesses",
@@ -1004,34 +1049,53 @@ def upload_business_logo():
 
         if response2 is not None and response2.ok:
 
+            saved_data = safe_response_json(response2)
+
+            if (
+                isinstance(saved_data, list)
+                and saved_data
+            ):
+                saved_business = saved_data[0]
+            else:
+                saved_business = dict(
+                    compatibility_payload
+                )
+
             print(
-                "BUSINESS PROFILE CREATED USING COMPATIBILITY SCHEMA.",
+                "BUSINESS PROFILE CREATED USING "
+                "COMPATIBILITY SCHEMA.",
                 flush=True
             )
 
             return jsonify({
                 "success": True,
                 "logo": logo_url,
-                "message": "Business logo uploaded successfully."
+                "business": normalize_business_record(
+                    saved_business
+                ),
+                "message":
+                    "Business logo uploaded successfully."
             })
 
-        second_error = ""
-
-        if response2 is not None:
-            second_error = response2.text[:2000]
+        second_error = (
+            response2.text[:5000]
+            if response2 is not None
+            else "No response from Supabase."
+        )
 
         print(
-            "SECOND BUSINESS INSERT FAILED:",
+            "COMPATIBILITY BUSINESS CREATION FAILED:",
             second_error,
             flush=True
         )
 
-        # --------------------------------------------------------
-        # IMPORTANT:
-        # Return the REAL database error instead of hiding it.
-        # This makes Supabase configuration/schema problems
-        # immediately visible in the frontend.
-        # --------------------------------------------------------
+        # ------------------------------------------------------------
+        # RETURN THE REAL DATABASE ERROR
+        #
+        # This is important because the previous version returned
+        # "Unknown Supabase database error", which hid the actual
+        # reason Supabase rejected the operation.
+        # ------------------------------------------------------------
 
         real_error = (
             second_error
@@ -1039,18 +1103,11 @@ def upload_business_logo():
             or "Unknown Supabase database error."
         )
 
-        print(
-            "BUSINESS LOGO CREATION FAILED:",
-            real_error,
-            flush=True
-        )
-
         return jsonify({
             "success": False,
-            "error": (
+            "error":
                 "Unable to create business profile for logo. "
                 + real_error
-            )
         }), 500
 
     except Exception as error:
@@ -1068,6 +1125,11 @@ def upload_business_logo():
             "error": str(error)
         }), 500
 
+         
+
+        
+            
+        
                     
 
 # ================================================================
